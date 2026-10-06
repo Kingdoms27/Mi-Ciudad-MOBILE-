@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as Notifications from 'expo-notifications';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
 import { TemaProvider, useTema } from '@/src/contexto/TemaContext';
@@ -11,15 +10,6 @@ import { sincronizarVisitasPendientes } from '@/src/servicios/visitas';
 import { sincronizarEstadoEventos } from '@/src/servicios/eventosGuardados';
 import { obtenerLugares } from '@/src/servicios/lugares';
 import { revisarProximidad, revisarProximidadDesdeCoordenadas } from '@/src/servicios/proximidad';
-
-Notifications.setNotificationHandler({
-  handleNotification:async()=>({
-    shouldShowBanner:true,
-    shouldShowList:true,
-    shouldPlaySound:false,
-    shouldSetBadge:false,
-  }),
-});
 
 function Efectos(){
   const{usuario}=useSesion();
