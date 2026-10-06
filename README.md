@@ -50,7 +50,7 @@ docs/                        Mapeo, decisiones, pruebas y defensa
 ## Requisitos de entorno
 
 - Node.js 22.13 o superior.
-- Expo SDK 57.
+- Expo SDK 57 (React Native 0.86.3).
 - Teléfono Android/iPhone para probar cámara, GPS, biometría, notificaciones y sensores.
 - Cuenta de Expo únicamente para generar el build EAS.
 
@@ -117,3 +117,4 @@ Consultar:
 - `docs/PRUEBAS-MOBILE.md`
 - `docs/DECISIONES-Y-DUDAS.md`
 - `docs/GUIA-DEFENSA.md`
+- `docs/ESTADO-ENTREGA.md`
