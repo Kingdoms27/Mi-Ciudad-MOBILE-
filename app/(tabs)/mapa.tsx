@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -138,9 +138,19 @@ export default function Mapa(){
       showsMyLocationButton={false}
       showsCompass={false}
       toolbarEnabled={false}
+      mapType={Platform.OS==='android'?'none':'standard'}
+      loadingEnabled
+      loadingBackgroundColor={colores.fondo}
       mapPadding={{top:165,right:14,bottom:245,left:14}}
       onPress={()=>setSeleccion(null)}
     >
+      {Platform.OS==='android'?<UrlTile
+        urlTemplate={esOscuro
+          ?'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
+          :'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'}
+        maximumZ={20}
+        flipY={false}
+      />:null}
       {visibles.map(l=><Marker
         key={l.id}
         coordinate={{latitude:l.coordenadas.latitud,longitude:l.coordenadas.longitud}}
