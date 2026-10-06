@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { LugarCard } from '@/src/componentes/LugarCard';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
 import { obtenerCategorias, obtenerLugares } from '@/src/servicios/lugares';
 import { Categoria, Coordenadas, Lugar } from '@/src/tipos';
 import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
@@ -104,7 +106,7 @@ export default function Inicio(){
       <Reveal delay={150}>
         <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
           <Pressable
-            onPress={()=>setCategoria('todas')}
+            onPress={()=>{void Haptics.selectionAsync();setCategoria('todas')}}
             style={[s.chip,{backgroundColor:categoria==='todas'?colores.primario:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.68)',borderColor:categoria==='todas'?colores.primario:colores.borde}]}
           >
             <Ionicons name="grid-outline" size={14} color={categoria==='todas'?'white':colores.tinta}/>
@@ -112,7 +114,7 @@ export default function Inicio(){
           </Pressable>
           {categorias.map(c=><Pressable
             key={c.id}
-            onPress={()=>setCategoria(c.id)}
+            onPress={()=>{void Haptics.selectionAsync();setCategoria(c.id)}}
             style={[s.chip,{backgroundColor:categoria===c.id?colores.primario:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.68)',borderColor:categoria===c.id?colores.primario:colores.borde}]}
           >
             <Text style={{fontWeight:'900',color:categoria===c.id?'white':colores.tinta}}>{c.nombre}</Text>
@@ -132,7 +134,7 @@ export default function Inicio(){
         </View>
       </Reveal>
 
-      {cargando?<EstadoContenido tipo="cargando"/>:
+      {cargando?<SkeletonLista cantidad={3}/>:
        error?<EstadoContenido tipo="error" mensaje={error} onReintentar={cargar}/>:
        visibles.length===0?<EstadoContenido tipo="vacio" mensaje="No encontramos lugares con ese filtro."/>:
        visibles.map((l,i)=><Reveal key={l.id} delay={Math.min(250+i*55,520)}>
