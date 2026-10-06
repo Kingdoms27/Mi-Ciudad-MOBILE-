@@ -13,6 +13,7 @@ import { fechaEvento, pesos } from '@/src/utilidades/formato';
 import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleEvento(){
   const{id}=useLocalSearchParams<{id:string}>();
@@ -68,6 +69,7 @@ export default function DetalleEvento(){
   const heroTranslate=scrollY.interpolate({inputRange:[0,220],outputRange:[0,55],extrapolate:'clamp'});
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
+    <ScreenTopBar floating/>
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={s.scroll}
