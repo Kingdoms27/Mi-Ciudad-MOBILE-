@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { obtenerLugarPorId } from '@/src/servicios/lugares';
 import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
