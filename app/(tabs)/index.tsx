@@ -20,7 +20,7 @@ const HERO_URL='https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costan
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
-  const imagen=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes[0]);
+  const imagen=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes);
 
   return <Pressable
     style={s.featureCard}
