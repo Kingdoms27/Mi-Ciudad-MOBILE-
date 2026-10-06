@@ -7,7 +7,7 @@ type Ctx={usuario:Usuario|null;sesionGuardada:boolean;bloqueada:boolean;cargando
 const C=createContext<Ctx|undefined>(undefined);
 export function SesionProvider({children}:PropsWithChildren){
  const[sesion,setSesion]=useState<Sesion|null>(null);const[bloqueada,setBloqueada]=useState(false);const[cargando,setCargando]=useState(true);
- useEffect(()=>{(async()=>{const s=await obtenerSesionGuardada();if(s){setSesion(s);setBloqueada(await biometriaDisponible().catch(()=>false));}setCargando(false);})()},[]);
+ useEffect(()=>{(async()=>{try{const s=await obtenerSesionGuardada();if(s){setSesion(s);setBloqueada(await biometriaDisponible().catch(()=>false));}}catch(e){console.warn('No se pudo restaurar la sesión',e);setSesion(null);setBloqueada(false);}finally{setCargando(false);}})()},[]);
  const login=async(email:string,password:string)=>{const r=await ingreso(email,password);if('error'in r)return{ok:false,mensaje:r.error.mensaje};setSesion(r.datos);setBloqueada(false);return{ok:true};};
  const registrar=async(nombre:string,email:string,password:string)=>{const r=await registro(nombre,email,password);if('error'in r)return{ok:false,mensaje:r.error.mensaje};setSesion(r.datos);setBloqueada(false);return{ok:true};};
  const logout=async()=>{await cerrarSesion();setSesion(null);setBloqueada(false);};
