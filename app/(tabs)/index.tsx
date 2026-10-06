@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { LugarCard } from '@/src/componentes/LugarCard';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
@@ -13,6 +14,32 @@ import { obtenerCategorias, obtenerLugares } from '@/src/servicios/lugares';
 import { Categoria, Coordenadas, Lugar } from '@/src/tipos';
 import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
 import { useTema } from '@/src/contexto/TemaContext';
+import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+
+const HERO_URL='https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg';
+
+function Destacado({lugar}:{lugar:Lugar}){
+  const{colores}=useTema();
+  const imagen=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes[0]);
+
+  return <Pressable
+    style={s.featureCard}
+    onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
+  >
+    <Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover"/>
+    <View style={s.featureShade}/>
+    <View style={s.featureTop}>
+      <View style={s.featureBadge}><Text style={s.featureBadgeText}>DESTACADO</Text></View>
+    </View>
+    <View style={s.featureBottom}>
+      <Text style={s.featureName} numberOfLines={2}>{lugar.nombre}</Text>
+      <Text style={s.featureDesc} numberOfLines={1}>{lugar.descripcionCorta}</Text>
+      <View style={[s.featureArrow,{backgroundColor:colores.primario}]}>
+        <Ionicons name="arrow-forward" size={17} color="white"/>
+      </View>
+    </View>
+  </Pressable>;
+}
 
 export default function Inicio(){
   const{colores,esOscuro}=useTema();
@@ -24,6 +51,7 @@ export default function Inicio(){
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
   const scrollY=useRef(new Animated.Value(0)).current;
+  const heroImage=useImagenLugar('hero-colon',HERO_URL);
 
   const cargar=async()=>{
     setCargando(true);
@@ -34,6 +62,7 @@ export default function Inicio(){
       if('error'in c)throw new Error(c.error.mensaje);
       setLugares(l.datos);
       setCategorias(c.datos);
+
       const p=await Location.requestForegroundPermissionsAsync();
       if(p.granted){
         const u=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
@@ -55,112 +84,159 @@ export default function Inicio(){
     [lugares,categoria,buscar,ubicacion],
   );
 
-  const heroTranslate=scrollY.interpolate({inputRange:[0,120],outputRange:[0,-20],extrapolate:'clamp'});
-  const heroOpacity=scrollY.interpolate({inputRange:[0,150],outputRange:[1,.72],extrapolate:'clamp'});
+  const destacados=useMemo(()=>{
+    const ids=['lug-002','lug-004','lug-003'];
+    return ids.map(id=>lugares.find(l=>l.id===id)).filter(Boolean) as Lugar[];
+  },[lugares]);
+
+  const heroScale=scrollY.interpolate({inputRange:[-160,0,260],outputRange:[1.22,1,1],extrapolate:'clamp'});
+  const heroTranslate=scrollY.interpolate({inputRange:[0,260],outputRange:[0,58],extrapolate:'clamp'});
+  const heroOpacity=scrollY.interpolate({inputRange:[0,250],outputRange:[1,.86],extrapolate:'clamp'});
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
-    <View style={[s.glow,s.glowOne,{backgroundColor:esOscuro?'rgba(111,208,178,.08)':'rgba(14,90,75,.08)'}]}/>
-    <View style={[s.glow,s.glowTwo,{backgroundColor:esOscuro?'rgba(231,181,117,.05)':'rgba(216,156,85,.09)'}]}/>
     <NetworkBanner/>
     <Animated.ScrollView
-      contentContainerStyle={s.content}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={s.scrollContent}
       onScroll={Animated.event([{nativeEvent:{contentOffset:{y:scrollY}}}],{useNativeDriver:true})}
       scrollEventThrottle={16}
     >
-      <Animated.View style={{transform:[{translateY:heroTranslate}],opacity:heroOpacity}}>
-        <Reveal>
-          <View style={s.topRow}>
-            <View>
-              <Text style={[s.kicker,{color:colores.primario}]}>GUÍA TURÍSTICA · COLÓN</Text>
-              <Text style={[s.eyebrow,{color:colores.secundario}]}>Entre Ríos · Argentina</Text>
-            </View>
-            <View style={[s.locationDot,{backgroundColor:colores.primarioSuave}]}>
-              <Ionicons name="location" size={19} color={colores.primario}/>
-            </View>
+      <View style={s.hero}>
+        <Animated.Image
+          source={{uri:heroImage}}
+          style={[s.heroImage,{opacity:heroOpacity,transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
+          resizeMode="cover"
+        />
+        <View style={s.heroShade}/>
+        <View style={s.heroTop}>
+          <View style={s.brandPill}>
+            <Ionicons name="location" size={14} color="white"/>
+            <Text style={s.brandPillText}>COLÓN · ENTRE RÍOS</Text>
           </View>
-          <Text style={[s.h1,{color:colores.tinta}]}>Descubrí Colón{'\n'}a tu ritmo.</Text>
-          <Text style={[s.bajada,{color:colores.secundario}]}>Patrimonio, naturaleza, río y experiencias para recorrer la ciudad con una guía simple y cercana.</Text>
-        </Reveal>
+          <View style={s.weatherLike}>
+            <Ionicons name="sparkles-outline" size={16} color="white"/>
+          </View>
+        </View>
+        <View style={s.heroCopy}>
+          <Text style={s.heroKicker}>MI CIUDAD</Text>
+          <Text style={s.heroTitle}>Descubrí Colón{'
+'}a tu ritmo.</Text>
+          <Text style={s.heroDesc}>Río, patrimonio, naturaleza y experiencias para guardar en tu recorrido.</Text>
+        </View>
+      </View>
 
-        <Reveal delay={100}>
-          <GlassSurface style={s.searchWrap} intensity={48}>
-            <Ionicons name="search-outline" size={20} color={colores.secundario}/>
+      <View style={s.body}>
+        <Reveal delay={70} style={s.searchFloat}>
+          <GlassSurface style={s.searchWrap} intensity={62}>
+            <Ionicons name="search-outline" size={21} color={colores.secundario}/>
             <TextInput
               value={buscar}
               onChangeText={setBuscar}
-              placeholder="Buscar lugares y experiencias"
+              placeholder="¿Qué querés conocer?"
               placeholderTextColor={colores.secundario}
               style={[s.search,{color:colores.tinta}]}
               accessibilityLabel="Buscar lugar"
             />
             {buscar?<Pressable onPress={()=>setBuscar('')} hitSlop={10}>
-              <Ionicons name="close-circle" size={18} color={colores.secundario}/>
+              <Ionicons name="close-circle" size={19} color={colores.secundario}/>
             </Pressable>:null}
           </GlassSurface>
         </Reveal>
-      </Animated.View>
 
-      <Reveal delay={150}>
-        <Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
-          <Pressable
-            onPress={()=>{void Haptics.selectionAsync();setCategoria('todas')}}
-            style={[s.chip,{backgroundColor:categoria==='todas'?colores.primario:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.68)',borderColor:categoria==='todas'?colores.primario:colores.borde}]}
-          >
-            <Ionicons name="grid-outline" size={14} color={categoria==='todas'?'white':colores.tinta}/>
-            <Text style={{fontWeight:'900',color:categoria==='todas'?'white':colores.tinta}}>Todos</Text>
-          </Pressable>
-          {categorias.map(c=><Pressable
-            key={c.id}
-            onPress={()=>{void Haptics.selectionAsync();setCategoria(c.id)}}
-            style={[s.chip,{backgroundColor:categoria===c.id?colores.primario:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.68)',borderColor:categoria===c.id?colores.primario:colores.borde}]}
-          >
-            <Text style={{fontWeight:'900',color:categoria===c.id?'white':colores.tinta}}>{c.nombre}</Text>
-          </Pressable>)}
-        </Animated.ScrollView>
-      </Reveal>
+        <Reveal delay={120}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
+            <Pressable
+              onPress={()=>{void Haptics.selectionAsync();setCategoria('todas')}}
+              style={[s.chip,{backgroundColor:categoria==='todas'?colores.primario:colores.superficie,borderColor:categoria==='todas'?colores.primario:colores.borde}]}
+            >
+              <Ionicons name="grid-outline" size={14} color={categoria==='todas'?'white':colores.tinta}/>
+              <Text style={{fontWeight:'900',color:categoria==='todas'?'white':colores.tinta}}>Todos</Text>
+            </Pressable>
+            {categorias.map(c=><Pressable
+              key={c.id}
+              onPress={()=>{void Haptics.selectionAsync();setCategoria(c.id)}}
+              style={[s.chip,{backgroundColor:categoria===c.id?colores.primario:colores.superficie,borderColor:categoria===c.id?colores.primario:colores.borde}]}
+            >
+              <Text style={{fontWeight:'900',color:categoria===c.id?'white':colores.tinta}}>{c.nombre}</Text>
+            </Pressable>)}
+          </ScrollView>
+        </Reveal>
 
-      <Reveal delay={210}>
-        <View style={s.section}>
-          <View>
-            <Text style={[s.h2,{color:colores.tinta}]}>{ubicacion?'Cerca tuyo':'Lugares para explorar'}</Text>
-            <Text style={[s.sectionSub,{color:colores.secundario}]}>{ubicacion?'Ordenados por distancia':'Selección para empezar tu recorrido'}</Text>
+        {!buscar&&categoria==='todas'&&destacados.length>0?<Reveal delay={160}>
+          <View style={s.sectionHead}>
+            <View>
+              <Text style={[s.sectionKicker,{color:colores.primario}]}>IMPERDIBLES</Text>
+              <Text style={[s.h2,{color:colores.tinta}]}>Para empezar</Text>
+            </View>
+            <Text style={[s.sectionHint,{color:colores.secundario}]}>Deslizá →</Text>
           </View>
-          <View style={[s.count,{backgroundColor:colores.primarioSuave}]}>
-            <Text style={{color:colores.primario,fontSize:11,fontWeight:'900'}}>{visibles.length}</Text>
-          </View>
-        </View>
-      </Reveal>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.featureRow}>
+            {destacados.map(l=><Destacado key={l.id} lugar={l}/>)}
+          </ScrollView>
+        </Reveal>:null}
 
-      {cargando?<SkeletonLista cantidad={3}/>:
-       error?<EstadoContenido tipo="error" mensaje={error} onReintentar={cargar}/>:
-       visibles.length===0?<EstadoContenido tipo="vacio" mensaje="No encontramos lugares con ese filtro."/>:
-       visibles.map((l,i)=><Reveal key={l.id} delay={Math.min(250+i*55,520)}>
-         <LugarCard lugar={l} distancia={ubicacion?formatearDistancia(distanciaKm(ubicacion,l.coordenadas)):undefined}/>
-       </Reveal>)}
+        <Reveal delay={200}>
+          <View style={s.section}>
+            <View>
+              <Text style={[s.sectionKicker,{color:colores.primario}]}>{ubicacion?'CERCA TUYO':'EXPLORÁ'}</Text>
+              <Text style={[s.h2,{color:colores.tinta}]}>{buscar?'Resultados':'Lugares de Colón'}</Text>
+              <Text style={[s.sectionSub,{color:colores.secundario}]}>
+                {ubicacion?'Ordenados por distancia desde tu ubicación':'Elegí una experiencia y armá tu recorrido'}
+              </Text>
+            </View>
+            <View style={[s.count,{backgroundColor:colores.primarioSuave}]}>
+              <Text style={{color:colores.primario,fontSize:11,fontWeight:'900'}}>{visibles.length}</Text>
+            </View>
+          </View>
+        </Reveal>
+
+        {cargando?<SkeletonLista cantidad={3}/>:
+         error?<EstadoContenido tipo="error" mensaje={error} onReintentar={cargar}/>:
+         visibles.length===0?<EstadoContenido tipo="vacio" mensaje="No encontramos lugares con ese filtro."/>:
+         visibles.map((l,i)=><Reveal key={l.id} delay={Math.min(230+i*45,470)}>
+           <LugarCard lugar={l} distancia={ubicacion?formatearDistancia(distanciaKm(ubicacion,l.coordenadas)):undefined}/>
+         </Reveal>)}
+      </View>
     </Animated.ScrollView>
   </View>;
 }
 
 const s=StyleSheet.create({
-  root:{flex:1,overflow:'hidden'},
-  content:{paddingHorizontal:20,paddingTop:58,paddingBottom:118},
-  glow:{position:'absolute',borderRadius:999},
-  glowOne:{width:300,height:300,top:-155,right:-125},
-  glowTwo:{width:220,height:220,top:330,left:-145},
-  topRow:{flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
-  kicker:{fontSize:11,letterSpacing:1.45,fontWeight:'900'},
-  eyebrow:{fontSize:10,fontWeight:'700',marginTop:3},
-  locationDot:{width:43,height:43,borderRadius:15,alignItems:'center',justifyContent:'center'},
-  h1:{fontSize:40,lineHeight:43,fontWeight:'900',letterSpacing:-1.25,marginTop:22},
-  bajada:{fontSize:15,lineHeight:22,marginTop:12,marginBottom:20,maxWidth:390},
-  searchWrap:{height:58,borderRadius:20,flexDirection:'row',alignItems:'center',paddingHorizontal:15,gap:9},
-  search:{flex:1,fontSize:15},
-  chips:{gap:8,paddingVertical:18,paddingRight:8},
+  root:{flex:1},
+  scrollContent:{paddingBottom:112},
+  hero:{height:390,overflow:'hidden',position:'relative',backgroundColor:'#17342E'},
+  heroImage:{position:'absolute',left:0,right:0,top:-12,height:430,width:'100%'},
+  heroShade:{position:'absolute',left:0,right:0,top:0,bottom:0,backgroundColor:'rgba(8,22,18,.42)'},
+  heroTop:{position:'absolute',top:50,left:20,right:20,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
+  brandPill:{backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',borderRadius:999,paddingHorizontal:11,paddingVertical:8,flexDirection:'row',alignItems:'center',gap:5},
+  brandPillText:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:1.1},
+  weatherLike:{width:38,height:38,borderRadius:14,backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',alignItems:'center',justifyContent:'center'},
+  heroCopy:{position:'absolute',left:20,right:20,bottom:56},
+  heroKicker:{color:'#A9E8D4',fontSize:10,fontWeight:'900',letterSpacing:1.5},
+  heroTitle:{color:'white',fontSize:42,lineHeight:44,fontWeight:'900',letterSpacing:-1.45,marginTop:7},
+  heroDesc:{color:'rgba(255,255,255,.84)',fontSize:14,lineHeight:21,maxWidth:350,marginTop:10},
+  body:{paddingHorizontal:20},
+  searchFloat:{marginTop:-29,zIndex:3},
+  searchWrap:{height:60,borderRadius:21,flexDirection:'row',alignItems:'center',paddingHorizontal:16,gap:9},
+  search:{flex:1,fontSize:15,fontWeight:'700'},
+  chips:{gap:8,paddingTop:20,paddingBottom:22,paddingRight:8},
   chip:{paddingHorizontal:14,paddingVertical:10,borderRadius:999,borderWidth:1,flexDirection:'row',alignItems:'center',gap:5},
-  section:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginTop:5,marginBottom:14},
-  h2:{fontSize:23,fontWeight:'900',letterSpacing:-.45},
-  sectionSub:{fontSize:11,marginTop:3,fontWeight:'700'},
-  count:{minWidth:31,height:31,borderRadius:16,alignItems:'center',justifyContent:'center',paddingHorizontal:8},
+  sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-end',marginBottom:12},
+  sectionKicker:{fontSize:9,fontWeight:'900',letterSpacing:1.25},
+  sectionHint:{fontSize:10,fontWeight:'800'},
+  featureRow:{gap:12,paddingRight:10,paddingBottom:24},
+  featureCard:{width:250,height:188,borderRadius:24,overflow:'hidden',backgroundColor:'#203A33'},
+  featureShade:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,18,15,.30)'},
+  featureTop:{position:'absolute',top:12,left:12},
+  featureBadge:{backgroundColor:'rgba(8,20,17,.62)',borderRadius:999,paddingHorizontal:9,paddingVertical:6},
+  featureBadgeText:{color:'white',fontSize:8,fontWeight:'900',letterSpacing:1},
+  featureBottom:{position:'absolute',left:14,right:14,bottom:13},
+  featureName:{color:'white',fontSize:20,fontWeight:'900',letterSpacing:-.35,paddingRight:38},
+  featureDesc:{color:'rgba(255,255,255,.78)',fontSize:11,marginTop:3,paddingRight:30},
+  featureArrow:{position:'absolute',right:0,bottom:0,width:34,height:34,borderRadius:13,alignItems:'center',justifyContent:'center'},
+  section:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginBottom:14},
+  h2:{fontSize:24,fontWeight:'900',letterSpacing:-.55,marginTop:2},
+  sectionSub:{fontSize:11,marginTop:4,fontWeight:'700',maxWidth:285},
+  count:{minWidth:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',paddingHorizontal:8},
 });
