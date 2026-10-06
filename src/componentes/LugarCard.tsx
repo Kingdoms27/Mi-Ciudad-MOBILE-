@@ -10,7 +10,7 @@ import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
-  const imagen=useImagenLugar(lugar.id,lugar.imagenes[0]);
+  const imagen=useImagenLugar(lugar.id,lugar.imagenes);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
