@@ -16,7 +16,7 @@ import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
 import { useTema } from '@/src/contexto/TemaContext';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
-const HERO_URL='https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg';
+const HERO_URL='https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg';
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
