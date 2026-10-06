@@ -3,7 +3,7 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import Storage from 'expo-sqlite/kv-store';
 import { RespuestaApi, Sesion, Usuario } from '@/src/tipos';
 import { usuarioMock } from '@/src/mocks/usuario';
-const TOKEN_KEY='mi-ciudad:token'; const USER_KEY='mi-ciudad:usuario';
+const TOKEN_KEY='mi-ciudad.token'; const USER_KEY='mi-ciudad:usuario';
 const esperar=(ms=250)=>new Promise(r=>setTimeout(r,ms));
 const normalizar=(u:Usuario):Usuario=>({...u,preferencias:{...u.preferencias}});
 export async function registro(nombre:string,email:string,password:string):Promise<RespuestaApi<Sesion>>{
