@@ -226,7 +226,7 @@ const s=StyleSheet.create({
   sectionHint:{fontSize:10,fontWeight:'800'},
   featureRow:{gap:12,paddingRight:10,paddingBottom:24},
   featureCard:{width:250,height:188,borderRadius:24,overflow:'hidden',backgroundColor:'#203A33'},
-  featureShade:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(7,18,15,.30)'},
+  featureShade:{position:'absolute',top:0,left:0,right:0,bottom:0,backgroundColor:'rgba(7,18,15,.30)'},
   featureTop:{position:'absolute',top:12,left:12},
   featureBadge:{backgroundColor:'rgba(8,20,17,.62)',borderRadius:999,paddingHorizontal:9,paddingVertical:6},
   featureBadgeText:{color:'white',fontSize:8,fontWeight:'900',letterSpacing:1},
