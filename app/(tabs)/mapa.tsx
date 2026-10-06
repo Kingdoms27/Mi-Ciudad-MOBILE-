@@ -3,7 +3,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { obtenerCategorias, obtenerLugares } from '@/src/servicios/lugares';
 import { Categoria, Coordenadas, Lugar } from '@/src/tipos';
 import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
