@@ -11,6 +11,7 @@ import { LugarCard } from '@/src/componentes/LugarCard';
 import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
 import { Reveal } from '@/src/componentes/Reveal';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function Favoritos(){
   const{usuario}=useSesion();
@@ -35,6 +36,7 @@ export default function Favoritos(){
   },[usuario?.id]));
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
+    <ScreenTopBar title="Favoritos"/>
     <View style={[s.glow,{backgroundColor:esOscuro?'rgba(111,208,178,.07)':'rgba(14,90,75,.07)'}]}/>
     <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
       <Reveal>
