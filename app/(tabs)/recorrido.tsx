@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import * as Haptics from 'expo-haptics';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { obtenerRecorrido, sincronizarVisitasPendientes } from '@/src/servicios/visitas';
@@ -12,6 +13,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
 
 export default function Recorrido(){
   const{colores,esOscuro}=useTema();
@@ -36,6 +38,7 @@ export default function Recorrido(){
     setSinc(true);
     await sincronizarVisitasPendientes();
     await cargar();
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
     setSinc(false);
   };
 
@@ -68,15 +71,15 @@ export default function Recorrido(){
 
       <Reveal delay={100}>
         <View style={s.actions}>
-          <Pressable style={[s.action,{backgroundColor:colores.primario}]} onPress={()=>router.push('/escanear')}>
+          <Pressable style={[s.action,{backgroundColor:colores.primario}]} onPress={()=>{void Haptics.selectionAsync();router.push('/escanear')}}>
             <Ionicons name="qr-code-outline" size={23} color="white"/>
             <Text style={s.primaryText}>QR</Text>
           </Pressable>
-          <Pressable style={[s.actionGlass,{borderColor:colores.borde,backgroundColor:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.72)'}]} onPress={()=>router.push({pathname:'/registrar-visita',params:{origen:'gps'}})}>
+          <Pressable style={[s.actionGlass,{borderColor:colores.borde,backgroundColor:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.72)'}]} onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/registrar-visita',params:{origen:'gps'}})}}>
             <Ionicons name="location-outline" size={23} color={colores.primario}/>
             <Text style={{color:colores.tinta,fontWeight:'900'}}>GPS</Text>
           </Pressable>
-          <Pressable style={[s.actionGlass,{borderColor:colores.borde,backgroundColor:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.72)'}]} onPress={()=>router.push({pathname:'/registrar-visita',params:{origen:'manual'}})}>
+          <Pressable style={[s.actionGlass,{borderColor:colores.borde,backgroundColor:esOscuro?'rgba(255,255,255,.05)':'rgba(255,255,255,.72)'}]} onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/registrar-visita',params:{origen:'manual'}})}}>
             <Ionicons name="create-outline" size={23} color={colores.primario}/>
             <Text style={{color:colores.tinta,fontWeight:'900'}}>Manual</Text>
           </Pressable>
@@ -87,7 +90,7 @@ export default function Recorrido(){
         </Pressable>
       </Reveal>
 
-      {cargando?<EstadoContenido tipo="cargando"/>:
+      {cargando?<SkeletonLista cantidad={2}/>:
        visitas.length===0?<EstadoContenido tipo="vacio" mensaje="Todavía no registraste visitas."/>:
        visitas.map((v,i)=><Reveal key={v.id} delay={Math.min(130+i*55,430)}>
          <GlassSurface style={s.card} intensity={40}>
