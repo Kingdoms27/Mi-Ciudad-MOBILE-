@@ -120,8 +120,7 @@ export default function Inicio(){
         </View>
         <View style={s.heroCopy}>
           <Text style={s.heroKicker}>MI CIUDAD</Text>
-          <Text style={s.heroTitle}>Descubrí Colón{'
-'}a tu ritmo.</Text>
+          <Text style={s.heroTitle}>Descubrí Colón{String.fromCharCode(10)}a tu ritmo.</Text>
           <Text style={s.heroDesc}>Río, patrimonio, naturaleza y experiencias para guardar en tu recorrido.</Text>
         </View>
       </View>
