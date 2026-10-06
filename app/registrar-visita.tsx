@@ -3,7 +3,7 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View 
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { obtenerLugares } from '@/src/servicios/lugares';
 import { registrarVisita, validarCercania } from '@/src/servicios/visitas';
 import { Lugar, OrigenVisita } from '@/src/tipos';
