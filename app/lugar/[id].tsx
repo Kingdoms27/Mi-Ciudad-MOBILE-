@@ -78,7 +78,7 @@ function ContenidoLugar({
   esOscuro:boolean;
   usuarioId?:string;
 }){
-  const imagen=useImagenLugar(lugar.id,lugar.imagenes[0]);
+  const imagen=useImagenLugar(lugar.id,lugar.imagenes);
 
   const toggle=async()=>{
     if(!usuarioId){
