@@ -60,7 +60,17 @@ function Navegacion(){
   return <>
     <Efectos/>
     <StatusBar style={esOscuro?'light':'dark'}/>
-    <Stack screenOptions={{headerShadowVisible:false}}>
+    <Stack screenOptions={{
+      headerShadowVisible:false,
+      animation:'fade_from_bottom',
+      animationDuration:260,
+      gestureEnabled:true,
+      fullScreenGestureEnabled:true,
+      contentStyle:{backgroundColor:esOscuro?'#0F1816':'#F5F2EA'},
+      headerStyle:{backgroundColor:esOscuro?'#0F1816':'#F5F2EA'},
+      headerTintColor:esOscuro?'#F2F7F4':'#17342E',
+      headerTitleStyle:{fontWeight:'900'},
+    }}>
       <Stack.Screen name="(tabs)" options={{headerShown:false}}/>
       <Stack.Screen name="lugar/[id]" options={{title:'Lugar',headerBackTitle:'Atrás'}}/>
       <Stack.Screen name="evento/[id]" options={{title:'Evento',headerBackTitle:'Atrás'}}/>
