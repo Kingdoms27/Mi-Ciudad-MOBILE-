@@ -80,7 +80,7 @@ function Navegacion(){
 
   return <NavigationThemeProvider value={navTheme}>
     <Efectos/>
-    <StatusBar style={esOscuro?'light':'dark'} backgroundColor={colores.fondo}/>
+    <StatusBar style={esOscuro?'light':'dark'}/>
     <Stack screenOptions={{
       headerShown:false,
       animation:'fade_from_bottom',
