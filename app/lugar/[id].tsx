@@ -14,6 +14,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
   const{id}=useLocalSearchParams<{id:string}>();
@@ -114,6 +115,7 @@ function ContenidoLugar({
   const heroTranslate=scrollY.interpolate({inputRange:[0,260],outputRange:[0,72],extrapolate:'clamp'});
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
+    <ScreenTopBar floating/>
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={s.scrollContent}
