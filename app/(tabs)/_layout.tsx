@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useTema } from '@/src/contexto/TemaContext';
 
@@ -38,11 +39,11 @@ export default function TabLayout(){
       />
     ),
   }}>
-    <Tabs.Screen name="index" options={{title:'Explorar',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'compass':'compass-outline'} size={focused?size+2:size} color={color}/>}}/>
-    <Tabs.Screen name="mapa" options={{title:'Mapa',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'map':'map-outline'} size={focused?size+2:size} color={color}/>}}/>
-    <Tabs.Screen name="agenda" options={{title:'Agenda',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'calendar':'calendar-outline'} size={focused?size+2:size} color={color}/>}}/>
-    <Tabs.Screen name="recorrido" options={{title:'Recorrido',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'camera':'camera-outline'} size={focused?size+2:size} color={color}/>}}/>
-    <Tabs.Screen name="cuenta" options={{title:'Yo',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'person':'person-outline'} size={focused?size+2:size} color={color}/>}}/>
+    <Tabs.Screen name="index" listeners={{tabPress:()=>{void Haptics.selectionAsync();}}} options={{title:'Explorar',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'compass':'compass-outline'} size={focused?size+2:size} color={color}/>}}/>
+    <Tabs.Screen name="mapa" listeners={{tabPress:()=>{void Haptics.selectionAsync();}}} options={{title:'Mapa',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'map':'map-outline'} size={focused?size+2:size} color={color}/>}}/>
+    <Tabs.Screen name="agenda" listeners={{tabPress:()=>{void Haptics.selectionAsync();}}} options={{title:'Agenda',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'calendar':'calendar-outline'} size={focused?size+2:size} color={color}/>}}/>
+    <Tabs.Screen name="recorrido" listeners={{tabPress:()=>{void Haptics.selectionAsync();}}} options={{title:'Recorrido',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'camera':'camera-outline'} size={focused?size+2:size} color={color}/>}}/>
+    <Tabs.Screen name="cuenta" listeners={{tabPress:()=>{void Haptics.selectionAsync();}}} options={{title:'Yo',tabBarIcon:({color,size,focused})=><Ionicons name={focused?'person':'person-outline'} size={focused?size+2:size} color={color}/>}}/>
   </Tabs>;
 }
 
