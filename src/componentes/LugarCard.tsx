@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Animated, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import * as Haptics from 'expo-haptics';
 import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
@@ -23,7 +24,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   return <Animated.View style={{transform:[{scale:escala}]}}>
     <Pressable
       style={[s.card,{backgroundColor:colores.superficie,borderColor:colores.borde,shadowColor:colores.sombra}]}
-      onPress={()=>router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}
+      onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
       onPressIn={()=>animar(.985)}
       onPressOut={()=>animar(1)}
       accessibilityRole="button"
