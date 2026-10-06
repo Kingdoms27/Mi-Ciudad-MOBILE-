@@ -1,6 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
