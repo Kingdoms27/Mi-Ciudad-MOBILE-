@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import * as Haptics from 'expo-haptics';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { actualizarPreferencias } from '@/src/servicios/preferencias';
@@ -24,12 +25,22 @@ export default function Cuenta(){
     setProcesando(true);
     const r=modoForm==='login'?await login(email,password):await registrar(nombre,email,password);
     setProcesando(false);
-    if(!r.ok)Alert.alert('No se pudo ingresar',r.mensaje);
+    if(!r.ok){
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(()=>undefined);
+      Alert.alert('No se pudo ingresar',r.mensaje);
+      return;
+    }
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
   };
 
   const unlock=async()=>{
     const r=await desbloquear();
-    if(!r.ok)Alert.alert('Biometría',r.mensaje);
+    if(!r.ok){
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(()=>undefined);
+      Alert.alert('Biometría',r.mensaje);
+      return;
+    }
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
   };
 
   const pref=async(cambios:any)=>{
@@ -100,13 +111,13 @@ export default function Cuenta(){
           <View style={[s.segmented,{backgroundColor:esOscuro?'rgba(255,255,255,.05)':'rgba(14,90,75,.06)'}]}>
             <Pressable
               style={[s.segment,modoForm==='login'&&{backgroundColor:colores.superficie}]}
-              onPress={()=>setModoForm('login')}
+              onPress={()=>{void Haptics.selectionAsync();setModoForm('login')}}
             >
               <Text style={[s.segmentText,{color:modoForm==='login'?colores.primario:colores.secundario}]}>Ingresar</Text>
             </Pressable>
             <Pressable
               style={[s.segment,modoForm==='registro'&&{backgroundColor:colores.superficie}]}
-              onPress={()=>setModoForm('registro')}
+              onPress={()=>{void Haptics.selectionAsync();setModoForm('registro')}}
             >
               <Text style={[s.segmentText,{color:modoForm==='registro'?colores.primario:colores.secundario}]}>Registrarme</Text>
             </Pressable>
@@ -188,7 +199,7 @@ export default function Cuenta(){
 
     <Reveal delay={90}>
       <GlassSurface style={s.profileCard}>
-        <Pressable style={s.row} onPress={()=>router.push('/favoritos')}>
+        <Pressable style={s.row} onPress={()=>{void Haptics.selectionAsync();router.push('/favoritos')}}>
           <View style={s.rowLeft}>
             <View style={[s.smallIcon,{backgroundColor:colores.primarioSuave}]}>
               <Ionicons name="star-outline" size={21} color={colores.primario}/>
@@ -216,7 +227,7 @@ export default function Cuenta(){
               <Text style={[s.rowCaption,{color:colores.secundario}]}>Máximo un aviso por lugar y día</Text>
             </View>
           </View>
-          <Switch value={p.avisarProximidad} onValueChange={v=>pref({avisarProximidad:v})}/>
+          <Switch value={p.avisarProximidad} onValueChange={v=>{void Haptics.selectionAsync();pref({avisarProximidad:v})}}/>
         </View>
 
         <View style={[s.separator,{backgroundColor:colores.borde}]}/>
@@ -224,7 +235,7 @@ export default function Cuenta(){
         <View style={s.options}>
           {([100,250,500] as const).map(v=><Pressable
             key={v}
-            onPress={()=>pref({radioAvisoMetros:v})}
+            onPress={()=>{void Haptics.selectionAsync();pref({radioAvisoMetros:v})}}
             style={[s.option,{backgroundColor:p.radioAvisoMetros===v?colores.primario:colores.superficie2}]}
           >
             <Text style={{color:p.radioAvisoMetros===v?'white':colores.tinta,fontWeight:'900'}}>{v} m</Text>
@@ -236,7 +247,7 @@ export default function Cuenta(){
         <View style={s.options}>
           {(['claro','oscuro','sistema'] as const).map(v=><Pressable
             key={v}
-            onPress={()=>pref({tema:v})}
+            onPress={()=>{void Haptics.selectionAsync();pref({tema:v})}}
             style={[s.option,{backgroundColor:p.tema===v?colores.primario:colores.superficie2}]}
           >
             <Text style={{color:p.tema===v?'white':colores.tinta,fontWeight:'900',textTransform:'capitalize'}}>{v}</Text>
