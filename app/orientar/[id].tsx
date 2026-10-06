@@ -10,6 +10,7 @@ import { distanciaKm, formatearDistancia, rumboGrados } from '@/src/utilidades/d
 import { useTema } from '@/src/contexto/TemaContext';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function Orientar(){
   const{id}=useLocalSearchParams<{id:string}>();
@@ -56,6 +57,7 @@ export default function Orientar(){
   </View>;
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
+    <ScreenTopBar title="Orientación"/>
     <View style={[s.glow,{backgroundColor:esOscuro?'rgba(111,208,178,.08)':'rgba(14,90,75,.08)'}]}/>
     <Reveal style={s.content}>
       <Text style={[s.kicker,{color:colores.primario}]}>ORIENTACIÓN</Text>
