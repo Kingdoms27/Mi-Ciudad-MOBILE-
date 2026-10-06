@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import * as Haptics from 'expo-haptics';
 import { Evento } from '@/src/tipos';
 import { obtenerEventos } from '@/src/servicios/eventos';
 import { estaEventoGuardado, guardarEvento, quitarEvento } from '@/src/servicios/eventosGuardados';
@@ -12,6 +13,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
 
 export default function Agenda(){
   const{colores,esOscuro}=useTema();
@@ -49,9 +51,11 @@ export default function Agenda(){
     try{
       if(guardados[e.id]){
         await quitarEvento(usuario.id,e.id);
+        await Haptics.selectionAsync().catch(()=>undefined);
         setGuardados(x=>({...x,[e.id]:false}));
       }else{
         await guardarEvento(usuario.id,e);
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
         setGuardados(x=>({...x,[e.id]:true}));
         Alert.alert('Evento guardado','Se programó un recordatorio antes del inicio.');
       }
@@ -77,7 +81,7 @@ export default function Agenda(){
         </View>
       </Reveal>
 
-      {cargando?<EstadoContenido tipo="cargando"/>:
+      {cargando?<SkeletonLista cantidad={3}/>:
        error?<EstadoContenido tipo="error" mensaje={error} onReintentar={cargar}/>:
        eventos.length===0?<EstadoContenido tipo="vacio"/>:
        eventos.map((e,i)=><Reveal key={e.id} delay={Math.min(80+i*55,420)}>
