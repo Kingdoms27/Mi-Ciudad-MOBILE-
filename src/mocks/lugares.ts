@@ -17,14 +17,14 @@ export const lugaresMock: Lugar[] = [
   id:'lug-001',nombre:'Termas de Colón',categoriaId:'cat-termas',descripcionCorta:'Complejo termal junto al río Uruguay.',
   descripcion:'Piscinas termales, sectores de descanso y propuestas para disfrutar durante todo el año. Consultá los horarios vigentes antes de tu visita.',
   coordenadas:{latitud:-32.2076,longitud:-58.1377},direccion:'Batalla de Cepeda 100, Colón',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Bateria_Toboganes_Acuaticos.JPG/1280px-Bateria_Toboganes_Acuaticos.JPG'],horarios:todosLosDias('09:00','20:00'),
+  imagenes:['https://termascolon.gov.ar/wp-content/uploads/2018/06/inicio-institucional.png','https://www.colonturismo.tur.ar/wp-content/uploads/2021/09/inicio-info-contacto.png','https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Bateria_Toboganes_Acuaticos.JPG/1280px-Bateria_Toboganes_Acuaticos.JPG'],horarios:todosLosDias('09:00','20:00'),
   telefono:'3447-434761',sitioWeb:'https://termascolon.gov.ar/',precioEntrada:9000,audioguia:null,codigoQr:'COLON:lug-001',accesible:true,activo:true,actualizadoEn:'2026-09-20T11:00:00-03:00'
  },
  {
   id:'lug-002',nombre:'Playa Norte',categoriaId:'cat-playas',descripcionCorta:'Playa amplia sobre el río Uruguay, ideal para disfrutar el día.',
   descripcion:'Sector de arena y costa con acceso cercano al centro turístico. La disponibilidad de servicios puede variar según temporada.',
   coordenadas:{latitud:-32.2106,longitud:-58.1352},direccion:'Costanera Norte, Colón',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('08:00','20:00'),
+  imagenes:['https://colon.gov.ar/wp-content/uploads/2026/01/WhatsApp-Image-2026-01-06-at-08.12.15.jpeg','https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('08:00','20:00'),
   telefono:null,sitioWeb:null,precioEntrada:0,audioguia:null,codigoQr:'COLON:lug-002',accesible:true,activo:true,actualizadoEn:'2026-09-12T09:00:00-03:00'
  },
  {
@@ -39,7 +39,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-005',nombre:'Museo Histórico Regional de Colón',categoriaId:'cat-museos',descripcionCorta:'Museo local dedicado a la historia y la memoria de la ciudad.',
   descripcion:'Museo de la ciudad con objetos, documentos, herramientas y colecciones que recorren los orígenes y el desarrollo histórico de Colón.',
   coordenadas:{latitud:-32.2238,longitud:-58.1434},direccion:'12 de Abril 461, Colón',
-  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/Museo-Colon-2-1-1024x576.jpg'],
+  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/Museo-Colon-2-1-1024x576.jpg','https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/Museo-Colon-3-1024x576.jpg'],
   horarios:[{dia:1,abre:'09:00',cierra:'18:00'},{dia:2,abre:'09:00',cierra:'18:00'},{dia:3,abre:'09:00',cierra:'18:00'},{dia:4,abre:'09:00',cierra:'18:00'},{dia:5,abre:'09:00',cierra:'18:00'}],
   telefono:'3447-426002',sitioWeb:'https://www.colonturismo.tur.ar/directorio/museo-historico-regional-de-colon/',precioEntrada:0,
   audioguia:{url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',duracionSegundos:221,idioma:'es'},codigoQr:'COLON:lug-005',accesible:true,activo:true,actualizadoEn:'2026-09-30T10:00:00-03:00'
@@ -56,7 +56,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-007',nombre:'Feria Costanera',categoriaId:'cat-artesanias',descripcionCorta:'Puestos de producción local, diseño y recuerdos regionales.',
   descripcion:'Espacio de encuentro con artesanos y emprendedores de la región. Los días y horarios pueden variar según temporada y eventos.',
   coordenadas:{latitud:-32.2208,longitud:-58.1385},direccion:'Av. Costanera Quirós, entre San Martín y Bolívar',
-  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2022/08/Feria-Costanera-1-576x1024.jpeg'],
+  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2026/09/WhatsApp-Image-2026-03-09-at-09.05.09-1-576x1024.jpeg','https://www.colonturismo.tur.ar/wp-content/uploads/2026/09/WhatsApp-Image-2026-09-03-at-11.04.00-632x1024.jpeg'],
   horarios:[{dia:5,abre:'17:00',cierra:'23:00'},{dia:6,abre:'17:00',cierra:'23:00'},{dia:0,abre:'17:00',cierra:'22:00'}],
   telefono:null,sitioWeb:null,precioEntrada:0,audioguia:null,codigoQr:'COLON:lug-007',accesible:true,activo:true,actualizadoEn:'2026-10-02T16:00:00-03:00'
  },
@@ -64,7 +64,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-008',nombre:'Bodega Vulliez Sermet',categoriaId:'cat-gastro',descripcionCorta:'Experiencia de vinos y productos regionales cerca de Colón.',
   descripcion:'Propuesta enoturística de la zona. Las visitas pueden depender de horarios y disponibilidad, por lo que conviene consultar antes de ir.',
   coordenadas:{latitud:-32.1736,longitud:-58.1835},direccion:'Ruta 135 km 8, Colón',
-  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/WhatsApp-Image-2025-08-10-at-15.22.20-1-819x1024.jpeg'],
+  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/WhatsApp-Image-2025-08-10-at-15.22.23-2-819x1024.jpeg','https://www.colonturismo.tur.ar/wp-content/uploads/2022/01/WhatsApp-Image-2025-08-10-at-15.22.20-1-819x1024.jpeg'],
   horarios:[{dia:2,abre:'10:00',cierra:'17:00'},{dia:3,abre:'10:00',cierra:'17:00'},{dia:4,abre:'10:00',cierra:'17:00'},{dia:5,abre:'10:00',cierra:'17:00'},{dia:6,abre:'10:00',cierra:'17:00'}],
   telefono:'3447-505095',sitioWeb:'https://www.vulliezsermet.com/',precioEntrada:null,audioguia:null,codigoQr:null,accesible:true,activo:true,actualizadoEn:'2026-10-01T09:00:00-03:00'
  },
@@ -79,7 +79,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-010',nombre:'Hotel Plaza',categoriaId:'cat-alojamiento',descripcionCorta:'Hotel céntrico frente a Plaza San Martín, a pocas cuadras de la costanera.',
   descripcion:'Alojamiento céntrico con servicios para huéspedes, piscina climatizada y piscina exterior. La disponibilidad y las tarifas se consultan con el establecimiento.',
   coordenadas:{latitud:-32.2234,longitud:-58.1431},direccion:'Belgrano 20, Colón',
-  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2021/11/1-frente-1024x603.jpg'],horarios:todosLosDias('00:00','23:59'),
+  imagenes:['https://www.colonturismo.tur.ar/wp-content/uploads/2021/11/1-frente-1024x603.jpg','https://www.colonturismo.tur.ar/wp-content/uploads/2021/11/55633979.jpg'],horarios:todosLosDias('00:00','23:59'),
   telefono:'3447-421043',sitioWeb:'https://www.hotel-plaza.com.ar/',precioEntrada:null,audioguia:null,codigoQr:null,accesible:true,activo:true,actualizadoEn:'2026-10-01T09:00:00-03:00'
  }
 ];
