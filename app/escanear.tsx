@@ -3,7 +3,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { obtenerLugarPorQr } from '@/src/servicios/lugares';
 import { registrarVisita } from '@/src/servicios/visitas';
 import { useSesion } from '@/src/contexto/SesionContext';
