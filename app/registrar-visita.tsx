@@ -11,6 +11,7 @@ import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function RegistrarVisita(){
   const params=useLocalSearchParams<{lugarId?:string;origen?:string}>();
@@ -91,6 +92,7 @@ export default function RegistrarVisita(){
   };
 
   return <View style={[s.root,{backgroundColor:colores.fondo}]}>
+    <ScreenTopBar title="Registrar visita"/>
     <View style={[s.glow,{backgroundColor:esOscuro?'rgba(111,208,178,.07)':'rgba(14,90,75,.07)'}]}/>
     <ScrollView
       contentContainerStyle={s.content}
