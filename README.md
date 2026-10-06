@@ -118,3 +118,8 @@ Consultar:
 - `docs/DECISIONES-Y-DUDAS.md`
 - `docs/GUIA-DEFENSA.md`
 - `docs/ESTADO-ENTREGA.md`
+
+
+## Imágenes turísticas
+
+Las fotografías reales usadas por los mocks y sus fuentes/licencias están documentadas en [`docs/CREDITOS-IMAGENES.md`](docs/CREDITOS-IMAGENES.md). La app mantiene una caché local de imágenes para reutilizarlas sin conexión después de la primera carga.
