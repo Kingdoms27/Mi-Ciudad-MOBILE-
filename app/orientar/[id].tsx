@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
 import { Magnetometer } from 'expo-sensors';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { useLocalSearchParams } from 'expo-router';
 import { obtenerLugarPorId } from '@/src/servicios/lugares';
 import { Coordenadas, Lugar } from '@/src/tipos';
