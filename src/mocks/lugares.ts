@@ -7,7 +7,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-004',nombre:'Molino Forclaz',categoriaId:'cat-museos',descripcionCorta:'Molino histórico de 1888 levantado por colonos suizos.',
   descripcion:'Monumento histórico y uno de los símbolos patrimoniales de la zona de Colón y San José. El recorrido permite conocer la historia de la familia Forclaz y la vida de los primeros colonos.',
   coordenadas:{latitud:-32.216958,longitud:-58.186797},direccion:'Primeros Colonos s/nº, Ejido Colón',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Molino_Forclaz_en_Col%C3%B3n.JPG/1280px-Molino_Forclaz_en_Col%C3%B3n.JPG'],
+  imagenes:['https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Molino_Forclaz_en_Col%C3%B3n.JPG/1280px-Molino_Forclaz_en_Col%C3%B3n.JPG'],
   horarios:[{dia:2,abre:'09:00',cierra:'19:00'},{dia:3,abre:'09:00',cierra:'19:00'},{dia:4,abre:'09:00',cierra:'19:00'},{dia:5,abre:'09:00',cierra:'19:00'},{dia:6,abre:'10:00',cierra:'20:00'}],
   telefono:'3447-470000',sitioWeb:null,precioEntrada:1500,
   audioguia:{url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',duracionSegundos:252,idioma:'es'},
@@ -17,21 +17,21 @@ export const lugaresMock: Lugar[] = [
   id:'lug-001',nombre:'Termas de Colón',categoriaId:'cat-termas',descripcionCorta:'Complejo termal junto al río Uruguay.',
   descripcion:'Piscinas termales, sectores de descanso y propuestas para disfrutar durante todo el año. Consultá los horarios vigentes antes de tu visita.',
   coordenadas:{latitud:-32.2076,longitud:-58.1377},direccion:'Batalla de Cepeda 100, Colón',
-  imagenes:['https://termascolon.gov.ar/wp-content/uploads/2018/06/inicio-institucional.png','https://www.colonturismo.tur.ar/wp-content/uploads/2021/09/inicio-info-contacto.png','https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Bateria_Toboganes_Acuaticos.JPG/1280px-Bateria_Toboganes_Acuaticos.JPG'],horarios:todosLosDias('09:00','20:00'),
+  imagenes:['https://termascolon.gov.ar/wp-content/uploads/2018/06/inicio-institucional.png','https://www.colonturismo.tur.ar/wp-content/uploads/2021/09/inicio-info-contacto.png','https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Bateria_Toboganes_Acuaticos.JPG/1280px-Bateria_Toboganes_Acuaticos.JPG'],horarios:todosLosDias('09:00','20:00'),
   telefono:'3447-434761',sitioWeb:'https://termascolon.gov.ar/',precioEntrada:9000,audioguia:null,codigoQr:'COLON:lug-001',accesible:true,activo:true,actualizadoEn:'2026-09-20T11:00:00-03:00'
  },
  {
   id:'lug-002',nombre:'Playa Norte',categoriaId:'cat-playas',descripcionCorta:'Playa amplia sobre el río Uruguay, ideal para disfrutar el día.',
   descripcion:'Sector de arena y costa con acceso cercano al centro turístico. La disponibilidad de servicios puede variar según temporada.',
   coordenadas:{latitud:-32.2106,longitud:-58.1352},direccion:'Costanera Norte, Colón',
-  imagenes:['https://colon.gov.ar/wp-content/uploads/2026/01/WhatsApp-Image-2026-01-06-at-08.12.15.jpeg','https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('08:00','20:00'),
+  imagenes:['https://colon.gov.ar/wp-content/uploads/2026/01/WhatsApp-Image-2026-01-06-at-08.12.15.jpeg','https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('08:00','20:00'),
   telefono:null,sitioWeb:null,precioEntrada:0,audioguia:null,codigoQr:'COLON:lug-002',accesible:true,activo:true,actualizadoEn:'2026-09-12T09:00:00-03:00'
  },
  {
   id:'lug-003',nombre:'Parque Nacional El Palmar',categoriaId:'cat-naturaleza',descripcionCorta:'Paisaje de palmares de yatay y senderos naturales.',
   descripcion:'Área protegida emblemática de Entre Ríos. Ideal para senderismo, observación de fauna y recorridos interpretativos. En varios sectores la conectividad móvil es limitada.',
   coordenadas:{latitud:-31.8886,longitud:-58.2398},direccion:'Ruta Nacional 14 km 198, Ubajay',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Yatay_Palms%2C_El_Palmar%2C_Entre_Rios%2C_Argentina%2C_1_Jan._2011_-_Flickr_-_PhillipC.jpg/1280px-Yatay_Palms%2C_El_Palmar%2C_Entre_Rios%2C_Argentina%2C_1_Jan._2011_-_Flickr_-_PhillipC.jpg'],horarios:todosLosDias('08:00','18:00'),
+  imagenes:['https://thumb.wikimedia.org/wikipedia/commons/thumb/1/19/Yatay_Palms%2C_El_Palmar%2C_Entre_Rios%2C_Argentina%2C_1_Jan._2011_-_Flickr_-_PhillipC.jpg/1280px-Yatay_Palms%2C_El_Palmar%2C_Entre_Rios%2C_Argentina%2C_1_Jan._2011_-_Flickr_-_PhillipC.jpg'],horarios:todosLosDias('08:00','18:00'),
   telefono:null,sitioWeb:'https://www.argentina.gob.ar/parquesnacionales/elpalmar',precioEntrada:0,
   audioguia:{url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',duracionSegundos:205,idioma:'es'},codigoQr:'COLON:lug-003',accesible:false,activo:true,actualizadoEn:'2026-09-25T08:00:00-03:00'
  },
@@ -48,7 +48,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-006',nombre:'Puerto Viejo',categoriaId:'cat-museos',descripcionCorta:'Sector histórico junto al río y la costanera.',
   descripcion:'Un punto para interpretar el crecimiento de la ciudad vinculado al río Uruguay y la actividad portuaria. Ideal para recorrer a pie.',
   coordenadas:{latitud:-32.2209,longitud:-58.1377},direccion:'Costanera de Colón',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Puerto_viejo%2C_Col%C3%B3n_-_1.jpg/960px-Puerto_viejo%2C_Col%C3%B3n_-_1.jpg'],horarios:todosLosDias('00:00','23:59'),
+  imagenes:['https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Puerto_viejo%2C_Col%C3%B3n_-_1.jpg/960px-Puerto_viejo%2C_Col%C3%B3n_-_1.jpg'],horarios:todosLosDias('00:00','23:59'),
   telefono:null,sitioWeb:null,precioEntrada:0,audioguia:{url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',duracionSegundos:198,idioma:'es'},
   codigoQr:'COLON:lug-006',accesible:true,activo:true,actualizadoEn:'2026-10-01T10:00:00-03:00'
  },
@@ -72,7 +72,7 @@ export const lugaresMock: Lugar[] = [
   id:'lug-009',nombre:'Paseo Costanera',categoriaId:'cat-naturaleza',descripcionCorta:'Recorrido junto al río para caminar, descansar y ver el atardecer.',
   descripcion:'Un paseo urbano abierto, con vistas al río Uruguay y acceso a distintos puntos de la ciudad.',
   coordenadas:{latitud:-32.2202,longitud:-58.1369},direccion:'Costanera, Colón',
-  imagenes:['https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('00:00','23:59'),
+  imagenes:['https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg'],horarios:todosLosDias('00:00','23:59'),
   telefono:null,sitioWeb:null,precioEntrada:0,audioguia:null,codigoQr:'COLON:lug-009',accesible:true,activo:true,actualizadoEn:'2026-10-01T09:00:00-03:00'
  },
  {
