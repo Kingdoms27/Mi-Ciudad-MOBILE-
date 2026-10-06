@@ -10,6 +10,7 @@ import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function Escanear(){
   const{usuario}=useSesion();
@@ -80,6 +81,7 @@ export default function Escanear(){
   const lineY=scan.interpolate({inputRange:[0,1],outputRange:[8,236]});
 
   return <View style={s.root}>
+    <ScreenTopBar floating close/>
     <CameraView
       style={StyleSheet.absoluteFill}
       facing="back"
