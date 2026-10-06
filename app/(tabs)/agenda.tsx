@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Evento } from '@/src/tipos';
 import { obtenerEventos } from '@/src/servicios/eventos';
 import { estaEventoGuardado, guardarEvento, quitarEvento } from '@/src/servicios/eventosGuardados';
