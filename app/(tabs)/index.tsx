@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Location from 'expo-location';
-import { Ionicons } from '@react-native-vector-icons/ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { LugarCard } from '@/src/componentes/LugarCard';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { EstadoContenido } from '@/src/componentes/EstadoContenido';
