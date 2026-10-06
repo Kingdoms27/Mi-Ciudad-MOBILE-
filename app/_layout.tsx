@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { useEffect, useMemo } from 'react';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
@@ -29,12 +29,15 @@ function Efectos(){
     if(!usuario||!usuario.preferencias.avisarProximidad)return;
     let cancelado=false;
     let watcher:Location.LocationSubscription|undefined;
+
     (async()=>{
       const r=await obtenerLugares();
       if('error'in r||cancelado)return;
+
       await revisarProximidad(r.datos,usuario.preferencias).catch(()=>undefined);
       const permiso=await Location.getForegroundPermissionsAsync();
       if(!permiso.granted||cancelado)return;
+
       watcher=await Location.watchPositionAsync(
         {accuracy:Location.Accuracy.Balanced,distanceInterval:50,timeInterval:30000},
         pos=>{
@@ -45,6 +48,7 @@ function Efectos(){
         },
       );
     })().catch(()=>undefined);
+
     return()=>{cancelado=true;watcher?.remove();};
   },[
     usuario?.id,
@@ -56,30 +60,44 @@ function Efectos(){
 }
 
 function Navegacion(){
-  const{esOscuro}=useTema();
-  return <>
+  const{esOscuro,colores}=useTema();
+
+  const navTheme=useMemo(()=>{
+    const base=esOscuro?DarkTheme:DefaultTheme;
+    return {
+      ...base,
+      colors:{
+        ...base.colors,
+        primary:colores.primario,
+        background:colores.fondo,
+        card:colores.fondo,
+        text:colores.tinta,
+        border:'transparent',
+        notification:colores.acento,
+      },
+    };
+  },[esOscuro,colores]);
+
+  return <NavigationThemeProvider value={navTheme}>
     <Efectos/>
-    <StatusBar style={esOscuro?'light':'dark'}/>
+    <StatusBar style={esOscuro?'light':'dark'} backgroundColor={colores.fondo}/>
     <Stack screenOptions={{
-      headerShadowVisible:false,
+      headerShown:false,
       animation:'fade_from_bottom',
-      animationDuration:260,
+      animationDuration:240,
       gestureEnabled:true,
       fullScreenGestureEnabled:true,
-      contentStyle:{backgroundColor:esOscuro?'#0F1816':'#F5F2EA'},
-      headerStyle:{backgroundColor:esOscuro?'#0F1816':'#F5F2EA'},
-      headerTintColor:esOscuro?'#F2F7F4':'#17342E',
-      headerTitleStyle:{fontWeight:'900'},
+      contentStyle:{backgroundColor:colores.fondo},
     }}>
-      <Stack.Screen name="(tabs)" options={{headerShown:false}}/>
-      <Stack.Screen name="lugar/[id]" options={{title:'Lugar',headerBackTitle:'Atrás'}}/>
-      <Stack.Screen name="evento/[id]" options={{title:'Evento',headerBackTitle:'Atrás'}}/>
-      <Stack.Screen name="favoritos" options={{title:'Favoritos'}}/>
-      <Stack.Screen name="escanear" options={{title:'Escanear QR',presentation:'modal'}}/>
-      <Stack.Screen name="registrar-visita" options={{title:'Registrar visita'}}/>
-      <Stack.Screen name="orientar/[id]" options={{title:'Orientación'}}/>
+      <Stack.Screen name="(tabs)"/>
+      <Stack.Screen name="lugar/[id]"/>
+      <Stack.Screen name="evento/[id]"/>
+      <Stack.Screen name="favoritos"/>
+      <Stack.Screen name="escanear" options={{presentation:'modal',animation:'slide_from_bottom'}}/>
+      <Stack.Screen name="registrar-visita"/>
+      <Stack.Screen name="orientar/[id]"/>
     </Stack>
-  </>;
+  </NavigationThemeProvider>;
 }
 
 export default function RootLayout(){
