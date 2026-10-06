@@ -5,9 +5,11 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
+import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
+  const imagen=useImagenLugar(lugar.id,lugar.imagenes[0]);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -28,7 +30,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        <Image source={{uri:lugar.imagenes[0]}} style={s.image}/>
+        <Image source={{uri:imagen}} style={s.image} resizeMode="cover"/>
         <View style={s.scrim}/>
         <View style={[s.badge,{backgroundColor:'rgba(13,45,39,.72)'}]}>
           <Ionicons name="location-outline" size={13} color="white"/>
