@@ -80,8 +80,7 @@ export default function Inicio(){
               <Ionicons name="location" size={19} color={colores.primario}/>
             </View>
           </View>
-          <Text style={[s.h1,{color:colores.tinta}]}>Descubrí Colón{'
-'}a tu ritmo.</Text>
+          <Text style={[s.h1,{color:colores.tinta}]}>Descubrí Colón{'\n'}a tu ritmo.</Text>
           <Text style={[s.bajada,{color:colores.secundario}]}>Patrimonio, naturaleza, río y experiencias para recorrer la ciudad con una guía simple y cercana.</Text>
         </Reveal>
 
