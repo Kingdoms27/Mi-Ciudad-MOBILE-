@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/part00 .bootstrap/part01 .bootstrap/part02 .bootstrap/part03 .bootstrap/part04 .bootstrap/part05 .bootstrap/part06 > /tmp/project.tgz.b64
+          cat             .bootstrap/fix00a .bootstrap/fix00b .bootstrap/fix00c             .bootstrap/part01             .bootstrap/fix02a .bootstrap/fix02b .bootstrap/fix02c .bootstrap/fix02d             .bootstrap/part03             .bootstrap/fix04a .bootstrap/fix04b             .bootstrap/part05 .bootstrap/part06 > /tmp/project.tgz.b64
           base64 -d /tmp/project.tgz.b64 > /tmp/project.tgz
           tar -xzf /tmp/project.tgz -C .
           rm -rf .bootstrap
