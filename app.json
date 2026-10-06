@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Mi Ciudad Colón",
+    "slug": "mi-ciudad-colon",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "miciudadcolon",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F5F2EA"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ar.edu.uner.miciudadcolon",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Mi Ciudad usa tu ubicación para mostrar lugares cercanos y orientarte en Colón.",
+        "NSCameraUsageDescription": "Mi Ciudad usa la cámara para registrar visitas y leer códigos QR.",
+        "NSPhotoLibraryUsageDescription": "Mi Ciudad permite elegir una foto para asociarla a una visita.",
+        "NSFaceIDUsageDescription": "Mi Ciudad puede usar Face ID para reingresar de forma rápida y segura.",
+        "NSMotionUsageDescription": "Mi Ciudad usa el magnetómetro para indicar la dirección de un lugar.",
+        "UIBackgroundModes": ["audio"]
+      }
+    },
+    "android": {
+      "package": "ar.edu.uner.miciudadcolon",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0E5A4B"
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "@react-native-vector-icons/ionicons",
+      ["expo-camera", {"cameraPermission": "Permitir que Mi Ciudad use la cámara para fotos y códigos QR."}],
+      ["expo-image-picker", {"photosPermission": "Permitir que Mi Ciudad acceda a tus fotos para asociarlas a una visita.", "cameraPermission": "Permitir que Mi Ciudad use la cámara para registrar tu visita.", "microphonePermission": false}],
+      ["expo-location", {"locationWhenInUsePermission": "Permitir que Mi Ciudad use tu ubicación para mostrar lugares cercanos."}],
+      "expo-notifications",
+      "expo-secure-store",
+      ["expo-local-authentication", {"faceIDPermission": "Permitir que Mi Ciudad use Face ID para reingresar."}],
+      ["expo-sensors", {"motionPermission": "Permitir que Mi Ciudad use los sensores para orientarte hacia un lugar."}],
+      ["expo-audio", {"enableBackgroundPlayback": true, "microphonePermission": false, "recordAudioAndroid": false}]
+    ],
+    "experiments": {"typedRoutes": true},
+    "extra": {
+      "eas": {"projectId": "REEMPLAZAR-AL-EJECUTAR-EAS-BUILD-CONFIGURE"}
+    }
+  }
+}

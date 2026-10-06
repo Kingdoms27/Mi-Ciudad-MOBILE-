@@ -1,0 +1,5 @@
+import { Usuario } from '@/src/tipos';
+export const usuarioMock: Usuario = {
+  id:'usr-201', nombre:'Lucía Méndez', email:'lucia@mail.com', avatarUrl:null, creadoEn:'2026-09-02T18:20:00-03:00',
+  preferencias:{categoriasFavoritas:['cat-museos','cat-playas'],avisarProximidad:true,radioAvisoMetros:250,tema:'sistema'}
+};

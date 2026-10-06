@@ -1,0 +1,8 @@
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Ionicons } from '@react-native-vector-icons/ionicons';
+import { Lugar } from '@/src/tipos';
+import { useTema } from '@/src/contexto/TemaContext';
+import { horarioHoy, pesos } from '@/src/utilidades/formato';
+export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){const{colores}=useTema();return <Pressable style={[s.card,{backgroundColor:colores.superficie,borderColor:colores.borde}]} onPress={()=>router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})} accessibilityRole="button" accessibilityLabel={`Abrir ${lugar.nombre}`}><Image source={{uri:lugar.imagenes[0]}} style={s.image}/><View style={s.info}><View style={s.row}><Text style={[s.title,{color:colores.tinta}]} numberOfLines={1}>{lugar.nombre}</Text><Ionicons name="chevron-forward" size={18} color={colores.secundario}/></View><Text style={[s.sub,{color:colores.primario}]}>{horarioHoy(lugar.horarios)}{distancia?` · ${distancia}`:''}</Text><Text style={[s.desc,{color:colores.secundario}]} numberOfLines={2}>{lugar.descripcionCorta}</Text><Text style={[s.price,{color:colores.tinta}]}>{pesos(lugar.precioEntrada)}</Text></View></Pressable>}
+const s=StyleSheet.create({card:{borderRadius:22,overflow:'hidden',borderWidth:1,marginBottom:14},image:{width:'100%',height:160,backgroundColor:'#d9d9d9'},info:{padding:16,gap:5},row:{flexDirection:'row',alignItems:'center',gap:8},title:{fontSize:19,fontWeight:'900',flex:1},sub:{fontSize:13,fontWeight:'800'},desc:{fontSize:14,lineHeight:20},price:{marginTop:4,fontWeight:'900'}});
