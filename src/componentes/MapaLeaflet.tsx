@@ -130,5 +130,5 @@ html,body,#map{height:100%;width:100%;margin:0;padding:0;background:${oscuro?'#1
 });
 
 const s=StyleSheet.create({
-  web:{...StyleSheet.absoluteFillObject,backgroundColor:'transparent'},
+  web:{position:'absolute',top:0,right:0,bottom:0,left:0,backgroundColor:'transparent'},
 });
