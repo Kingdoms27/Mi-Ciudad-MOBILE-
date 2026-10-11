@@ -149,7 +149,6 @@ export default function Mapa(){
       lugares={visibles}
       coord={coord}
       oscuro={esOscuro}
-      lugarSeleccionadoId={seleccion?.id}
       onLugarPress={id=>{
         const lugar=visibles.find(l=>l.id===id);
         if(lugar)enfocarLugar(lugar);
