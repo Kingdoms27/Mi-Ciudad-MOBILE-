@@ -11,7 +11,6 @@ type Props={
   lugares:Lugar[];
   coord:Coordenadas|null;
   oscuro:boolean;
-  lugarSeleccionadoId?:string|null;
   onLugarPress:(id:string)=>void;
 };
 
@@ -25,7 +24,7 @@ function escapar(valor:string){
 }
 
 export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
-  {lugares,coord,oscuro,lugarSeleccionadoId,onLugarPress},
+  {lugares,coord,oscuro,onLugarPress},
   ref,
 ){
   const webRef=useRef<WebView|null>(null);
@@ -44,16 +43,15 @@ export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
       nombre:l.nombre,
       lat:l.coordenadas.latitud,
       lon:l.coordenadas.longitud,
-      seleccionado:l.id===lugarSeleccionadoId,
     }));
 
     const tiles=oscuro
       ?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-      :'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      :'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
     const atribucion=oscuro
       ?'© OpenStreetMap contributors · © CARTO'
-      :'© OpenStreetMap contributors';
+      :'© OpenStreetMap contributors · © CARTO';
 
     return `<!doctype html>
 <html>
@@ -66,8 +64,6 @@ html,body,#map{height:100%;width:100%;margin:0;padding:0;background:${oscuro?'#1
 .leaflet-control-attribution{display:none;}
 .pin{width:30px;height:30px;border-radius:50% 50% 50% 0;background:#0E5A4B;transform:rotate(-45deg);border:3px solid rgba(255,255,255,.96);box-shadow:0 4px 12px rgba(0,0,0,.22);}
 .pin:after{content:'';position:absolute;width:8px;height:8px;border-radius:50%;background:white;left:8px;top:8px;}
-.pin.selected{background:#D59E4A;width:34px;height:34px;}
-.pin.selected:after{left:10px;top:10px;}
 .attribution{position:absolute;z-index:999;right:6px;bottom:5px;padding:3px 5px;border-radius:6px;background:rgba(255,255,255,.76);font:8px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#53615d;pointer-events:none;}
 </style>
 </head>
@@ -84,7 +80,7 @@ html,body,#map{height:100%;width:100%;margin:0;padding:0;background:${oscuro?'#1
 
   const puntos=${escapar(JSON.stringify(puntos))};
   puntos.forEach(function(p){
-    const html='<div class="pin '+(p.seleccionado?'selected':'')+'"></div>';
+    const html='<div class="pin"></div>';
     const icon=L.divIcon({className:'',html:html,iconSize:[34,34],iconAnchor:[17,34]});
     L.marker([p.lat,p.lon],{icon:icon})
       .addTo(map)
@@ -109,7 +105,7 @@ html,body,#map{height:100%;width:100%;margin:0;padding:0;background:${oscuro?'#1
 </script>
 </body>
 </html>`;
-  },[lugares,coord,oscuro,lugarSeleccionadoId]);
+  },[lugares,coord,oscuro]);
 
   return <WebView
     ref={webRef}
