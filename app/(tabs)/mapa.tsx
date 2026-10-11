@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -14,6 +14,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
+import { MapaLeaflet, MapaLeafletRef } from '@/src/componentes/MapaLeaflet';
 
 const COLON={latitude:-32.2231,longitude:-58.1440,latitudeDelta:0.07,longitudeDelta:0.07};
 
@@ -21,6 +22,7 @@ export default function Mapa(){
   const{colores,esOscuro}=useTema();
   const insets=useSafeAreaInsets();
   const mapRef=useRef<MapView|null>(null);
+  const leafletRef=useRef<MapaLeafletRef|null>(null);
 
   const[lugares,setLugares]=useState<Lugar[]>([]);
   const[categorias,setCategorias]=useState<Categoria[]>([]);
@@ -81,12 +83,16 @@ export default function Mapa(){
   const enfocarLugar=async(l:Lugar)=>{
     await Haptics.selectionAsync().catch(()=>undefined);
     setSeleccion(l);
-    mapRef.current?.animateToRegion({
-      latitude:l.coordenadas.latitud,
-      longitude:l.coordenadas.longitud,
-      latitudeDelta:0.018,
-      longitudeDelta:0.018,
-    },420);
+    if(Platform.OS==='android'){
+      leafletRef.current?.enfocar(l.coordenadas.latitud,l.coordenadas.longitud,15);
+    }else{
+      mapRef.current?.animateToRegion({
+        latitude:l.coordenadas.latitud,
+        longitude:l.coordenadas.longitud,
+        latitudeDelta:0.018,
+        longitudeDelta:0.018,
+      },420);
+    }
   };
 
   const enfocarUsuario=async()=>{
@@ -105,12 +111,16 @@ export default function Mapa(){
       setCoord(actual);
       setPermiso('ok');
       setSeleccion(null);
-      mapRef.current?.animateToRegion({
-        latitude:actual.latitud,
-        longitude:actual.longitud,
-        latitudeDelta:0.025,
-        longitudeDelta:0.025,
-      },480);
+      if(Platform.OS==='android'){
+        leafletRef.current?.enfocar(actual.latitud,actual.longitud,15);
+      }else{
+        mapRef.current?.animateToRegion({
+          latitude:actual.latitud,
+          longitude:actual.longitud,
+          latitudeDelta:0.025,
+          longitudeDelta:0.025,
+        },480);
+      }
       await Haptics.selectionAsync().catch(()=>undefined);
     }finally{
       setUbicando(false);
@@ -119,7 +129,11 @@ export default function Mapa(){
 
   const volverColon=async()=>{
     setSeleccion(null);
-    mapRef.current?.animateToRegion(COLON,480);
+    if(Platform.OS==='android'){
+      leafletRef.current?.enfocar(COLON.latitude,COLON.longitude,13);
+    }else{
+      mapRef.current?.animateToRegion(COLON,480);
+    }
     await Haptics.selectionAsync().catch(()=>undefined);
   };
 
@@ -130,7 +144,17 @@ export default function Mapa(){
 
   return <View style={s.root}>
     <NetworkBanner/>
-    <MapView
+    {Platform.OS==='android'?<MapaLeaflet
+      ref={leafletRef}
+      lugares={visibles}
+      coord={coord}
+      oscuro={esOscuro}
+      lugarSeleccionadoId={seleccion?.id}
+      onLugarPress={id=>{
+        const lugar=visibles.find(l=>l.id===id);
+        if(lugar)enfocarLugar(lugar);
+      }}
+    />:<MapView
       ref={mapRef}
       style={s.map}
       initialRegion={COLON}
@@ -138,19 +162,11 @@ export default function Mapa(){
       showsMyLocationButton={false}
       showsCompass={false}
       toolbarEnabled={false}
-      mapType={Platform.OS==='android'?'none':'standard'}
       loadingEnabled
       loadingBackgroundColor={colores.fondo}
       mapPadding={{top:165,right:14,bottom:245,left:14}}
       onPress={()=>setSeleccion(null)}
     >
-      {Platform.OS==='android'?<UrlTile
-        urlTemplate={esOscuro
-          ?'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'
-          :'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'}
-        maximumZ={20}
-        flipY={false}
-      />:null}
       {visibles.map(l=><Marker
         key={l.id}
         coordinate={{latitude:l.coordenadas.latitud,longitude:l.coordenadas.longitud}}
@@ -159,7 +175,7 @@ export default function Mapa(){
         pinColor={seleccion?.id===l.id?colores.acento:undefined}
         onPress={()=>enfocarLugar(l)}
       />)}
-    </MapView>
+    </MapView>}
 
     <Reveal delay={70} style={[s.filtersPos,{top}]}>
       <GlassSurface style={s.filters} intensity={68}>
