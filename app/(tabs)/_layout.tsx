@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { StyleSheet, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useTema } from '@/src/contexto/TemaContext';
@@ -15,27 +14,31 @@ export default function TabLayout(){
     tabBarItemStyle:{paddingVertical:7},
     tabBarStyle:{
       position:'absolute',
-      left:12,
-      right:12,
-      bottom:12,
-      height:72,
-      paddingTop:3,
+      left:14,
+      right:14,
+      bottom:10,
+      height:70,
+      paddingTop:4,
       paddingBottom:5,
       borderTopWidth:0,
-      borderRadius:24,
+      borderRadius:22,
       backgroundColor:'transparent',
       overflow:'hidden',
-      elevation:12,
+      elevation:10,
       shadowColor:'#000',
-      shadowOpacity:0.12,
-      shadowRadius:18,
-      shadowOffset:{width:0,height:7},
+      shadowOpacity:esOscuro?0.28:0.16,
+      shadowRadius:16,
+      shadowOffset:{width:0,height:6},
     },
     tabBarBackground:()=>(
-      <BlurView
-        intensity={72}
-        tint={esOscuro?'dark':'light'}
-        style={s.blur}
+      <View
+        style={[
+          s.surface,
+          {
+            backgroundColor:esOscuro?'rgba(16,29,25,.98)':'rgba(250,248,242,.98)',
+            borderColor:esOscuro?'rgba(255,255,255,.09)':'rgba(23,67,56,.12)',
+          },
+        ]}
       />
     ),
   }}>
@@ -48,15 +51,14 @@ export default function TabLayout(){
 }
 
 const s=StyleSheet.create({
-  blur:{
+  surface:{
     position:'absolute',
     top:0,
     left:0,
     right:0,
     bottom:0,
-    borderRadius:24,
+    borderRadius:22,
     overflow:'hidden',
     borderWidth:1,
-    borderColor:'rgba(255,255,255,.24)',
   },
 });
