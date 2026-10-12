@@ -16,7 +16,7 @@ import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
 import { useTema } from '@/src/contexto/TemaContext';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
-const HERO_URL='https://thumb.wikimedia.org/wikipedia/commons/thumb/8/83/Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg/1280px-Costanera_de_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg';
+const HERO_LOCAL=require('../../assets/hero-colon.jpg');
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
@@ -51,7 +51,6 @@ export default function Inicio(){
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
   const scrollY=useRef(new Animated.Value(0)).current;
-  const heroImage=useImagenLugar('hero-colon',HERO_URL);
 
   const cargar=async()=>{
     setCargando(true);
@@ -104,11 +103,13 @@ export default function Inicio(){
     >
       <View style={s.hero}>
         <Animated.Image
-          source={{uri:heroImage}}
+          source={HERO_LOCAL}
           style={[s.heroImage,{opacity:heroOpacity,transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
         />
-        <View style={s.heroShade}/>
+        <View style={s.heroPhotoShade}/>
+        <View style={s.heroBase}/>
+        <View style={s.heroBlend}/>
         <View style={s.heroTop}>
           <View style={s.brandPill}>
             <Ionicons name="location" size={14} color="white"/>
@@ -204,16 +205,18 @@ export default function Inicio(){
 const s=StyleSheet.create({
   root:{flex:1},
   scrollContent:{paddingBottom:112},
-  hero:{height:390,overflow:'hidden',position:'relative',backgroundColor:'#17342E'},
-  heroImage:{position:'absolute',left:0,right:0,top:-12,height:430,width:'100%'},
-  heroShade:{position:'absolute',left:0,right:0,top:0,bottom:0,backgroundColor:'rgba(8,22,18,.42)'},
-  heroTop:{position:'absolute',top:50,left:20,right:20,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
+  hero:{height:430,overflow:'hidden',position:'relative',backgroundColor:'#0D2A24'},
+  heroImage:{position:'absolute',left:0,right:0,top:0,height:255,width:'100%'},
+  heroPhotoShade:{position:'absolute',left:0,right:0,top:0,height:255,backgroundColor:'rgba(5,16,14,.16)'},
+  heroBase:{position:'absolute',left:0,right:0,top:220,bottom:0,backgroundColor:'#0D2A24'},
+  heroBlend:{position:'absolute',left:0,right:0,top:188,height:72,backgroundColor:'rgba(13,42,36,.78)'},
+  heroTop:{position:'absolute',top:48,left:20,right:20,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
   brandPill:{backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',borderRadius:999,paddingHorizontal:11,paddingVertical:8,flexDirection:'row',alignItems:'center',gap:5},
   brandPillText:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:1.1},
   weatherLike:{width:38,height:38,borderRadius:14,backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',alignItems:'center',justifyContent:'center'},
-  heroCopy:{position:'absolute',left:20,right:20,bottom:56},
+  heroCopy:{position:'absolute',left:20,right:20,bottom:48},
   heroKicker:{color:'#A9E8D4',fontSize:10,fontWeight:'900',letterSpacing:1.5},
-  heroTitle:{color:'white',fontSize:42,lineHeight:44,fontWeight:'900',letterSpacing:-1.45,marginTop:7},
+  heroTitle:{color:'white',fontSize:40,lineHeight:42,fontWeight:'900',letterSpacing:-1.35,marginTop:7},
   heroDesc:{color:'rgba(255,255,255,.84)',fontSize:14,lineHeight:21,maxWidth:350,marginTop:10},
   body:{paddingHorizontal:20},
   searchFloat:{marginTop:-29,zIndex:3},
