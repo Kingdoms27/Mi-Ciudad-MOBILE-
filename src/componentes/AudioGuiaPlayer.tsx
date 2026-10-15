@@ -32,6 +32,7 @@ export function AudioGuiaPlayer({source,titulo}:{source:string;titulo:string}){
 
   const pct=status.duration?Math.min(100,(status.currentTime/status.duration)*100):0;
   const restante=Math.max(0,(status.duration||0)-(status.currentTime||0));
+  const esAudioDeMuestra=source.includes('soundhelix.com');
 
   return <View style={[
     s.card,
@@ -45,7 +46,7 @@ export function AudioGuiaPlayer({source,titulo}:{source:string;titulo:string}){
         <Ionicons name={status.playing?'pause':'play'} size={24} color="white"/>
       </Pressable>
       <View style={{flex:1}}>
-        <Text style={[s.eyebrow,{color:colores.primario}]}>AUDIOGUÍA</Text>
+        <Text style={[s.eyebrow,{color:colores.primario}]}>{esAudioDeMuestra?'AUDIO DE DEMOSTRACIÓN':'AUDIOGUÍA'}</Text>
         <Text style={[s.title,{color:colores.tinta}]} numberOfLines={1}>{titulo}</Text>
         <Text style={[s.time,{color:colores.secundario}]}>
           {mmss(status.currentTime)} · faltan {mmss(restante)}
