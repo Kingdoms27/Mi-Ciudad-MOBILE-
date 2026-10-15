@@ -1,8 +1,8 @@
 # Estado de entrega
 
-## Cobertura funcional
+## Cobertura funcional en el código
 
-El código cubre los seis bloques funcionales del PRD:
+El proyecto contiene pantallas y servicios para los seis bloques del PRD:
 
 1. Lugares.
 2. Mapa y cercanía.
@@ -11,37 +11,43 @@ El código cubre los seis bloques funcionales del PRD:
 5. Favoritos y cuenta.
 6. Audioguías.
 
-También cubre los diez requisitos técnicos mínimos del Trabajo Final Integrador mediante Expo Router, autenticación persistente, servicios asíncronos, cámara/QR, archivos, ubicación/mapas, notificaciones, SQLite/kv-store/red, sensores/háptica, multimedia e identidad de aplicación.
+También están implementados los diez bloques técnicos del integrador: Expo Router, autenticación local de demostración, servicios asíncronos, cámara/QR, archivos, ubicación/mapas, notificaciones, SQLite/kv-store/red, háptica/sensor, multimedia e identidad visual.
 
-## Qué ya puede probarse con mocks
+Esta lista describe lo implementado en el código; no reemplaza la validación en teléfonos reales ni garantiza que cada flujo haya pasado una prueba manual.
 
-- Navegación completa.
-- Catálogo, filtros y búsqueda.
-- Mapa y ubicación.
-- Favoritos.
-- Agenda y recordatorios.
-- Registro/login de demostración.
-- Biometría.
-- QR.
-- Visita manual y por GPS.
-- Foto de visita.
-- Persistencia local.
-- Modo offline.
-- Cola de sincronización.
-- Audioguía y descarga offline.
+## Qué se puede probar con mocks
+
+- Navegación y catálogo.
+- Filtros, búsqueda y detalles.
+- Mapa y permiso de ubicación.
+- Favoritos y agenda.
+- Cuenta demo y registro local.
+- Biometría cuando el dispositivo la soporta.
+- QR, visita manual y validación GPS.
+- Foto y nota de visita.
+- Persistencia local y estado offline.
+- Cola de sincronización: permanece pendiente si la API no está configurada o falla.
+- Reproductor de audio de demostración.
 - Brújula.
 - Tema claro/oscuro.
-- Estados de error/carga/vacío.
+- Estados de carga, vacío y error.
 
-## Dependencias que no deben inventarse
+## Dependencias externas
 
-El PRD indica que la API docente se entrega más adelante. Por ese motivo el proyecto no inventa el contrato de autenticación, favoritos o endpoints adicionales que no fueron definidos. La arquitectura ya está aislada en `src/servicios/` para reemplazar mocks sin reescribir las pantallas.
+- **API de la cátedra:** no se ha suministrado un contrato definitivo en los archivos disponibles. La autenticación mock no sustituye la autenticación de servidor y las visitas no pueden sincronizarse entre dispositivos sin endpoints reales.
+- **Audioguías:** las URLs SoundHelix son pistas de prueba; deben sustituirse por contenido turístico autorizado.
+- **Mapa Android:** usa mosaicos OSM/CARTO dentro de WebView y requiere conectividad para cargar cartografía no almacenada. Validar en un teléfono y confirmar con la cátedra que la variante sea aceptable.
+- **Imágenes remotas:** las fotos de lugares quedan en caché sólo después de descargarse con éxito. La portada sí es un asset local.
 
 ## Antes de entregar
 
-- Probar en un teléfono real con Expo Go.
-- Completar los nombres del grupo.
-- Conectar la API oficial cuando la cátedra la publique.
-- Ejecutar `eas build:configure`.
-- Generar y probar `eas build --platform android --profile preview`.
-- Validar el APK sin Metro ni computadora.
+- [ ] Restaurar y comprobar la calidad de la foto original en el asset local.
+- [ ] Ejecutar instalación, chequeo Expo y TypeScript.
+- [ ] Probar en teléfonos reales Android y iPhone.
+- [ ] Probar la base de datos abriendo rápidamente varias pantallas y después de cerrar/reabrir.
+- [ ] Verificar visita local, sincronización con API y estados de error.
+- [ ] Confirmar que los recordatorios se programan sólo con permiso y fecha válida.
+- [ ] Completar nombres de integrantes.
+- [ ] Versionar `package-lock.json`.
+- [ ] Vincular EAS y generar `eas build --platform android --profile preview`.
+- [ ] Instalar y validar el APK sin Metro ni computadora.
