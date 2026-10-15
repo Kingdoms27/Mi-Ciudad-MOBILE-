@@ -6,7 +6,81 @@ import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiPost } from '@/src/servicios/api';
 import { distanciaKm } from '@/src/utilidades/distancia';
 import { OrigenVisita, Visita } from '@/src/tipos';
-export async function registrarVisita(usuarioId:string,lugarId:string,origen:OrigenVisita,nota:string|null=null,fotoTemporal:string|null=null){const id=`vis-${Date.now()}`;let fotoUri:string|null=null;if(fotoTemporal)fotoUri=await persistirFotoVisita(fotoTemporal,id);const visita:Visita={id,usuarioId,lugarId,fechaHora:new Date().toISOString(),origen,fotoUri,nota:nota?.trim()||null,sincronizada:false};await guardarVisitaLocal(visita);return visita;}
-export async function obtenerRecorrido(usuarioId?:string){return listarVisitasLocales(usuarioId);}
-export async function validarCercania(lugarId:string,maxMetros=200){const p=await Location.requestForegroundPermissionsAsync();if(!p.granted)return{ok:false,mensaje:'Necesitamos ubicación para validar que estás cerca. Podés registrar la visita manualmente.'};const r=await obtenerLugarPorId(lugarId);if('error'in r)return{ok:false,mensaje:r.error.mensaje};const u=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High});const km=distanciaKm({latitud:u.coords.latitude,longitud:u.coords.longitude},r.datos.coordenadas);return{ok:km*1000<=maxMetros,mensaje:km*1000<=maxMetros?'Ubicación validada.':`Estás a ${Math.round(km*1000)} m. Acercate a menos de ${maxMetros} m o usá el registro manual.`};}
-export async function sincronizarVisitasPendientes(){if(!(await hayConexion()))return 0;const pendientes=await listarVisitasPendientes();let sincronizadas=0;for(const v of pendientes){if(apiConfigurada()){const r=await apiPost<Visita>('/visitas',v);if('error'in r)continue;}else{await new Promise(r=>setTimeout(r,80));}await marcarVisitaSincronizada(v.id);sincronizadas++;}return sincronizadas;}
+
+export type ResultadoSincronizacionVisitas = {
+  sincronizadas: number;
+  pendientes: number;
+  estado: 'completa' | 'sin-conexion' | 'api-no-configurada' | 'fallida';
+};
+
+export async function registrarVisita(
+  usuarioId: string,
+  lugarId: string,
+  origen: OrigenVisita,
+  nota: string | null = null,
+  fotoTemporal: string | null = null,
+) {
+  const id = `vis-${Date.now()}`;
+  let fotoUri: string | null = null;
+  if (fotoTemporal) fotoUri = await persistirFotoVisita(fotoTemporal, id);
+  const visita: Visita = {
+    id,
+    usuarioId,
+    lugarId,
+    fechaHora: new Date().toISOString(),
+    origen,
+    fotoUri,
+    nota: nota?.trim() || null,
+    sincronizada: false,
+  };
+  await guardarVisitaLocal(visita);
+  return visita;
+}
+
+export async function obtenerRecorrido(usuarioId?: string) {
+  return listarVisitasLocales(usuarioId);
+}
+
+export async function validarCercania(lugarId: string, maxMetros = 200) {
+  const permiso = await Location.requestForegroundPermissionsAsync();
+  if (!permiso.granted) {
+    return { ok: false, mensaje: 'Necesitamos ubicación para validar que estás cerca. Podés registrar la visita manualmente.' };
+  }
+  const resultado = await obtenerLugarPorId(lugarId);
+  if ('error' in resultado) return { ok: false, mensaje: resultado.error.mensaje };
+  const ubicacion = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+  const km = distanciaKm(
+    { latitud: ubicacion.coords.latitude, longitud: ubicacion.coords.longitude },
+    resultado.datos.coordenadas,
+  );
+  return {
+    ok: km * 1000 <= maxMetros,
+    mensaje: km * 1000 <= maxMetros
+      ? 'Ubicación validada.'
+      : `Estás a ${Math.round(km * 1000)} m. Acercate a menos de ${maxMetros} m o usá el registro manual.`,
+  };
+}
+
+export async function sincronizarVisitasPendientes(): Promise<ResultadoSincronizacionVisitas> {
+  const iniciales = await listarVisitasPendientes();
+  if (iniciales.length === 0) return { sincronizadas: 0, pendientes: 0, estado: 'completa' };
+
+  const online = await hayConexion().catch(() => false);
+  if (!online) return { sincronizadas: 0, pendientes: iniciales.length, estado: 'sin-conexion' };
+  if (!apiConfigurada()) return { sincronizadas: 0, pendientes: iniciales.length, estado: 'api-no-configurada' };
+
+  let sincronizadas = 0;
+  for (const visita of iniciales) {
+    const respuesta = await apiPost<Visita>('/visitas', visita);
+    if ('error' in respuesta) continue;
+    await marcarVisitaSincronizada(visita.id);
+    sincronizadas++;
+  }
+
+  const restantes = await listarVisitasPendientes();
+  return {
+    sincronizadas,
+    pendientes: restantes.length,
+    estado: restantes.length === 0 ? 'completa' : 'fallida',
+  };
+}
