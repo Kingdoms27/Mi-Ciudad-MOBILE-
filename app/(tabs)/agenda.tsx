@@ -54,10 +54,15 @@ export default function Agenda(){
         await Haptics.selectionAsync().catch(()=>undefined);
         setGuardados(x=>({...x,[e.id]:false}));
       }else{
-        await guardarEvento(usuario.id,e);
+        const resultado=await guardarEvento(usuario.id,e);
         await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
         setGuardados(x=>({...x,[e.id]:true}));
-        Alert.alert('Evento guardado','Se programó un recordatorio antes del inicio.');
+        Alert.alert(
+          'Evento guardado',
+          resultado.recordatorioProgramado
+            ? 'El evento quedó guardado y el recordatorio está programado.'
+            : 'El evento quedó guardado, pero no se pudo programar el recordatorio. Revisá los permisos de notificaciones y que el evento todavía no haya comenzado.',
+        );
       }
     }catch(err){
       Alert.alert('No se pudo guardar',err instanceof Error?err.message:'Error inesperado');
