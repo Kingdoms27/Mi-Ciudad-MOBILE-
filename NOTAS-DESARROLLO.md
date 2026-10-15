@@ -7,35 +7,37 @@
 - No se usa `expo-av`.
 - Para archivos se usa la API nueva de `expo-file-system`: `File`, `Directory` y `Paths`.
 - Los íconos usan `@react-native-vector-icons/ionicons`.
-- Las pantallas nunca importan mocks directamente.
-- Los servicios son asíncronos desde el primer día.
-- El token de sesión se guarda sólo en `expo-secure-store`.
+- Las pantallas no importan mocks directamente; la lectura pasa por la capa de servicios.
+- El token de sesión se guarda en `expo-secure-store`. Las contraseñas de cuentas locales de demostración también se guardan en almacenamiento seguro, ya que no hay autenticación de servidor hasta recibir la API oficial.
 - Preferencias y caché usan `expo-sqlite/kv-store`.
-- Visitas, favoritos y eventos guardados usan SQLite.
-- Una visita se guarda primero con `sincronizada: false` y se sincroniza cuando vuelve Internet.
+- Visitas, favoritos y eventos guardados usan SQLite. Todas las operaciones esperan la inicialización del esquema antes de acceder a tablas.
+- Una visita se guarda primero con `sincronizada: false`. Sólo pasa a sincronizada después de una respuesta HTTP satisfactoria de la API. Sin URL de API, permanece local y la interfaz lo informa.
 - Si se rechaza ubicación, la app continúa siendo usable.
 - El QR esperado sigue el formato del PRD: `COLON:<id-lugar>`.
-- Los avisos de proximidad se limitan a uno por lugar y por día.
-- No se inventan endpoints de la API docente. Cuando la cátedra entregue el contrato, se ajusta únicamente `src/servicios/`.
+- Los avisos de proximidad se limitan a uno por lugar y día local.
+- Los recordatorios requieren permiso y una fecha de evento válida; al cambiar el estado de un evento se cancelan o actualizan los avisos asociados.
+- No se inventan endpoints de autenticación. Los recursos de catálogo, agenda y envío de visitas deben ajustarse al contrato de la cátedra.
+- El mapa iOS usa `react-native-maps`; Android usa una capa raster de OpenStreetMap/CARTO en WebView para evitar depender de una clave de Google Maps. Debe validarse en un dispositivo Android y confirmarse con la cátedra por la diferencia de implementación.
+- Las pistas SoundHelix son audios de demostración, no audioguías oficiales.
 
 ## Implementado
 
 - Catálogo, búsqueda, categorías y detalle de lugares.
 - Mapa, ubicación, distancias, filtros y navegación externa.
 - Agenda y detalle de eventos.
-- Guardado de eventos y recordatorios locales.
-- Registro e ingreso mock con sesión persistente.
+- Guardado de eventos y recordatorios locales con resultado de permiso explícito en la interfaz.
+- Registro/login local de demostración con validación de credenciales.
 - SecureStore y reingreso biométrico.
 - Favoritos.
 - Recorrido por QR, GPS y registro manual.
 - Foto desde cámara o galería.
 - Persistencia de fotos en Documents.
-- Audioguías con reproducción en segundo plano.
-- Descarga de audioguías para uso offline.
+- Audioplayer con controles y etiqueta para pistas de demostración.
+- Descarga de audio para uso offline.
 - Magnetómetro y flecha de orientación.
 - Háptica.
 - Caché y modo offline.
-- Monitoreo de conectividad y cola de sincronización.
+- Monitoreo de conectividad y cola de sincronización real cuando la API esté configurada.
 - Avisos de proximidad mientras el usuario se mueve con la app activa.
 - Tema claro/oscuro/sistema.
 - Estados de carga, error y vacío.
@@ -44,8 +46,11 @@
 
 ## Pendientes externos antes de entregar
 
-1. Recibir el contrato definitivo de la API de la cátedra y reemplazar/adaptar endpoints en la capa de servicios.
-2. Completar integrantes oficiales del grupo en el README.
-3. Vincular el proyecto a la cuenta Expo con `eas build:configure`.
-4. Ejecutar pruebas en teléfonos reales Android/iPhone.
-5. Generar el primer APK preview y corregir cualquier permiso/configuración nativa detectada por EAS.
+1. Recibir el contrato definitivo y URL de la API de la cátedra.
+2. Sustituir las pistas de demostración por audioguías aprobadas.
+3. Confirmar con la cátedra la variante de mapa de Android.
+4. Completar los nombres del grupo en el README.
+5. Vincular el proyecto a la cuenta Expo con `eas build:configure`.
+6. Completar las pruebas en teléfonos reales Android/iPhone.
+7. Generar el APK preview e instalarlo con Metro apagado.
+8. Versionar el `package-lock.json` generado por npm en el equipo de desarrollo, para fijar dependencias y habilitar `npm ci` en CI.
