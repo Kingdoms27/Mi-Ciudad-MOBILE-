@@ -6,6 +6,8 @@ Las imágenes de los lugares usadas por los mocks fueron seleccionadas para repr
 
 | Lugar | Fuente principal | Uso en el proyecto |
 |---|---|---|
+| Portada de inicio | Fotografía suministrada para el proyecto | Asset local `assets/hero-colon.jpg`; no depende de una descarga al iniciar. |
+|---|---|---|
 | Molino Forclaz | Wikimedia Commons — fotografía de Dario Alpern | Imagen real del monumento. Licencia CC BY-SA 4.0 entre las licencias ofrecidas por el archivo. |
 | Termas de Colón | Termas de Colón | Fotografía del complejo termal publicada por el sitio turístico del establecimiento. |
 | Playa Norte / Playas de Colón | Municipalidad de Colón | Postal de playas de la temporada 2026. |
@@ -27,6 +29,6 @@ Las imágenes de los lugares usadas por los mocks fueron seleccionadas para repr
 
 Las URLs remotas siguen formando parte del modelo `Lugar`, tal como ocurriría cuando la API docente entregue el catálogo real. La app agrega una caché propia en `src/servicios/imagenes.ts`: cuando una imagen se carga correctamente se guarda en Documents y se reutiliza sin conexión en siguientes aperturas.
 
-De esta forma se evita depender de fotografías genéricas de stock y se conserva el comportamiento offline solicitado por el PRD después de una primera carga con conexión.
+De esta forma se evita depender de fotografías genéricas de stock y se conserva el comportamiento offline de las fotos de lugar después de una primera carga con conexión. La portada principal está incluida en el bundle de la app y debe mantenerse con la resolución/calidad de la imagen original.
 
 > Nota académica: los datos operativos de horarios, tarifas y disponibilidad son mocks hasta que la cátedra entregue la API oficial. Las imágenes y referencias visuales no deben interpretarse como una API oficial de Turismo Colón.
