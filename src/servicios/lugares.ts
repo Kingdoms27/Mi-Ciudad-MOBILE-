@@ -5,63 +5,79 @@ import { guardarCache, leerCache } from '@/src/servicios/cache';
 import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet } from '@/src/servicios/api';
 
-const esperar=(ms=180)=>new Promise(r=>setTimeout(r,ms));
-const CACHE_LUGARES='lugares:v3';
-const CACHE_CATEGORIAS='categorias:v2';
+const esperar = (ms = 180) => new Promise(r => setTimeout(r, ms));
+const CACHE_LUGARES = 'lugares:v4';
+const CACHE_CATEGORIAS = 'categorias:v3';
 
-export async function obtenerCategorias():Promise<RespuestaApi<Categoria[]>>{
-  await esperar();
-  if(apiConfigurada()&&await hayConexion().catch(()=>false)){
-    const remoto=await apiGet<Categoria[]>('/categorias');
-    if('datos'in remoto){
-      await guardarCache(CACHE_CATEGORIAS,remoto.datos);
-      return remoto;
-    }
-  }
-  const datos=[...categoriasMock].sort((a,b)=>a.orden-b.orden);
-  await guardarCache(CACHE_CATEGORIAS,datos);
-  return{datos,meta:{total:datos.length,pagina:1,porPagina:50}};
+function respuestaLista<T>(datos: T[], porPagina: number): RespuestaApi<T[]> {
+  return { datos, meta: { total: datos.length, pagina: 1, porPagina } };
 }
 
-export async function obtenerLugares():Promise<RespuestaApi<Lugar[]>>{
+export async function obtenerCategorias(): Promise<RespuestaApi<Categoria[]>> {
   await esperar();
-  const online=await hayConexion().catch(()=>false);
-  const mock=lugaresMock.filter(l=>l.activo);
+  const online = await hayConexion().catch(() => false);
 
-  if(online&&apiConfigurada()){
-    const remoto=await apiGet<Lugar[]>('/lugares');
-    if('datos'in remoto){
-      await guardarCache(CACHE_LUGARES,remoto.datos);
+  if (apiConfigurada()) {
+    if (online) {
+      const remoto = await apiGet<Categoria[]>('/categorias');
+      if ('datos' in remoto) {
+        const datos = [...remoto.datos].sort((a, b) => a.orden - b.orden);
+        await guardarCache(CACHE_CATEGORIAS, datos);
+        return { ...remoto, datos, meta: remoto.meta ?? { total: datos.length, pagina: 1, porPagina: 50 } };
+      }
+      const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
+      if (cache) return respuestaLista(cache, 50);
       return remoto;
     }
+
+    const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
+    if (cache) return respuestaLista(cache, 50);
   }
 
-  if(online){
-    await guardarCache(CACHE_LUGARES,mock);
-    return{datos:mock,meta:{total:mock.length,pagina:1,porPagina:20}};
-  }
-
-  const cache=await leerCache<Lugar[]>(CACHE_LUGARES);
-  const salida=cache??mock;
-  return{datos:salida,meta:{total:salida.length,pagina:1,porPagina:20}};
+  const datos = [...categoriasMock].sort((a, b) => a.orden - b.orden);
+  return respuestaLista(datos, 50);
 }
 
-export async function obtenerLugarPorId(id:string):Promise<RespuestaApi<Lugar>>{
+export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
+  await esperar();
+  const online = await hayConexion().catch(() => false);
+
+  if (apiConfigurada()) {
+    if (online) {
+      const remoto = await apiGet<Lugar[]>('/lugares');
+      if ('datos' in remoto) {
+        const datos = remoto.datos.filter(l => l.activo);
+        await guardarCache(CACHE_LUGARES, datos);
+        return { ...remoto, datos, meta: remoto.meta ?? { total: datos.length, pagina: 1, porPagina: 20 } };
+      }
+      const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
+      if (cache) return respuestaLista(cache, 20);
+      return remoto;
+    }
+
+    const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
+    if (cache) return respuestaLista(cache, 20);
+  }
+
+  return respuestaLista(lugaresMock.filter(l => l.activo), 20);
+}
+
+export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>> {
   await esperar(100);
-  const online=await hayConexion().catch(()=>false);
-
-  if(online&&!apiConfigurada()){
-    const l=lugaresMock.find(x=>x.id===id&&x.activo);
-    return l?{datos:l}:{error:{codigo:'LUGAR_NO_ENCONTRADO',mensaje:'No existe ese lugar.'}};
-  }
-
-  const lista=(await leerCache<Lugar[]>(CACHE_LUGARES))??lugaresMock;
-  const l=lista.find(x=>x.id===id&&x.activo);
-  return l?{datos:l}:{error:{codigo:'LUGAR_NO_ENCONTRADO',mensaje:'No existe ese lugar.'}};
+  const lista = await obtenerLugares();
+  if ('error' in lista) return lista;
+  const lugar = lista.datos.find(l => l.id === id && l.activo);
+  return lugar
+    ? { datos: lugar }
+    : { error: { codigo: 'LUGAR_NO_ENCONTRADO', mensaje: 'No existe ese lugar.' } };
 }
 
-export async function obtenerLugarPorQr(codigoQr:string):Promise<RespuestaApi<Lugar>>{
+export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<Lugar>> {
   await esperar(80);
-  const l=lugaresMock.find(x=>x.codigoQr===codigoQr&&x.activo);
-  return l?{datos:l}:{error:{codigo:'QR_INVALIDO',mensaje:'El código QR no pertenece a Mi Ciudad.'}};
+  const lista = await obtenerLugares();
+  if ('error' in lista) return lista;
+  const lugar = lista.datos.find(l => l.codigoQr === codigoQr && l.activo);
+  return lugar
+    ? { datos: lugar }
+    : { error: { codigo: 'QR_INVALIDO', mensaje: 'El código QR no pertenece a Mi Ciudad.' } };
 }
