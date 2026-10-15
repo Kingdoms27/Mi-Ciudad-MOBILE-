@@ -1,23 +1,22 @@
 # Créditos de imágenes turísticas
 
-Las imágenes de los lugares usadas por los mocks fueron seleccionadas para representar sitios reales de Colón y la microrregión. Se priorizaron portales oficiales, fichas verificadas de Turismo Colón y material con licencia abierta.
+Las imágenes de los lugares usadas por los mocks se seleccionaron para representar sitios reales de Colón y la microrregión. Se priorizaron portales oficiales, fichas verificadas de Turismo Colón y material con licencia abierta.
 
 ## Fuentes
 
 | Lugar | Fuente principal | Uso en el proyecto |
 |---|---|---|
 | Portada de inicio | Fotografía suministrada para el proyecto | Asset local `assets/hero-colon.jpg`; no depende de una descarga al iniciar. |
-|---|---|---|
-| Molino Forclaz | Wikimedia Commons — fotografía de Dario Alpern | Imagen real del monumento. Licencia CC BY-SA 4.0 entre las licencias ofrecidas por el archivo. |
-| Termas de Colón | Termas de Colón | Fotografía del complejo termal publicada por el sitio turístico del establecimiento. |
-| Playa Norte / Playas de Colón | Municipalidad de Colón | Postal de playas de la temporada 2026. |
+| Molino Forclaz | Wikimedia Commons — fotografía de Dario Alpern | Imagen real del monumento. Revisar la ficha original y su atribución CC BY-SA 4.0 antes de redistribuir. |
+| Termas de Colón | Termas de Colón | Fotografía publicada por el establecimiento; confirmar condiciones de reutilización antes de una publicación comercial. |
+| Playa Norte / Playas de Colón | Municipalidad de Colón | Imagen publicada en el portal municipal para representar las playas. |
 | Parque Nacional El Palmar | Administración de Parques Nacionales / Argentina.gob.ar | Fotografía oficial del paisaje del parque. |
-| Museo Histórico Regional de Colón | Colón Turismo | Fotografía de la ficha verificada del museo. |
-| Puerto Viejo | Wikimedia Commons — fotografía de Pablo D. Flores | Fotografía real del antiguo edificio del puerto. Licencia CC BY-SA 2.5. |
+| Museo Histórico Regional de Colón | Colón Turismo | Fotografía publicada en la ficha del atractivo. |
+| Puerto Viejo | Wikimedia Commons — fotografía de Pablo D. Flores | Fotografía real del antiguo edificio del puerto. Revisar la ficha original y su atribución CC BY-SA 2.5 antes de redistribuir. |
 | Feria Costanera | Colón Turismo | Imagen publicada en la ficha del atractivo. |
-| Bodega Vulliez-Sermet | Colón Turismo | Imagen publicada en la ficha verificada del establecimiento. |
-| Paseo Costanera | Wikimedia Commons — fotografía de Paula Kindsvater | Fotografía real de la costanera. Licencia CC BY-SA 4.0. |
-| Hotel Plaza | Colón Turismo | Fotografía publicada en la ficha verificada del hotel. |
+| Bodega Vulliez-Sermet | Colón Turismo | Imagen publicada en la ficha del establecimiento. |
+| Paseo Costanera | Wikimedia Commons — fotografía de Paula Kindsvater | Fotografía real de la costanera. Revisar la ficha original y su atribución CC BY-SA 4.0 antes de redistribuir. |
+| Hotel Plaza | Colón Turismo | Fotografía publicada en la ficha del alojamiento. |
 
 ## Enlaces de atribución para Wikimedia Commons
 
@@ -27,8 +26,6 @@ Las imágenes de los lugares usadas por los mocks fueron seleccionadas para repr
 
 ## Decisión técnica
 
-Las URLs remotas siguen formando parte del modelo `Lugar`, tal como ocurriría cuando la API docente entregue el catálogo real. La app agrega una caché propia en `src/servicios/imagenes.ts`: cuando una imagen se carga correctamente se guarda en Documents y se reutiliza sin conexión en siguientes aperturas.
+La portada principal está incluida en el bundle. Las imágenes de los lugares siguen definidas en los modelos/mocks como URLs; la app las guarda localmente después de una primera descarga correcta con la API actual de `expo-file-system`. Si una URL falla, el hook intenta las alternativas del lugar y conserva un fallback remoto.
 
-De esta forma se evita depender de fotografías genéricas de stock y se conserva el comportamiento offline de las fotos de lugar después de una primera carga con conexión. La portada principal está incluida en el bundle de la app y debe mantenerse con la resolución/calidad de la imagen original.
-
-> Nota académica: los datos operativos de horarios, tarifas y disponibilidad son mocks hasta que la cátedra entregue la API oficial. Las imágenes y referencias visuales no deben interpretarse como una API oficial de Turismo Colón.
+Horarios, tarifas, disponibilidad, agenda de ejemplo y pistas SoundHelix no son datos oficiales. Las pistas SoundHelix se usan sólo para probar los controles multimedia y aparecen rotuladas como audio de demostración. Deben sustituirse por grabaciones turísticas autorizadas antes de tratarse como audioguías reales.
