@@ -92,6 +92,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
   const tilesEl=document.getElementById('tiles');
   const markersEl=document.getElementById('markers');
   const mapEl=document.getElementById('map');
+  const tileNodes=new Map();
 
   function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
   function project(lat,lon,z){
@@ -115,7 +116,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
   function osmUrl(z,x,y){
     return 'https://tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png';
   }
-  function render(){
+  function renderTiles(){
     const w=mapEl.clientWidth||window.innerWidth;
     const h=mapEl.clientHeight||window.innerHeight;
     const cp=project(center.lat,center.lon,zoom);
@@ -124,28 +125,49 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     const x1=Math.floor((cp.x+w/2)/TILE);
     const y0=Math.floor((cp.y-h/2)/TILE);
     const y1=Math.floor((cp.y+h/2)/TILE);
+    const deseados=new Set();
 
-    tilesEl.innerHTML='';
     for(let ty=y0;ty<=y1;ty++){
       if(ty<0||ty>=n)continue;
       for(let tx=x0;tx<=x1;tx++){
-        const wrapped=((tx%n)+n)%n;
-        const img=document.createElement('img');
-        img.className='tile';
-        img.draggable=false;
+        const xEnvuelto=((tx%n)+n)%n;
+        const key=zoom+'/'+tx+'/'+ty;
+        deseados.add(key);
+        let img=tileNodes.get(key);
+        if(!img){
+          img=document.createElement('img');
+          img.className='tile';
+          img.draggable=false;
+          const nivel=zoom;
+          const tileX=xEnvuelto;
+          const tileY=ty;
+          img.src=tileUrl(nivel,tileX,tileY);
+          img.onerror=function(){
+            if(!img.dataset.fallback){
+              img.dataset.fallback='1';
+              img.src=osmUrl(nivel,tileX,tileY);
+            }
+          };
+          tileNodes.set(key,img);
+          tilesEl.appendChild(img);
+        }
         img.style.left=(tx*TILE-cp.x+w/2)+'px';
         img.style.top=(ty*TILE-cp.y+h/2)+'px';
-        img.src=tileUrl(zoom,wrapped,ty);
-        img.onerror=function(){
-          if(!img.dataset.fallback){
-            img.dataset.fallback='1';
-            img.src=osmUrl(zoom,wrapped,ty);
-          }
-        };
-        tilesEl.appendChild(img);
       }
     }
 
+    for(const [key,img] of tileNodes.entries()){
+      if(!deseados.has(key)){
+        img.remove();
+        tileNodes.delete(key);
+      }
+    }
+  }
+
+  function renderMarkers(){
+    const w=mapEl.clientWidth||window.innerWidth;
+    const h=mapEl.clientHeight||window.innerHeight;
+    const cp=project(center.lat,center.lon,zoom);
     markersEl.innerHTML='';
     points.forEach(function(p){
       const pp=project(p.lat,p.lon,zoom);
@@ -161,7 +183,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
       marker.addEventListener('click',function(ev){
         ev.stopPropagation();
         activeId=p.id;
-        render();
+        renderMarkers();
         window.ReactNativeWebView.postMessage(JSON.stringify({tipo:'lugar',id:p.id}));
       });
       markersEl.appendChild(marker);
@@ -189,6 +211,10 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     }
   }
 
+  function render(){
+    renderTiles();
+    renderMarkers();
+  }
   let dragging=false;
   let moved=false;
   let start={x:0,y:0};
@@ -202,6 +228,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
   }
 
   mapEl.addEventListener('touchstart',function(e){
+    if(e.target.closest('.zoom'))return;
     if(e.touches.length===1){
       dragging=true;moved=false;
       start={x:e.touches[0].clientX,y:e.touches[0].clientY};
@@ -223,8 +250,8 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
       render();
     }else if(e.touches.length===2&&pinchDistance){
       const d=distance(e.touches[0],e.touches[1]);
-      const ratio=d/pinchDistance;
-      const next=clamp(pinchZoom+(ratio>1.25?1:ratio<.8?-1:0),minZoom,maxZoom);
+      const nivel=pinchZoom+Math.log2(d/pinchDistance);
+      const next=clamp(Math.round(nivel),minZoom,maxZoom);
       if(next!==zoom){zoom=next;render();}
     }
   },{passive:false});
@@ -251,6 +278,8 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
 
   window.addEventListener('resize',render);
   render();
+  setTimeout(render,180);
+  setTimeout(render,650);
 })();
 </script>
 </body>
