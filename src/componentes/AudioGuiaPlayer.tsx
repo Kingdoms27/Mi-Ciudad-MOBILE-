@@ -6,7 +6,7 @@ import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-au
 import { useTema } from '@/src/contexto/TemaContext';
 import { mmss } from '@/src/utilidades/formato';
 
-export function AudioGuiaPlayer({source,titulo}:{source:string;titulo:string}){
+export function AudioGuiaPlayer({source,titulo,esDemostracion=false}:{source:string;titulo:string;esDemostracion?:boolean}){
   const{colores,esOscuro}=useTema();
   const player=useAudioPlayer(source,{updateInterval:500});
   const status=useAudioPlayerStatus(player);
@@ -32,7 +32,7 @@ export function AudioGuiaPlayer({source,titulo}:{source:string;titulo:string}){
 
   const pct=status.duration?Math.min(100,(status.currentTime/status.duration)*100):0;
   const restante=Math.max(0,(status.duration||0)-(status.currentTime||0));
-  const esAudioDeMuestra=source.includes('soundhelix.com');
+  const esAudioDeMuestra=esDemostracion||source.includes('soundhelix.com');
 
   return <View style={[
     s.card,
