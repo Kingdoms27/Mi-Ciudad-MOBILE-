@@ -202,7 +202,7 @@ function ContenidoLugar({
               </View>
               <Ionicons name="headset-outline" size={22} color={colores.primario}/>
             </View>
-            <AudioGuiaPlayer source={audioLocal??lugar.audioguia.url} titulo={lugar.nombre}/>
+            <AudioGuiaPlayer source={audioLocal??lugar.audioguia.url} titulo={lugar.nombre} esDemostracion={lugar.audioguia.url.includes('soundhelix.com')}/>
             <Pressable
               disabled={descargando||Boolean(audioLocal)}
               onPress={descargar}
