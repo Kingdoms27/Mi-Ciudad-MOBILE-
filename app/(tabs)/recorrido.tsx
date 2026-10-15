@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
@@ -36,10 +36,33 @@ export default function Recorrido(){
   const nombre=(id:string)=>lugares.find(l=>l.id===id)?.nombre??id;
   const sync=async()=>{
     setSinc(true);
-    await sincronizarVisitasPendientes();
-    await cargar();
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>undefined);
-    setSinc(false);
+    let correcto=false;
+    try{
+      const resultado=await sincronizarVisitasPendientes();
+      await cargar();
+
+      if(resultado.estado==='completa'){
+        correcto=true;
+        if(resultado.sincronizadas>0){
+          Alert.alert('Recorrido sincronizado',`Se sincronizaron ${resultado.sincronizadas} visita(s).`);
+        }else{
+          Alert.alert('Todo al día','No hay visitas pendientes de sincronización.');
+        }
+      }else if(resultado.estado==='api-no-configurada'){
+        Alert.alert('Visitas guardadas localmente','La API de la cátedra todavía no está configurada. Las visitas siguen guardadas en este teléfono y no se marcaron como sincronizadas.');
+      }else if(resultado.estado==='sin-conexion'){
+        Alert.alert('Sin conexión','Las visitas siguen guardadas en este teléfono. Volvé a intentar cuando tengas Internet.');
+      }else{
+        Alert.alert('Sincronización incompleta',`Se sincronizaron ${resultado.sincronizadas} visita(s). Quedan ${resultado.pendientes} pendiente(s); podés volver a intentarlo.`);
+      }
+    }catch(error){
+      Alert.alert('No se pudo sincronizar',error instanceof Error?error.message:'Ocurrió un error inesperado.');
+    }finally{
+      await Haptics.notificationAsync(
+        correcto?Haptics.NotificationFeedbackType.Success:Haptics.NotificationFeedbackType.Warning,
+      ).catch(()=>undefined);
+      setSinc(false);
+    }
   };
 
   if(!usuario)return <View style={[s.auth,{backgroundColor:colores.fondo}]}>
