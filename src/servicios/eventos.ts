@@ -3,5 +3,46 @@ import { Evento, RespuestaApi } from '@/src/tipos';
 import { guardarCache, leerCache } from '@/src/servicios/cache';
 import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet } from '@/src/servicios/api';
-export async function obtenerEventos():Promise<RespuestaApi<Evento[]>>{await new Promise(r=>setTimeout(r,150));const online=await hayConexion().catch(()=>false);if(online&&apiConfigurada()){const remoto=await apiGet<Evento[]>('/eventos');if('datos'in remoto){const ordenados=[...remoto.datos].sort((a,b)=>new Date(a.inicio).getTime()-new Date(b.inicio).getTime());await guardarCache('eventos',ordenados);return{...remoto,datos:ordenados};}}const base=[...eventosMock].sort((a,b)=>new Date(a.inicio).getTime()-new Date(b.inicio).getTime());if(online||!(await leerCache<Evento[]>('eventos')))await guardarCache('eventos',base);const datos=online?base:(await leerCache<Evento[]>('eventos'))??base;return{datos,meta:{total:datos.length,pagina:1,porPagina:20}};}
-export async function obtenerEventoPorId(id:string):Promise<RespuestaApi<Evento>>{const r=await obtenerEventos();if('error'in r)return r;const e=r.datos.find(x=>x.id===id);return e?{datos:e}:{error:{codigo:'EVENTO_NO_ENCONTRADO',mensaje:'No existe ese evento.'}};}
+
+const CACHE_EVENTOS = 'eventos:v2';
+
+function ordenar(eventos: Evento[]) {
+  return [...eventos].sort((a, b) => new Date(a.inicio).getTime() - new Date(b.inicio).getTime());
+}
+
+function respuestaLista(datos: Evento[]): RespuestaApi<Evento[]> {
+  return { datos, meta: { total: datos.length, pagina: 1, porPagina: 20 } };
+}
+
+export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
+  await new Promise(r => setTimeout(r, 150));
+  const online = await hayConexion().catch(() => false);
+
+  if (apiConfigurada()) {
+    if (online) {
+      const remoto = await apiGet<Evento[]>('/eventos');
+      if ('datos' in remoto) {
+        const datos = ordenar(remoto.datos);
+        await guardarCache(CACHE_EVENTOS, datos);
+        return { ...remoto, datos, meta: remoto.meta ?? { total: datos.length, pagina: 1, porPagina: 20 } };
+      }
+      const cache = await leerCache<Evento[]>(CACHE_EVENTOS);
+      if (cache) return respuestaLista(cache);
+      return remoto;
+    }
+
+    const cache = await leerCache<Evento[]>(CACHE_EVENTOS);
+    if (cache) return respuestaLista(cache);
+  }
+
+  return respuestaLista(ordenar(eventosMock));
+}
+
+export async function obtenerEventoPorId(id: string): Promise<RespuestaApi<Evento>> {
+  const resultado = await obtenerEventos();
+  if ('error' in resultado) return resultado;
+  const evento = resultado.datos.find(e => e.id === id);
+  return evento
+    ? { datos: evento }
+    : { error: { codigo: 'EVENTO_NO_ENCONTRADO', mensaje: 'No existe ese evento.' } };
+}
