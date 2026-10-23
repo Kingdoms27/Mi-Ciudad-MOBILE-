@@ -110,42 +110,36 @@ export async function apiListarTodos<T>(
   maxPaginas = 30,
 ): Promise<RespuestaApi<T[]>> {
   const datos: T[] = [];
-  const url = new URL(path, 'https://mi-ciudad.local');
-  const pathname = url.pathname;
+  const sinPaginacion = path.replace(/([?&])pagina=\\d+(&|$)/g, '$1')
+    .replace(/([?&])porPagina=\\d+(&|$)/g, '$1')
+    .replace(/[?&]$/, '');
+  const separador = sinPaginacion.includes('?') ? '&' : '?';
   let total = 0;
+
   for (let pagina = 1; pagina <= maxPaginas; pagina++) {
-    url.searchParams.set('pagina', String(pagina));
-    url.searchParams.set('porPagina', String(porPagina));
-    const respuesta = await apiGet<T[]>(pathname + url.search);
+    const ruta = sinPaginacion + separador + 'pagina=' + pagina + '&porPagina=' + porPagina;
+    const respuesta = await apiGet<T[]>(ruta);
     if ('error' in respuesta) return respuesta;
     if (!Array.isArray(respuesta.datos) || !respuesta.meta) {
       return { error: { codigo: 'RESPUESTA_INVALIDA', mensaje: 'La API no devolvió la paginación esperada.' } };
     }
+
     datos.push(...respuesta.datos);
     total = respuesta.meta.total;
     if (datos.length >= total || respuesta.datos.length === 0) {
       return { datos, meta: { total, pagina: 1, porPagina: datos.length } };
     }
   }
-  return { error: { codigo: 'LIMITE_PAGINAS', mensaje: 'El servidor devolvió más páginas de las que admite la sincronización.' } };
+  return { error: { codigo: 'LIMITE_PAGINAS', mensaje: 'El catálogo contiene más páginas de las admitidas.' } };
 }
 
 /**
- * Los assets del backend de desarrollo pueden venir como localhost.
- * En un teléfono, localhost apunta al teléfono, no al PC.
- * Sólo convertimos rutas /archivos del propio backend.
+ * La API puede emitir URLs locales con "localhost". Reemplazamos sólo el
+ * origen de archivos propios para que el teléfono use la IP de EXPO_PUBLIC_API_URL.
  */
 export function urlArchivoParaDispositivo(url: string | null): string | null {
   if (!url || !apiConfigurada()) return url;
-  try {
-    const origen = new URL(url);
-    const base = new URL(BASE);
-    if (
-      /^\/archivos\//.test(origen.pathname) &&
-      ['localhost', '127.0.0.1', '0.0.0.0'].includes(origen.hostname)
-    ) return base.origin + origen.pathname + origen.search;
-  } catch {
-    return url;
-  }
-  return url;
+  const local = url.match(/^https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)(?::\\d+)?(\\/archivos\\/.*)$/i);
+  const origen = BASE.match(/^https?:\\/\\/[^/]+/i)?.[0];
+  return local && origen ? origen + local[1] : url;
 }
