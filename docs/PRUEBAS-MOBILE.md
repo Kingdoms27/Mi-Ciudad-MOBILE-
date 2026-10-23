@@ -15,6 +15,8 @@
 - [ ] Registrar visita offline: debe mostrar “Guardada en el teléfono”.
 - [ ] Con API no configurada, sincronizar pendientes: deben seguir pendientes y la interfaz debe explicarlo.
 - [ ] Con API configurada, enviar una visita y verificar que sólo cambia a sincronizada tras una respuesta satisfactoria.
+- [ ] Registrar visita con foto, subir `POST /archivos` y después `POST /yo/visitas`; comprobar que el servidor conserva la foto.
+- [ ] Iniciar sesión con `lucia@mail.com / lucia1234` y comprobar sus visitas de muestra desde `GET /yo/visitas`.
 - [ ] Recuperar Internet y pulsar sincronizar.
 
 ## Ubicación/mapa
@@ -44,7 +46,10 @@
 - [ ] Probar aviso de proximidad cerca de un lugar y confirmar máximo un aviso por lugar y fecha local.
 
 ## Auth/seguridad
-- [ ] Login demo correcto: `lucia@mail.com / 123456`.
+- [ ] Login con el servidor `api-mi-ciudad` encendido desde un teléfono (no localhost).
+- [ ] Registro real `/auth/registro`, cierre de sesión e ingreso `/auth/ingreso`.
+- [ ] Perfil `GET/PATCH /yo`, favoritos y eventos guardados en dos instalaciones.
+- [ ] Login demo correcto: `lucia@mail.com / lucia1234`.
 - [ ] Login demo incorrecto: una contraseña diferente debe rechazarse.
 - [ ] Ingresar un correo de otra cuenta con contraseña incorrecta; no debe iniciar sesión ni reutilizar el perfil anterior.
 - [ ] Registrar usuario, cerrar sesión e ingresar otra vez con el mismo correo/contraseña.
