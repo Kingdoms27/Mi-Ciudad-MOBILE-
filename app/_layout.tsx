@@ -18,8 +18,10 @@ function Efectos(){
     inicializarDb().catch(console.error);
     const sub=Network.addNetworkStateListener(s=>{
       if(s.isConnected&&s.isInternetReachable!==false){
-        sincronizarVisitasPendientes().catch(()=>undefined);
-        if(usuario)sincronizarEstadoEventos(usuario.id).catch(()=>undefined);
+        if(usuario){
+          sincronizarVisitasPendientes(usuario.id).catch(()=>undefined);
+          sincronizarEstadoEventos(usuario.id).catch(()=>undefined);
+        }
       }
     });
     return()=>sub.remove();
