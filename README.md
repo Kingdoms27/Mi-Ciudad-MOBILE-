@@ -65,10 +65,50 @@ Mientras se usa el servicio mock:
 
 ```text
 Email: lucia@mail.com
-Contraseña: 123456
+Contraseña: lucia1234
 ```
 
 Esta cuenta está reservada para la demo. En el modo mock, el registro crea cuentas locales para probar el flujo; no equivale a una autenticación contra un servidor. Cada cuenta registrada debe volver a ingresar con la misma contraseña. La autenticación real y la sincronización entre dispositivos dependen de la API de la cátedra.
+
+## API oficial disponible en el ZIP de la cátedra
+
+El paquete `api-proyectos-mobile-main.zip` incluye `api-mi-ciudad/`, una API NestJS con el contrato oficial de Mi Ciudad. Ya se integraron sus recursos en `src/servicios/`:
+
+- `POST /auth/registro`, `POST /auth/ingreso`, `GET /yo`, `PATCH /yo`.
+- `GET /categorias`, `GET /lugares?porPagina=500&actualizadoDesde=...`, `GET /lugares/:id`, `GET /lugares/qr/:codigo`.
+- `GET /eventos?porPagina=100`, `GET /eventos/:id`.
+- `GET/PUT/DELETE /yo/favoritos`, `GET/PUT/DELETE /yo/eventos-guardados`.
+- `GET/POST /yo/visitas`; si una visita tiene foto local, primero `POST /archivos` con `multipart/form-data`.
+
+**No confundir el código fuente con una API disponible en Internet.** Hasta ejecutar `api-mi-ciudad` o desplegarla, no hay servidor al que conectarse. La aplicación utiliza mocks locales únicamente cuando `EXPO_PUBLIC_API_URL` no está configurada.
+
+Para levantar la API en la PC con Docker Desktop abierto:
+
+```powershell
+# Desde la carpeta descomprimida del ZIP
+cd .\api-proyectos-mobile-main\api-mi-ciudad
+docker compose up
+```
+
+Verificar `http://localhost:3000/salud` desde la PC. Para Expo Go en un teléfono de la **misma Wi-Fi**, usar la IP LAN de la PC, no `localhost`:
+
+```env
+EXPO_PUBLIC_API_URL=http://192.168.X.X:3000
+```
+
+La IP es un ejemplo: obtener la dirección real con `ipconfig` y comprobar `http://IP:3000/salud` desde el navegador del teléfono. Crear el archivo `.env` en la **carpeta de la app**, no dentro del backend, y reiniciar Metro con `npx expo start --clear --lan`.
+
+Para compartir la app con compañeros fuera de la red o instalar un APK usable en otros lugares, hay que desplegar el backend y establecer una URL pública HTTPS antes del build EAS. El repositorio de la API incluye `render.yaml` e instrucciones Render + Supabase para esa opción. `--tunnel` resuelve la conexión a Metro, pero **no** expone la API local automáticamente.
+
+Usuarios que siembra la API de la cátedra:
+
+| Email | Contraseña | Uso |
+|---|---|---|
+| `lucia@mail.com` | `lucia1234` | Favoritos, visitas y evento guardado de muestra |
+| `nuevo@demo.ar` | `nuevo1234` | Cuenta vacía para probar estados |
+| `turismo@colon.demo.ar` | `turismo1234` | Rol administrador para cambiar estados de eventos |
+
+Cuando la API está configurada, la app envía `contrasena` al registro/ingreso, mantiene el token Bearer en SecureStore y obtiene el usuario desde `GET /yo`. El login demo local sólo se utiliza sin URL API.
 
 ## API de la cátedra
 
@@ -78,7 +118,7 @@ Copiar `.env.example` como `.env` cuando se entregue la URL:
 EXPO_PUBLIC_API_URL=https://...
 ```
 
-Las pantallas no importan mocks directamente. Los servicios asíncronos de `src/servicios/` centralizan la transición hacia la API. Están preparados los recursos `/lugares`, `/categorias`, `/eventos` y el envío de visitas `/visitas`; estos endpoints deben confirmarse con el contrato oficial de la cátedra. No se debe inventar un contrato de autenticación ni dar por sincronizada una visita si el servidor no confirmó la operación.
+Las pantallas no importan mocks directamente. Los servicios asíncronos de `src/servicios/` implementan el contrato recibido, incluidas rutas de autenticación, perfil, favoritos, agenda, QR, imágenes y visitas. La URL se configura en tiempo de compilación con `EXPO_PUBLIC_API_URL`. Sólo se marca una visita como sincronizada después de la confirmación del servidor.
 
 Horarios, tarifas, agenda de ejemplo y pistas de audio de demostración deben tratarse como contenido de prueba hasta que se reemplacen por información oficial.
 
