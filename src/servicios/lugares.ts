@@ -3,91 +3,89 @@ import { lugaresMock } from '@/src/mocks/lugares';
 import { Categoria, Lugar, RespuestaApi } from '@/src/tipos';
 import { guardarCache, leerCache } from '@/src/servicios/cache';
 import { hayConexion } from '@/src/servicios/red';
-import { apiConfigurada, apiGet } from '@/src/servicios/api';
+import { apiConfigurada, apiGet, apiListarTodos, obtenerBaseApi } from '@/src/servicios/api';
+import { normalizarLugar } from '@/src/servicios/normalizacion';
 
-const esperar = (ms = 180) => new Promise(r => setTimeout(r, ms));
-const CACHE_LUGARES = 'lugares:api-v1';
-const CACHE_CATEGORIAS = 'categorias:api-v1';
+const CACHE_CATEGORIAS = 'categorias:api-v2:' + obtenerBaseApi();
+const CACHE_LUGARES = 'lugares:api-v2:' + obtenerBaseApi();
 
-function respuestaLista<T>(datos: T[], porPagina: number): RespuestaApi<T[]> {
-  return { datos, meta: { total: datos.length, pagina: 1, porPagina } };
+function respuestaLista<T>(datos: T[]): RespuestaApi<T[]> {
+  return { datos, meta: { total: datos.length, pagina: 1, porPagina: datos.length } };
 }
 
 export async function obtenerCategorias(): Promise<RespuestaApi<Categoria[]>> {
-  await esperar();
-  const online = await hayConexion().catch(() => false);
-
-  if (apiConfigurada()) {
-    if (online) {
-      const remoto = await apiGet<Categoria[]>('/categorias');
-      if ('datos' in remoto) {
-        const datos = [...remoto.datos].sort((a, b) => a.orden - b.orden);
-        await guardarCache(CACHE_CATEGORIAS, datos);
-        return { ...remoto, datos, meta: remoto.meta ?? { total: datos.length, pagina: 1, porPagina: 50 } };
-      }
-      const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
-      if (cache) return respuestaLista(cache, 50);
-      return remoto;
+  if (!apiConfigurada()) return respuestaLista([...categoriasMock].sort((a,b)=>a.orden-b.orden));
+  const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
+  if (await hayConexion().catch(()=>false)) {
+    const remoto = await apiGet<Categoria[]>('/categorias');
+    if ('datos' in remoto) {
+      const datos = [...remoto.datos].sort((a,b)=>a.orden-b.orden);
+      await guardarCache(CACHE_CATEGORIAS, datos);
+      return respuestaLista(datos);
     }
-
-    const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
-    if (cache) return respuestaLista(cache, 50);
-    return { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí las categorías una vez con conexión para usarlas sin Internet.' } };
+    if (!cache) return remoto;
   }
-
-  const datos = [...categoriasMock].sort((a, b) => a.orden - b.orden);
-  return respuestaLista(datos, 50);
+  return cache
+    ? respuestaLista(cache)
+    : { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí las categorías una vez con conexión para consultarlas offline.' } };
 }
 
 export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
-  await esperar();
-  const online = await hayConexion().catch(() => false);
+  if (!apiConfigurada()) return respuestaLista(lugaresMock.filter(l=>l.activo));
 
-  if (apiConfigurada()) {
-    if (online) {
-      const remoto = await apiGet<Lugar[]>('/lugares?porPagina=500&actualizadoDesde=2000-01-01T00%3A00%3A00-03%3A00');
-      if ('datos' in remoto) {
-        const datos = remoto.datos;
-        await guardarCache(CACHE_LUGARES, datos.filter(l => l.activo));
-        const activos = datos.filter(l => l.activo);
-        return { ...remoto, datos: activos, meta: { total: activos.length, pagina: 1, porPagina: 500 } };
+  const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
+  if (await hayConexion().catch(()=>false)) {
+    const ultimaActualizacion = cache?.reduce<string | null>(
+      (mayor, lugar) => !mayor || lugar.actualizadoEn > mayor ? lugar.actualizadoEn : mayor,
+      null,
+    );
+
+    // Si hay caché se solicitan sólo cambios, incluidas las bajas. Sin caché se obtiene todo.
+    const actualizadoDesde = ultimaActualizacion ?? '2000-01-01T00:00:00-03:00';
+    const ruta = '/lugares?actualizadoDesde=' + encodeURIComponent(actualizadoDesde);
+    const remoto = await apiListarTodos<Lugar>(ruta, 500);
+
+    if ('datos' in remoto) {
+      const mapa = new Map((cache ?? []).map(lugar => [lugar.id, lugar]));
+      for (const cambio of remoto.datos) {
+        if (!cambio.activo) mapa.delete(cambio.id);
+        else mapa.set(cambio.id, normalizarLugar(cambio));
       }
-      const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
-      if (cache) return respuestaLista(cache, 20);
-      return remoto;
+      const activos = [...mapa.values()].filter(l=>l.activo).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+      await guardarCache(CACHE_LUGARES, activos);
+      return respuestaLista(activos);
     }
-
-    const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
-    if (cache) return respuestaLista(cache, 500);
-    return { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí el catálogo una vez con conexión para guardarlo y usarlo sin Internet.' } };
+    if (!cache) return remoto;
   }
 
-  return respuestaLista(lugaresMock.filter(l => l.activo), 20);
+  return cache
+    ? respuestaLista(cache)
+    : { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí el catálogo una vez con conexión para usarlo sin Internet.' } };
 }
 
 export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>> {
-  if (apiConfigurada() && await hayConexion().catch(() => false)) {
-    const remoto = await apiGet<Lugar>(`/lugares/${encodeURIComponent(id)}`);
-    if ('datos' in remoto || remoto.error.codigo === 'LUGAR_NO_ENCONTRADO') return remoto;
+  if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+    const remoto = await apiGet<Lugar>('/lugares/' + encodeURIComponent(id));
+    if ('datos' in remoto) return { datos: normalizarLugar(remoto.datos) };
+    if (remoto.error.codigo === 'LUGAR_NO_ENCONTRADO') return remoto;
   }
   const lista = await obtenerLugares();
   if ('error' in lista) return lista;
-  const lugar = lista.datos.find(l => l.id === id && l.activo);
+  const lugar = lista.datos.find(l=>l.id===id);
   return lugar
     ? { datos: lugar }
-    : { error: { codigo: 'LUGAR_NO_ENCONTRADO', mensaje: 'No existe ese lugar.' } };
+    : { error: { codigo: 'LUGAR_NO_ENCONTRADO', mensaje: 'No encontramos ese lugar.' } };
 }
 
 export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<Lugar>> {
-  if (apiConfigurada() && await hayConexion().catch(() => false)) {
-    const remoto = await apiGet<Lugar>(`/lugares/qr/${encodeURIComponent(codigoQr)}`);
-    return remoto;
+  if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+    const remoto = await apiGet<Lugar>('/lugares/qr/' + encodeURIComponent(codigoQr));
+    return 'datos' in remoto ? { datos: normalizarLugar(remoto.datos) } : remoto;
   }
-  // Sin señal, validar el código contra el catálogo previamente descargado.
   const lista = await obtenerLugares();
   if ('error' in lista) return lista;
-  const lugar = lista.datos.find(l => l.codigoQr === codigoQr && l.activo);
+  const lugar = lista.datos.find(l=>l.codigoQr===codigoQr);
   return lugar
     ? { datos: lugar }
-    : { error: { codigo: 'QR_INVALIDO', mensaje: 'El código QR no pertenece a Mi Ciudad.' } };
+    : { error: { codigo: 'QR_NO_RECONOCIDO', mensaje: 'Ese código no pertenece a Mi Ciudad.' } };
 }
