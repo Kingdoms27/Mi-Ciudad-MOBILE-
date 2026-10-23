@@ -3,13 +3,13 @@ import {
   eliminarEventoGuardado, guardarEventoLocal, listarEventosGuardados, obtenerEventoGuardado,
 } from '@/src/servicios/db';
 import { obtenerEventos } from '@/src/servicios/eventos';
-import { apiConfigurada, apiDelete, apiGet, apiPut } from '@/src/servicios/api';
+import { apiConfigurada, apiDelete, apiListarTodos, apiPut } from '@/src/servicios/api';
 import { hayConexion } from '@/src/servicios/red';
 import { Evento, EventoGuardado } from '@/src/tipos';
 
 async function guardarEstadoRemoto(usuarioId: string) {
   if (!apiConfigurada() || !(await hayConexion().catch(() => false))) return;
-  const respuesta = await apiGet<Evento[]>('/yo/eventos-guardados?porPagina=100');
+  const respuesta = await apiListarTodos<Evento>('/yo/eventos-guardados', 100);
   if ('error' in respuesta) throw new Error(respuesta.error.mensaje);
 
   const actuales = await listarEventosGuardados(usuarioId);
@@ -50,7 +50,13 @@ export async function guardarEvento(
   evento: Evento,
 ): Promise<{ item: EventoGuardado; recordatorioProgramado: boolean }> {
   const actual = await obtenerEventoGuardado(usuarioId, evento.id);
-  if (actual) return { item: actual, recordatorioProgramado: Boolean(actual.notificationId) };
+  if (actual) {
+    if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+      const respuesta = await apiPut<Evento>('/yo/eventos-guardados/' + encodeURIComponent(evento.id));
+      if ('error' in respuesta) throw new Error(respuesta.error.mensaje);
+    }
+    return { item: actual, recordatorioProgramado: Boolean(actual.notificationId) };
+  }
 
   if (apiConfigurada()) {
     if (!(await hayConexion().catch(() => false))) {
