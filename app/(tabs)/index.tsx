@@ -20,13 +20,13 @@ const HERO_LOCAL=require('../../assets/hero-colon.jpg');
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
-  const imagen=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes);
+  const { imagen, reportarError }=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes);
 
   return <Pressable
     style={s.featureCard}
     onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
   >
-    {imagen?<Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover"/>:
+    {imagen?<Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover" onError={reportarError}/>:
       <View style={[StyleSheet.absoluteFill,{backgroundColor:'#1D5147',alignItems:'center',justifyContent:'center'}]}>
         <Ionicons name="images-outline" size={40} color="rgba(255,255,255,.38)"/>
       </View>}
