@@ -4,6 +4,7 @@ import Storage from 'expo-sqlite/kv-store';
 import { RespuestaApi, Sesion, Usuario } from '@/src/tipos';
 import { usuarioMock } from '@/src/mocks/usuario';
 import { apiConfigurada, apiGet, apiPost } from '@/src/servicios/api';
+import { normalizarUsuario } from '@/src/servicios/normalizacion';
 
 const TOKEN_KEY = 'mi-ciudad.token';
 const USER_KEY = 'mi-ciudad:usuario';
@@ -55,9 +56,10 @@ export async function registro(nombre: string, email: string, password: string):
       contrasena: password,
     });
     if ('error' in respuesta) return respuesta;
-    await guardarPerfil(respuesta.datos.usuario);
-    await SecureStore.setItemAsync(TOKEN_KEY, respuesta.datos.token);
-    return respuesta;
+    const sesion = { ...respuesta.datos, usuario: normalizarUsuario(respuesta.datos.usuario) };
+    await guardarPerfil(sesion.usuario);
+    await SecureStore.setItemAsync(TOKEN_KEY, sesion.token);
+    return { datos: sesion };
   }
   await esperar();
   const nombreLimpio = nombre.trim();
@@ -164,8 +166,9 @@ export async function obtenerSesionGuardada(): Promise<Sesion | null> {
   if (apiConfigurada()) {
     const respuesta = await apiGet<Usuario>('/yo');
     if ('datos' in respuesta) {
-      await guardarPerfil(respuesta.datos);
-      return { token, usuario: respuesta.datos };
+      const usuario = normalizarUsuario(respuesta.datos);
+      await guardarPerfil(usuario);
+      return { token, usuario };
     }
     if (respuesta.error.codigo === 'NO_AUTENTICADO' || respuesta.error.codigo === 'HTTP_401') {
       await SecureStore.deleteItemAsync(TOKEN_KEY);
