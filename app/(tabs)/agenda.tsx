@@ -5,7 +5,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
 import { Evento } from '@/src/tipos';
 import { obtenerEventos } from '@/src/servicios/eventos';
-import { estaEventoGuardado, guardarEvento, quitarEvento } from '@/src/servicios/eventosGuardados';
+import { cargarEventosGuardados, guardarEvento, quitarEvento } from '@/src/servicios/eventosGuardados';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { fechaEvento, pesos } from '@/src/utilidades/formato';
@@ -34,8 +34,13 @@ export default function Agenda(){
     }
     setEventos(r.datos);
     if(usuario){
-      const pares=await Promise.all(r.datos.map(async e=>[e.id,await estaEventoGuardado(usuario.id,e.id)] as const));
-      setGuardados(Object.fromEntries(pares));
+      try {
+        const lista=await cargarEventosGuardados(usuario.id);
+        const ids=new Set(lista.map(x=>x.eventoId));
+        setGuardados(Object.fromEntries(r.datos.map(e=>[e.id,ids.has(e.id)])));
+      } catch(err) {
+        setError(err instanceof Error?err.message:'No se pudieron cargar los eventos guardados.');
+      }
     }else setGuardados({});
     setCargando(false);
   };
