@@ -38,7 +38,7 @@ export default function Recorrido(){
     setSinc(true);
     let correcto=false;
     try{
-      const resultado=await sincronizarVisitasPendientes();
+      const resultado=await sincronizarVisitasPendientes(usuario.id);
       await cargar();
 
       if(resultado.estado==='completa'){
