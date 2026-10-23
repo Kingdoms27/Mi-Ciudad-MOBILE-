@@ -22,6 +22,7 @@ export default function Agenda(){
   const[guardados,setGuardados]=useState<Record<string,boolean>>({});
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
+  const[imagenesFallidas,setImagenesFallidas]=useState<Record<string,boolean>>({});
 
   const cargar=async()=>{
     setCargando(true);
@@ -97,8 +98,8 @@ export default function Agenda(){
        eventos.map((e,i)=><Reveal key={e.id} delay={Math.min(80+i*55,420)}>
          <Pressable onPress={()=>router.push({pathname:'/evento/[id]',params:{id:e.id}})}>
            <GlassSurface style={s.card} intensity={42}>
-             {e.imagenUrl?<View style={s.imageWrap}>
-               <Image source={{uri:e.imagenUrl}} style={s.image}/>
+             {e.imagenUrl&&!imagenesFallidas[e.id]?<View style={s.imageWrap}>
+               <Image source={{uri:e.imagenUrl}} style={s.image} onError={()=>setImagenesFallidas(prev=>({...prev,[e.id]:true}))}/>
                <View style={s.imageShade}/>
                <View style={[s.datePill,{backgroundColor:'rgba(13,45,39,.76)'}]}>
                  <Ionicons name="time-outline" size={13} color="white"/>
@@ -107,7 +108,7 @@ export default function Agenda(){
              </View>:null}
              <View style={s.cardBody}>
                <View style={s.row}>
-                 {!e.imagenUrl?<Text style={[s.fecha,{color:colores.primario}]}>{fechaEvento(e.inicio)}</Text>:<View/>}
+                 {(!e.imagenUrl||imagenesFallidas[e.id])?<Text style={[s.fecha,{color:colores.primario}]}>{fechaEvento(e.inicio)}</Text>:<View/>}
                  <Text style={[s.estado,{color:e.estado==='programado'?colores.exito:colores.peligro}]}>{e.estado}</Text>
                </View>
                <Text style={[s.title,{color:colores.tinta}]}>{e.titulo}</Text>
