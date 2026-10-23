@@ -23,10 +23,12 @@ export default function DetalleEvento(){
   const[lugar,setLugar]=useState<string|null>(null);
   const[guardado,setGuardado]=useState(false);
   const[cargando,setCargando]=useState(true);
+  const[imagenFallida,setImagenFallida]=useState(false);
   const scrollY=useRef(new Animated.Value(0)).current;
 
   useEffect(()=>{
     if(!id)return;
+    setImagenFallida(false);
     (async()=>{
       const r=await obtenerEventoPorId(id);
       if('datos'in r){
@@ -76,8 +78,8 @@ export default function DetalleEvento(){
       onScroll={Animated.event([{nativeEvent:{contentOffset:{y:scrollY}}}],{useNativeDriver:true})}
       scrollEventThrottle={16}
     >
-      {e.imagenUrl?<View style={s.heroWrap}>
-        <Animated.Image source={{uri:e.imagenUrl}} style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]} resizeMode="cover"/>
+      {e.imagenUrl&&!imagenFallida?<View style={s.heroWrap}>
+        <Animated.Image source={{uri:e.imagenUrl}} onError={()=>setImagenFallida(true)} style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]} resizeMode="cover"/>
         <View style={s.heroShade}/>
         <View style={s.heroPill}>
           <Ionicons name="calendar-outline" size={14} color="white"/>
