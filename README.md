@@ -112,6 +112,37 @@ powershell -ExecutionPolicy Bypass -File .\scripts\iniciar-api-windows.ps1 -ApiP
 
 Si `node --version` indica v22 o anterior, instalá Node.js 24 y volvé a abrir VS Code. El teléfono necesita la IP LAN real de la PC para conectarse con la API local.
 
+### Prueba completa en iPhone o Android (sin Docker)
+
+Con Node.js 24 y el ZIP `api-proyectos-mobile-main.zip` descargado:
+
+**Terminal 1**, desde la carpeta `Mi-Ciudad-MOBILE-`:
+
+```powershell
+npm run api:iniciar:win
+```
+
+Dejá esta terminal abierta cuando aparezca **API escuchando**.
+
+**Terminal 2**, desde la misma carpeta:
+
+```powershell
+npm run api:check -- http://localhost:3000
+npm run api:conectar:win
+```
+
+El último comando verifica la API en `localhost` y en la IP LAN de Windows, configura `EXPO_PUBLIC_API_URL` en `.env` preservando las demás claves y abre Expo Go en modo LAN. Escaneá el QR con el teléfono conectado a la **misma red** que la computadora.
+
+Si hay varias IPs, el script pedirá que especifiques una. Obtenela con `ipconfig` y repetí con `-PcIp`:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\conectar-app-windows.ps1 -PcIp 192.168.1.10
+```
+
+Reemplazá la IP de ejemplo por la real. Si falla el chequeo LAN, verificá que Windows permita Node.js en el firewall para **redes privadas**; no abras ese puerto a Internet.
+
+**Importante:** usar Metro por `--tunnel` no hace pública la API. Para compañeros en otras redes y un APK final conectado necesitarás un backend desplegado con HTTPS.
+
 Alternativamente, para levantar la API en la PC con Docker Desktop abierto:
 
 ```powershell
