@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor@latest",
     "fix:expo": "npx expo install --fix",
-    "api:check": "node scripts/verificar-api.mjs"
+    "api:check": "node scripts/verificar-api.mjs",
+    "api:iniciar:win": "powershell -ExecutionPolicy Bypass -File scripts/iniciar-api-windows.ps1",
+    "api:conectar:win": "powershell -ExecutionPolicy Bypass -File scripts/conectar-app-windows.ps1"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
