@@ -78,7 +78,7 @@ function ContenidoLugar({
   esOscuro:boolean;
   usuarioId?:string;
 }){
-  const imagen=useImagenLugar(lugar.id,lugar.imagenes);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -129,6 +129,7 @@ function ContenidoLugar({
       <View style={s.heroWrap}>
         {imagen?<Animated.Image
           source={{uri:imagen}}
+          onError={reportarError}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
         />:
