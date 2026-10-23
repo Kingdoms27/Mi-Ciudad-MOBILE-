@@ -35,6 +35,7 @@ export default function Recorrido(){
   useFocusEffect(useCallback(()=>{cargar()},[usuario?.id]));
   const nombre=(id:string)=>lugares.find(l=>l.id===id)?.nombre??id;
   const sync=async()=>{
+    if(!usuario)return;
     setSinc(true);
     let correcto=false;
     try{
