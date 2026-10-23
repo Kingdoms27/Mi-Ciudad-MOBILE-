@@ -105,6 +105,20 @@ export async function listarFavoritos(usuarioId: string): Promise<Favorito[]> {
   return db.getAllAsync<Favorito>('SELECT * FROM favoritos WHERE usuarioId=? ORDER BY creadoEn DESC', usuarioId);
 }
 
+export async function actualizarFavoritosDesdeServidor(usuarioId: string, favoritos: Favorito[]) {
+  const db = await getDb();
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM favoritos WHERE usuarioId=?', usuarioId);
+    for (const favorito of favoritos) {
+      if (favorito.usuarioId !== usuarioId) continue;
+      await db.runAsync(
+        'INSERT INTO favoritos(id,usuarioId,lugarId,creadoEn) VALUES(?,?,?,?)',
+        favorito.id, favorito.usuarioId, favorito.lugarId, favorito.creadoEn,
+      );
+    }
+  });
+}
+
 export async function guardarEventoLocal(e: EventoGuardado) {
   const db = await getDb();
   await db.runAsync(
