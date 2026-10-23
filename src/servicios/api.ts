@@ -110,8 +110,8 @@ export async function apiListarTodos<T>(
   maxPaginas = 30,
 ): Promise<RespuestaApi<T[]>> {
   const datos: T[] = [];
-  const sinPaginacion = path.replace(/([?&])pagina=\\d+(&|$)/g, '$1')
-    .replace(/([?&])porPagina=\\d+(&|$)/g, '$1')
+  const sinPaginacion = path.replace(/([?&])pagina=[^&]*/g, '$1')
+    .replace(/([?&])porPagina=[^&]*/g, '$1')
     .replace(/[?&]$/, '');
   const separador = sinPaginacion.includes('?') ? '&' : '?';
   let total = 0;
@@ -139,7 +139,7 @@ export async function apiListarTodos<T>(
  */
 export function urlArchivoParaDispositivo(url: string | null): string | null {
   if (!url || !apiConfigurada()) return url;
-  const local = url.match(/^https?:\\/\\/(?:localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)(?::\\d+)?(\\/archivos\\/.*)$/i);
-  const origen = BASE.match(/^https?:\\/\\/[^/]+/i)?.[0];
+  const local = url.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(\/archivos\/.*)$/i);
+  const origen = BASE.match(/^https?:\/\/[^/]+/i)?.[0];
   return local && origen ? origen + local[1] : url;
 }
