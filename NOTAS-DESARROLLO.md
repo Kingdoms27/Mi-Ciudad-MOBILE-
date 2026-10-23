@@ -16,7 +16,7 @@
 - El QR esperado sigue el formato del PRD: `COLON:<id-lugar>`.
 - Los avisos de proximidad se limitan a uno por lugar y día local.
 - Los recordatorios requieren permiso y una fecha de evento válida; al cambiar el estado de un evento se cancelan o actualizan los avisos asociados.
-- No se inventan endpoints de autenticación. Los recursos de catálogo, agenda y envío de visitas deben ajustarse al contrato de la cátedra.
+- El ZIP recibido `api-proyectos-mobile-main.zip` incluye `api-mi-ciudad`: se integraron los endpoints reales de autenticación, `/yo`, catálogo/QR, eventos, favoritos, eventos guardados, visitas y archivos. El cambio entre mocks y API depende de `EXPO_PUBLIC_API_URL`.
 - El mapa iOS usa `react-native-maps`; Android usa una capa raster de OpenStreetMap/CARTO en WebView para evitar depender de una clave de Google Maps. Debe validarse en un dispositivo Android y confirmarse con la cátedra por la diferencia de implementación.
 - Las pistas SoundHelix son audios de demostración, no audioguías oficiales.
 
@@ -46,7 +46,7 @@
 
 ## Pendientes externos antes de entregar
 
-1. Recibir el contrato definitivo y URL de la API de la cátedra.
+1. Levantar o publicar el backend oficial `api-mi-ciudad` y configurar `EXPO_PUBLIC_API_URL`. El ZIP es código fuente, no una URL activa.
 2. Sustituir las pistas de demostración por audioguías aprobadas.
 3. Confirmar con la cátedra la variante de mapa de Android.
 4. Completar los nombres del grupo en el README.
