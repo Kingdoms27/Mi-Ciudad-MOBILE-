@@ -30,6 +30,35 @@ try {
   const categorias = await peticion('categorías', '/categorias');
   const lugares = await peticion('catálogo offline', '/lugares?porPagina=500&actualizadoDesde=2000-01-01T00%3A00%3A00-03%3A00');
   const eventos = await peticion('agenda', '/eventos?porPagina=100');
+  // Comprobar también el servidor de imágenes: /salud puede funcionar
+  // mientras que /archivos devuelve 404 si no se cargaron los medios.
+  const imagenes = lugares.flatMap(l => l.imagenes ?? []).slice(0, 3);
+  if (imagenes.length) {
+    let comprobadas = 0;
+    for (const url of imagenes) {
+      try {
+        const respuestaImagen = await fetch(url, {
+          headers: { Range: 'bytes=0-63' },
+          signal: AbortSignal.timeout(10000),
+        });
+        const tipo = respuestaImagen.headers.get('content-type') ?? '';
+        await respuestaImagen.body?.cancel().catch(() => {});
+        if (!respuestaImagen.ok || !tipo.startsWith('image/')) {
+          throw new Error(`HTTP ${respuestaImagen.status} · Content-Type ${tipo || 'ausente'}`);
+        }
+        comprobadas++;
+      } catch (error) {
+        console.warn(`IMAGEN NO DISPONIBLE: ${url}\n  ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    if (comprobadas === 0) {
+      throw new Error('Las fotos de muestra no responden. Revisá que se hayan sembrado los archivos en el backend y que /archivos sea accesible.');
+    }
+    pasos.push(`OK archivos: ${comprobadas}/${imagenes.length} imágenes verificadas`);
+  } else {
+    console.warn('La API no devolvió fotografías en los lugares consultados.');
+  }
+
   await peticion('QR', '/lugares/qr/' + encodeURIComponent('COLON:lug-004'));
   const sesion = await peticion('ingreso', '/auth/ingreso', {
     method: 'POST',
