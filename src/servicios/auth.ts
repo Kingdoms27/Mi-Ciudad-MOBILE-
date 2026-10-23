@@ -65,7 +65,7 @@ export async function registro(nombre: string, email: string, password: string):
 
   if (nombreLimpio.length < 2) return { error: { codigo: 'NOMBRE_INVALIDO', mensaje: 'Ingresá tu nombre.' } };
   if (!emailValido(emailLimpio)) return { error: { codigo: 'EMAIL_INVALIDO', mensaje: 'Ingresá un email válido.' } };
-  if (password.length < 6) return { error: { codigo: 'PASSWORD_CORTA', mensaje: 'La contraseña debe tener al menos 6 caracteres.' } };
+  if (password.length < 8) return { error: { codigo: 'PASSWORD_CORTA', mensaje: 'La contraseña debe tener al menos 8 caracteres.' } };
   if (emailLimpio === DEMO_EMAIL) {
     return { error: { codigo: 'EMAIL_RESERVADO', mensaje: 'Ese correo es la cuenta de demostración. Usá otro email para registrarte.' } };
   }
