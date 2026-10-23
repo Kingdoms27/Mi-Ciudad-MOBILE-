@@ -101,9 +101,10 @@ export async function ingreso(email: string, password: string): Promise<Respuest
       contrasena: password,
     });
     if ('error' in respuesta) return respuesta;
-    await guardarPerfil(respuesta.datos.usuario);
-    await SecureStore.setItemAsync(TOKEN_KEY, respuesta.datos.token);
-    return respuesta;
+    const sesion = { ...respuesta.datos, usuario: normalizarUsuario(respuesta.datos.usuario) };
+    await guardarPerfil(sesion.usuario);
+    await SecureStore.setItemAsync(TOKEN_KEY, sesion.token);
+    return { datos: sesion };
   }
   await esperar();
   const emailLimpio = emailNormalizado(email);
