@@ -127,11 +127,15 @@ function ContenidoLugar({
       scrollEventThrottle={16}
     >
       <View style={s.heroWrap}>
-        <Animated.Image
+        {imagen?<Animated.Image
           source={{uri:imagen}}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
-        />
+        />:
+          <View style={[s.hero,{backgroundColor:'#1F5449',alignItems:'center',justifyContent:'center',gap:8}]}>
+            <Ionicons name="images-outline" size={48} color="#D9EBE4"/>
+            <Text style={{color:'#D9EBE4',fontWeight:'800'}}>Imagen no disponible</Text>
+          </View>}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>
