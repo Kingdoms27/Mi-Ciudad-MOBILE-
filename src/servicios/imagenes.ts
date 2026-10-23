@@ -55,7 +55,8 @@ export async function resolverImagenLugar(lugarId:string,urls:string|string[]){
     }catch{}
   }
 
-  return candidatas[0];
+  // No devolver una URL que ya falló: el llamador debe mostrar un respaldo visual.
+  return '';
 }
 
 export async function obtenerImagenLugarGuardada(lugarId:string,urls:string|string[]){
