@@ -4,7 +4,7 @@ import { guardarCache, leerCache } from '@/src/servicios/cache';
 import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet } from '@/src/servicios/api';
 
-const CACHE_EVENTOS = 'eventos:v2';
+const CACHE_EVENTOS = 'eventos:api-v1';
 
 function ordenar(eventos: Evento[]) {
   return [...eventos].sort((a, b) => new Date(a.inicio).getTime() - new Date(b.inicio).getTime());
@@ -20,7 +20,7 @@ export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
 
   if (apiConfigurada()) {
     if (online) {
-      const remoto = await apiGet<Evento[]>('/eventos');
+      const remoto = await apiGet<Evento[]>('/eventos?porPagina=100');
       if ('datos' in remoto) {
         const datos = ordenar(remoto.datos);
         await guardarCache(CACHE_EVENTOS, datos);
@@ -39,6 +39,10 @@ export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
 }
 
 export async function obtenerEventoPorId(id: string): Promise<RespuestaApi<Evento>> {
+  if (apiConfigurada() && await hayConexion().catch(() => false)) {
+    const remoto = await apiGet<Evento>(`/eventos/${encodeURIComponent(id)}`);
+    if ('datos' in remoto || remoto.error.codigo === 'EVENTO_NO_ENCONTRADO') return remoto;
+  }
   const resultado = await obtenerEventos();
   if ('error' in resultado) return resultado;
   const evento = resultado.datos.find(e => e.id === id);
