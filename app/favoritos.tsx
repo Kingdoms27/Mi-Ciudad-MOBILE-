@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { router, useFocusEffect } from 'expo-router';
-import { listarFavoritos } from '@/src/servicios/db';
+import { listarFavoritos } from '@/src/servicios/favoritos';
 import { obtenerLugares } from '@/src/servicios/lugares';
 import { Lugar } from '@/src/tipos';
 import { useSesion } from '@/src/contexto/SesionContext';
@@ -18,6 +18,7 @@ export default function Favoritos(){
   const{colores,esOscuro}=useTema();
   const[lugares,setLugares]=useState<Lugar[]>([]);
   const[cargando,setCargando]=useState(true);
+  const[error,setError]=useState('');
 
   useFocusEffect(useCallback(()=>{
     (async()=>{
@@ -26,12 +27,17 @@ export default function Favoritos(){
         return;
       }
       setCargando(true);
-      const[f,r]=await Promise.all([listarFavoritos(usuario.id),obtenerLugares()]);
-      if('datos'in r){
+      setError('');
+      try {
+        const[f,r]=await Promise.all([listarFavoritos(usuario.id),obtenerLugares()]);
+        if('error'in r)throw new Error(r.error.mensaje);
         const ids=new Set(f.map(x=>x.lugarId));
         setLugares(r.datos.filter(l=>ids.has(l.id)));
+      } catch (err) {
+        setError(err instanceof Error?err.message:'No se pudieron cargar los favoritos.');
+      } finally {
+        setCargando(false);
       }
-      setCargando(false);
     })();
   },[usuario?.id]));
 
@@ -53,6 +59,7 @@ export default function Favoritos(){
       </Reveal>
 
       {cargando?<SkeletonLista cantidad={3}/>:
+       error?<EstadoContenido tipo="error" mensaje={error}/>:
        lugares.length===0?<EstadoContenido tipo="vacio" mensaje="Todavía no guardaste lugares favoritos."/>:
        lugares.map((l,i)=><Reveal key={l.id} delay={Math.min(70+i*55,360)}>
          <LugarCard lugar={l}/>
