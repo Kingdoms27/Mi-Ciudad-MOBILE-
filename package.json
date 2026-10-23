@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "doctor": "npx expo-doctor@latest",
-    "fix:expo": "npx expo install --fix"
+    "fix:expo": "npx expo install --fix",
+    "api:check": "node scripts/verificar-api.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
