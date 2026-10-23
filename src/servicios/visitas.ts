@@ -69,8 +69,8 @@ export async function validarCercania(lugarId: string, maxMetros = 200) {
   };
 }
 
-export async function sincronizarVisitasPendientes(): Promise<ResultadoSincronizacionVisitas> {
-  const iniciales = await listarVisitasPendientes();
+export async function sincronizarVisitasPendientes(usuarioId: string): Promise<ResultadoSincronizacionVisitas> {
+  const iniciales = await listarVisitasPendientes(usuarioId);
   if (iniciales.length === 0) return { sincronizadas: 0, pendientes: 0, estado: 'completa' };
 
   const online = await hayConexion().catch(() => false);
@@ -98,7 +98,7 @@ export async function sincronizarVisitasPendientes(): Promise<ResultadoSincroniz
     sincronizadas++;
   }
 
-  const restantes = await listarVisitasPendientes();
+  const restantes = await listarVisitasPendientes(usuarioId);
   return {
     sincronizadas,
     pendientes: restantes.length,
