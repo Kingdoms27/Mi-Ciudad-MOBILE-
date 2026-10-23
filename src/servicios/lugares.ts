@@ -32,6 +32,7 @@ export async function obtenerCategorias(): Promise<RespuestaApi<Categoria[]>> {
 
     const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
     if (cache) return respuestaLista(cache, 50);
+    return { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí las categorías una vez con conexión para usarlas sin Internet.' } };
   }
 
   const datos = [...categoriasMock].sort((a, b) => a.orden - b.orden);
@@ -57,7 +58,8 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
     }
 
     const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
-    if (cache) return respuestaLista(cache, 20);
+    if (cache) return respuestaLista(cache, 500);
+    return { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí el catálogo una vez con conexión para guardarlo y usarlo sin Internet.' } };
   }
 
   return respuestaLista(lugaresMock.filter(l => l.activo), 20);
