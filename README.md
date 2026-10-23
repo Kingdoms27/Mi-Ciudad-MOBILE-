@@ -2,7 +2,7 @@
 
 Aplicación móvil de guía turística para **Colón, Entre Ríos**, desarrollada para **Desarrollo para Móviles 2026** con React Native, Expo, TypeScript y Expo Router.
 
-La implementación sigue el PRD *Mi Ciudad — Guía turística de Colón*. Mientras la cátedra no publique el contrato y la URL de la API, se utilizan mocks tipados. Cuando se configura `EXPO_PUBLIC_API_URL`, los servicios consultan la API y usan la última caché válida como respaldo; un error remoto no debe reemplazar datos remotos guardados por mocks.
+La implementación sigue el PRD *Mi Ciudad — Guía turística de Colón*. El ZIP de la cátedra ya incluye el contrato oficial y el backend; cuando no hay URL de servidor configurada, se utilizan mocks tipados. Cuando se configura `EXPO_PUBLIC_API_URL`, los servicios consultan la API y usan la última caché válida como respaldo; un error remoto no debe reemplazar datos remotos guardados por mocks.
 
 ## Funcionalidades
 
@@ -68,7 +68,7 @@ Email: lucia@mail.com
 Contraseña: lucia1234
 ```
 
-Esta cuenta está reservada para la demo. En el modo mock, el registro crea cuentas locales para probar el flujo; no equivale a una autenticación contra un servidor. Cada cuenta registrada debe volver a ingresar con la misma contraseña. La autenticación real y la sincronización entre dispositivos dependen de la API de la cátedra.
+Esta cuenta está reservada para la demo. El formulario de registro contra la API exige contraseñas de al menos ocho caracteres. En el modo mock, el registro crea cuentas locales para probar el flujo; no equivale a una autenticación contra un servidor. Cada cuenta registrada debe volver a ingresar con la misma contraseña. La autenticación real y la sincronización entre dispositivos dependen de la API de la cátedra.
 
 ## API oficial disponible en el ZIP de la cátedra
 
@@ -78,11 +78,31 @@ El paquete `api-proyectos-mobile-main.zip` incluye `api-mi-ciudad/`, una API Nes
 - `GET /categorias`, `GET /lugares?porPagina=500&actualizadoDesde=...`, `GET /lugares/:id`, `GET /lugares/qr/:codigo`.
 - `GET /eventos?porPagina=100`, `GET /eventos/:id`.
 - `GET/PUT/DELETE /yo/favoritos`, `GET/PUT/DELETE /yo/eventos-guardados`.
-- `GET/POST /yo/visitas`; si una visita tiene foto local, primero `POST /archivos` con `multipart/form-data`.
+- `GET/POST/PATCH /yo/visitas`; si una visita tiene foto local, primero `POST /archivos` con `multipart/form-data`.
+- `POST/DELETE /dispositivos` y `POST /dispositivos/prueba` (el backend entregado tiene esta sección marcada como `NO_IMPLEMENTADO`).
+- `PATCH /eventos/:id/estado` (reservado a cuentas administradoras, para pruebas del flujo de cambios).
+- Listas paginadas, actualización incremental del catálogo con `actualizadoDesde`, y traducción de URL de archivos local al origen accesible desde el teléfono.
 
 **No confundir el código fuente con una API disponible en Internet.** Hasta ejecutar `api-mi-ciudad` o desplegarla, no hay servidor al que conectarse. La aplicación utiliza mocks locales únicamente cuando `EXPO_PUBLIC_API_URL` no está configurada.
 
-Para levantar la API en la PC con Docker Desktop abierto:
+### Ejecutar el backend en Windows sin Docker
+
+**No es obligatorio instalar Docker Desktop ni WSL.** El backend oficial requiere **Node.js 24 o superior** (la app Expo puede funcionar con Node.js 22). Descomprimí el ZIP que compartió la cátedra, abrí PowerShell en la carpeta de la app y ejecutá:
+
+```powershell
+node --version
+.\\scripts\\iniciar-api-windows.ps1 -ApiPath "C:\\RUTA\\api-proyectos-mobile-main\\api-mi-ciudad"
+```
+
+Reemplazá `C:\\RUTA\\...` por la carpeta real donde descomprimiste el ZIP. El script crea `.env` para desarrollo, instala dependencias con pnpm, habilita las semillas de prueba y arranca la API en el puerto 3000. Conservá esa terminal abierta.
+
+Si PowerShell bloquea el script, podés usar una sesión temporal sin cambiar la política del equipo:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\\scripts\\iniciar-api-windows.ps1 -ApiPath "C:\\RUTA\\api-proyectos-mobile-main\\api-mi-ciudad"
+```
+
+Alternativamente, para levantar la API en la PC con Docker Desktop abierto:
 
 ```powershell
 # Desde la carpeta descomprimida del ZIP
