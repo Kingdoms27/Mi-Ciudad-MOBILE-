@@ -3,7 +3,7 @@ import { marcarVisitaSincronizada, guardarVisitaLocal, listarVisitasLocales, lis
 import { persistirFotoVisita } from '@/src/servicios/archivos';
 import { obtenerLugarPorId } from '@/src/servicios/lugares';
 import { hayConexion } from '@/src/servicios/red';
-import { apiConfigurada, apiPost } from '@/src/servicios/api';
+import { apiConfigurada, apiGet, apiPost, apiSubirImagen } from '@/src/servicios/api';
 import { distanciaKm } from '@/src/utilidades/distancia';
 import { OrigenVisita, Visita } from '@/src/tipos';
 
@@ -38,6 +38,14 @@ export async function registrarVisita(
 }
 
 export async function obtenerRecorrido(usuarioId?: string) {
+  if (apiConfigurada() && usuarioId && await hayConexion().catch(() => false)) {
+    const respuesta = await apiGet<Visita[]>('/yo/visitas?porPagina=500');
+    if ('datos' in respuesta) {
+      for (const visita of respuesta.datos) {
+        if (visita.usuarioId === usuarioId) await guardarVisitaLocal({ ...visita, sincronizada: true });
+      }
+    }
+  }
   return listarVisitasLocales(usuarioId);
 }
 
@@ -71,7 +79,20 @@ export async function sincronizarVisitasPendientes(): Promise<ResultadoSincroniz
 
   let sincronizadas = 0;
   for (const visita of iniciales) {
-    const respuesta = await apiPost<Visita>('/visitas', visita);
+    let fotoRemota: string | null = visita.fotoUri;
+    if (fotoRemota && !/^https?:\/\//.test(fotoRemota)) {
+      const subida = await apiSubirImagen(fotoRemota);
+      if ('error' in subida) continue;
+      fotoRemota = subida.datos.url;
+    }
+    const respuesta = await apiPost<Visita>('/yo/visitas', {
+      id: visita.id,
+      lugarId: visita.lugarId,
+      fechaHora: visita.fechaHora,
+      origen: visita.origen,
+      fotoUri: fotoRemota,
+      nota: visita.nota,
+    });
     if ('error' in respuesta) continue;
     await marcarVisitaSincronizada(visita.id);
     sincronizadas++;
