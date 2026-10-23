@@ -3,11 +3,12 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import Storage from 'expo-sqlite/kv-store';
 import { RespuestaApi, Sesion, Usuario } from '@/src/tipos';
 import { usuarioMock } from '@/src/mocks/usuario';
+import { apiConfigurada, apiGet, apiPost } from '@/src/servicios/api';
 
 const TOKEN_KEY = 'mi-ciudad.token';
 const USER_KEY = 'mi-ciudad:usuario';
 const DEMO_EMAIL = usuarioMock.email.toLowerCase();
-const DEMO_PASSWORD = '123456';
+const DEMO_PASSWORD = 'lucia1234';
 const esperar = (ms = 250) => new Promise(r => setTimeout(r, ms));
 
 const normalizar = (usuario: Usuario): Usuario => ({
@@ -47,6 +48,17 @@ async function guardarPerfil(usuario: Usuario) {
 }
 
 export async function registro(nombre: string, email: string, password: string): Promise<RespuestaApi<Sesion>> {
+  if (apiConfigurada()) {
+    const respuesta = await apiPost<Sesion>('/auth/registro', {
+      nombre: nombre.trim(),
+      email: emailNormalizado(email),
+      contrasena: password,
+    });
+    if ('error' in respuesta) return respuesta;
+    await guardarPerfil(respuesta.datos.usuario);
+    await SecureStore.setItemAsync(TOKEN_KEY, respuesta.datos.token);
+    return respuesta;
+  }
   await esperar();
   const nombreLimpio = nombre.trim();
   const emailLimpio = emailNormalizado(email);
@@ -81,6 +93,16 @@ export async function registro(nombre: string, email: string, password: string):
 }
 
 export async function ingreso(email: string, password: string): Promise<RespuestaApi<Sesion>> {
+  if (apiConfigurada()) {
+    const respuesta = await apiPost<Sesion>('/auth/ingreso', {
+      email: emailNormalizado(email),
+      contrasena: password,
+    });
+    if ('error' in respuesta) return respuesta;
+    await guardarPerfil(respuesta.datos.usuario);
+    await SecureStore.setItemAsync(TOKEN_KEY, respuesta.datos.token);
+    return respuesta;
+  }
   await esperar();
   const emailLimpio = emailNormalizado(email);
   if (!emailValido(emailLimpio) || password.length < 6) {
@@ -135,9 +157,30 @@ export async function cerrarSesion() {
 export async function obtenerSesionGuardada(): Promise<Sesion | null> {
   const token = await SecureStore.getItemAsync(TOKEN_KEY);
   if (!token) return null;
+  if (apiConfigurada() && token.startsWith('mock.')) {
+    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    return null;
+  }
+  if (apiConfigurada()) {
+    const respuesta = await apiGet<Usuario>('/yo');
+    if ('datos' in respuesta) {
+      await guardarPerfil(respuesta.datos);
+      return { token, usuario: respuesta.datos };
+    }
+    if (respuesta.error.codigo === 'NO_AUTENTICADO' || respuesta.error.codigo === 'HTTP_401') {
+      await SecureStore.deleteItemAsync(TOKEN_KEY);
+      return null;
+    }
+  }
   const raw = await Storage.getItem(USER_KEY);
   if (!raw) return null;
-  return { token, usuario: JSON.parse(raw) };
+  try {
+    const usuario = JSON.parse(raw) as Usuario;
+    if (!apiConfigurada() && !token.startsWith('mock.')) return null;
+    return { token, usuario };
+  } catch {
+    return null;
+  }
 }
 
 export async function guardarUsuario(usuario: Usuario) {
