@@ -81,9 +81,7 @@ export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<
     const remoto = await apiGet<Lugar>(`/lugares/qr/${encodeURIComponent(codigoQr)}`);
     return remoto;
   }
-  if (apiConfigurada()) {
-    return { error: { codigo: 'SIN_CONEXION_QR', mensaje: 'La validación de códigos QR requiere conexión con la API.' } };
-  }
+  // Sin señal, validar el código contra el catálogo previamente descargado.
   const lista = await obtenerLugares();
   if ('error' in lista) return lista;
   const lugar = lista.datos.find(l => l.codigoQr === codigoQr && l.activo);
