@@ -34,7 +34,7 @@ Esta lista describe lo implementado en el código; no reemplaza la validación e
 
 ## Dependencias externas
 
-- **API de la cátedra:** no se ha suministrado un contrato definitivo en los archivos disponibles. La autenticación mock no sustituye la autenticación de servidor y las visitas no pueden sincronizarse entre dispositivos sin endpoints reales.
+- **API de la cátedra:** el ZIP recibido incluye el backend NestJS `api-mi-ciudad` con contratos y endpoints oficiales. La app ya implementa la integración mediante `EXPO_PUBLIC_API_URL`, pero todavía falta arrancar el servidor en red o publicarlo. Sin URL configurada sólo hay mocks locales; con URL, se usa autenticación Bearer, recursos del servidor y sincronización de visitas/fotos.
 - **Audioguías:** las URLs SoundHelix son pistas de prueba; deben sustituirse por contenido turístico autorizado.
 - **Mapa Android:** usa mosaicos OSM/CARTO dentro de WebView y requiere conectividad para cargar cartografía no almacenada. Validar en un teléfono y confirmar con la cátedra que la variante sea aceptable.
 - **Imágenes remotas:** las fotos de lugares quedan en caché sólo después de descargarse con éxito. La portada sí es un asset local.
@@ -49,5 +49,7 @@ Esta lista describe lo implementado en el código; no reemplaza la validación e
 - [ ] Confirmar que los recordatorios se programan sólo con permiso y fecha válida.
 - [ ] Completar nombres de integrantes.
 - [ ] Versionar `package-lock.json`.
+- [ ] Levantar la API oficial, comprobar `/salud` desde un teléfono y probar login real.
+- [ ] Desplegarla con HTTPS para que la app sirva fuera de la red local.
 - [ ] Vincular EAS y generar `eas build --platform android --profile preview`.
 - [ ] Instalar y validar el APK sin Metro ni computadora.
