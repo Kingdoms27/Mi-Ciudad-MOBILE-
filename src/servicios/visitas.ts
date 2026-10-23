@@ -3,7 +3,8 @@ import { marcarVisitaSincronizada, guardarVisitaLocal, listarVisitasLocales, lis
 import { persistirFotoVisita } from '@/src/servicios/archivos';
 import { obtenerLugarPorId } from '@/src/servicios/lugares';
 import { hayConexion } from '@/src/servicios/red';
-import { apiConfigurada, apiGet, apiPost, apiSubirImagen } from '@/src/servicios/api';
+import { apiConfigurada, apiListarTodos, apiPatch, apiPost, apiSubirImagen } from '@/src/servicios/api';
+import { normalizarVisita } from '@/src/servicios/normalizacion';
 import { distanciaKm } from '@/src/utilidades/distancia';
 import { OrigenVisita, Visita } from '@/src/tipos';
 
@@ -20,7 +21,7 @@ export async function registrarVisita(
   nota: string | null = null,
   fotoTemporal: string | null = null,
 ) {
-  const id = `vis-${Date.now()}`;
+  const id = `vis-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
   let fotoUri: string | null = null;
   if (fotoTemporal) fotoUri = await persistirFotoVisita(fotoTemporal, id);
   const visita: Visita = {
@@ -39,10 +40,16 @@ export async function registrarVisita(
 
 export async function obtenerRecorrido(usuarioId?: string) {
   if (apiConfigurada() && usuarioId && await hayConexion().catch(() => false)) {
-    const respuesta = await apiGet<Visita[]>('/yo/visitas?porPagina=500');
+    const respuesta = await apiListarTodos<Visita>('/yo/visitas', 500);
     if ('datos' in respuesta) {
+      const locales = await listarVisitasLocales(usuarioId);
+      const porId = new Map(locales.map(v=>[v.id,v]));
       for (const visita of respuesta.datos) {
-        if (visita.usuarioId === usuarioId) await guardarVisitaLocal({ ...visita, sincronizada: true });
+        if (visita.usuarioId !== usuarioId) continue;
+        const local = porId.get(visita.id);
+        // Conservar la fotografía local si se descargó/capturó en este dispositivo.
+        const fotoUri = local?.fotoUri?.startsWith('file:') ? local.fotoUri : normalizarVisita(visita).fotoUri;
+        await guardarVisitaLocal({ ...visita, fotoUri, sincronizada: true });
       }
     }
   }
@@ -104,4 +111,32 @@ export async function sincronizarVisitasPendientes(usuarioId: string): Promise<R
     pendientes: restantes.length,
     estado: restantes.length === 0 ? 'completa' : 'fallida',
   };
+}
+
+/** Cambiar una nota o foto de una visita ya guardada en el servidor. */
+export async function actualizarVisitaServidor(
+  visita: Visita,
+  cambios: { nota?: string | null; fotoUri?: string | null },
+) {
+  if (!apiConfigurada() || !(await hayConexion().catch(()=>false))) {
+    return { error: { codigo: 'SIN_CONEXION', mensaje: 'Necesitás Internet para actualizar una visita sincronizada.' } } as const;
+  }
+  let fotoUri = cambios.fotoUri;
+  if (fotoUri && !/^https?:\\/\\//.test(fotoUri)) {
+    const subida = await apiSubirImagen(fotoUri);
+    if ('error' in subida) return subida;
+    fotoUri = subida.datos.url;
+  }
+  const respuesta = await apiPatch<Visita>('/yo/visitas/' + encodeURIComponent(visita.id), {
+    ...('nota' in cambios ? { nota: cambios.nota } : {}),
+    ...('fotoUri' in cambios ? { fotoUri: fotoUri ?? null } : {}),
+  });
+  if ('datos' in respuesta) {
+    await guardarVisitaLocal({
+      ...normalizarVisita(respuesta.datos),
+      fotoUri: cambios.fotoUri?.startsWith('file:') ? cambios.fotoUri : normalizarVisita(respuesta.datos).fotoUri,
+      sincronizada: true,
+    });
+  }
+  return respuesta;
 }
