@@ -3,8 +3,8 @@
 | # | Requisito | Implementación / verificación pendiente |
 |---|---|---|
 | 1 | Pantallas y navegación | Expo Router en `app/`, tabs y rutas de detalle, QR, visita y orientación. |
-| 2 | Autenticación | `src/servicios/auth.ts` y `SesionContext.tsx`. Cuenta demo restringida a sus credenciales, registros locales, token en SecureStore y reingreso biométrico. No sustituye autenticación de la API real. |
-| 3 | API y estados | `src/servicios/api.ts`, `lugares.ts`, `eventos.ts`. Mocks mientras no se publique el contrato. Se conserva la última caché válida ante errores remotos y las pantallas muestran estados de carga/vacío/error. |
+| 2 | Autenticación | `src/servicios/auth.ts` y `SesionContext.tsx`. Cuenta demo restringida a sus credenciales, registros locales, token en SecureStore y reingreso biométrico. Con URL configurada llama al login/registro real y valida `GET /yo` con Bearer. |
+| 3 | API y estados | `src/servicios/api.ts`, `lugares.ts`, `eventos.ts`. Backend oficial `api-mi-ciudad` incorporado por `EXPO_PUBLIC_API_URL`; mocks sólo sin URL. Se conserva la última caché válida ante errores remotos y las pantallas muestran estados de carga/vacío/error. |
 | 4 | Cámara y archivos | QR con `expo-camera`; foto con `expo-image-picker`; persistencia con `File`, `Directory` y `Paths`. |
 | 5 | Ubicación y mapas | `expo-location` en las pantallas de mapa/orientación/visitas. iOS usa `react-native-maps`; Android usa mosaicos OpenStreetMap/CARTO dentro de WebView porque el mapa nativo anterior no mostraba cartografía. La variante Android requiere validación en dispositivo y confirmación de la cátedra. Si se niega ubicación, los lugares siguen disponibles. |
 | 6 | Notificaciones locales | Guardar un evento devuelve si el recordatorio quedó efectivamente programado. Cambios de estado cancelan o actualizan recordatorios cuando corresponde. Requiere permiso y build/dispositivo compatibles. |
