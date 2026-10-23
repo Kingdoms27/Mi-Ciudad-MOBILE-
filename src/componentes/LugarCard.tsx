@@ -10,7 +10,7 @@ import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
-  const imagen=useImagenLugar(lugar.id,lugar.imagenes);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -31,7 +31,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover"/>:
+        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={reportarError}/>:
           <View style={[s.image,s.placeholder]}>
             <Ionicons name="images-outline" size={34} color="#D9EBE4"/>
             <Text style={s.placeholderText}>IMAGEN NO DISPONIBLE</Text>
