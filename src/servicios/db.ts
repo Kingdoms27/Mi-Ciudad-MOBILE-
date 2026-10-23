@@ -72,9 +72,11 @@ export async function listarVisitasLocales(usuarioId?: string): Promise<Visita[]
   return rows.map(r => ({ ...r, sincronizada: Boolean(r.sincronizada) }));
 }
 
-export async function listarVisitasPendientes(): Promise<Visita[]> {
+export async function listarVisitasPendientes(usuarioId: string): Promise<Visita[]> {
   const db = await getDb();
-  const rows = await db.getAllAsync<any>('SELECT * FROM visitas WHERE sincronizada=0 ORDER BY fechaHora ASC');
+  const rows = await db.getAllAsync<any>(
+    'SELECT * FROM visitas WHERE usuarioId=? AND sincronizada=0 ORDER BY fechaHora ASC',usuarioId,
+  );
   return rows.map(r => ({ ...r, sincronizada: false }));
 }
 
