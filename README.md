@@ -87,20 +87,30 @@ El paquete `api-proyectos-mobile-main.zip` incluye `api-mi-ciudad/`, una API Nes
 
 ### Ejecutar el backend en Windows sin Docker
 
-**No es obligatorio instalar Docker Desktop ni WSL.** El backend oficial requiere **Node.js 24 o superior** (la app Expo puede funcionar con Node.js 22). Descomprimí el ZIP que compartió la cátedra, abrí PowerShell en la carpeta de la app y ejecutá:
+**Es la opción recomendada en Windows.** El backend oficial requiere Node.js 24 o superior y el ZIP `api-proyectos-mobile-main.zip` de la cátedra. No necesitás Docker, WSL ni instalar PostgreSQL.
+
+Abrí PowerShell dentro de `Mi-Ciudad-MOBILE-` y ejecutá:
 
 ```powershell
 node --version
-.\\scripts\\iniciar-api-windows.ps1 -ApiPath "C:\\RUTA\\api-proyectos-mobile-main\\api-mi-ciudad"
+powershell -ExecutionPolicy Bypass -File .\scripts\iniciar-api-windows.ps1
 ```
 
-Reemplazá `C:\\RUTA\\...` por la carpeta real donde descomprimiste el ZIP. El script crea `.env` para desarrollo, instala dependencias con pnpm, habilita las semillas de prueba y arranca la API en el puerto 3000. Conservá esa terminal abierta.
+El script busca automáticamente el ZIP en Descargas, Escritorio o la carpeta de la app, y extrae el backend a `%LOCALAPPDATA%\MiCiudadColon\backend`. Instala las dependencias con pnpm, inicia SQLite con los datos de prueba si está vacía y levanta la API en el puerto 3000. **No borra una base existente.** Dejá abierta esa terminal.
 
-Si PowerShell bloquea el script, podés usar una sesión temporal sin cambiar la política del equipo:
+Si el ZIP está en otra carpeta, podés indicar su ubicación:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\\scripts\\iniciar-api-windows.ps1 -ApiPath "C:\\RUTA\\api-proyectos-mobile-main\\api-mi-ciudad"
+powershell -ExecutionPolicy Bypass -File .\scripts\iniciar-api-windows.ps1 -ZipPath "C:\ruta\api-proyectos-mobile-main.zip"
 ```
+
+Si ya lo descomprimiste, también acepta la ruta de la API:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\iniciar-api-windows.ps1 -ApiPath "C:\ruta\api-mi-ciudad"
+```
+
+Si `node --version` indica v22 o anterior, instalá Node.js 24 y volvé a abrir VS Code. El teléfono necesita la IP LAN real de la PC para conectarse con la API local.
 
 Alternativamente, para levantar la API en la PC con Docker Desktop abierto:
 
