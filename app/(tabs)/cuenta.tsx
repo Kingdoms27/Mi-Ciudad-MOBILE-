@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
+import { apiConfigurada } from '@/src/servicios/api';
+import { actualizarPerfil } from '@/src/servicios/perfil';
+import { registrarAvisosPush, enviarAvisoPrueba, desvincularAvisosPush } from '@/src/servicios/dispositivos';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { actualizarPreferencias } from '@/src/servicios/preferencias';
@@ -18,6 +22,11 @@ export default function Cuenta(){
   const[password,setPassword]=useState('lucia1234');
   const[procesando,setProcesando]=useState(false);
   const[verPassword,setVerPassword]=useState(false);
+  const[editandoPerfil,setEditandoPerfil]=useState(false);
+  const[nombrePerfil,setNombrePerfil]=useState('');
+  const[fotoPerfil,setFotoPerfil]=useState<string|null|undefined>(undefined);
+  const[guardandoPerfil,setGuardandoPerfil]=useState(false);
+  const[procesandoPush,setProcesandoPush]=useState(false);
 
   useEffect(()=>{if(usuario&&usuario.preferencias.tema!==modo)setModo(usuario.preferencias.tema)},[usuario?.id]);
 
@@ -51,6 +60,62 @@ export default function Cuenta(){
       if(cambios.tema)await setModo(cambios.tema);
     } catch(error) {
       Alert.alert('No se pudieron guardar los cambios',error instanceof Error?error.message:'Revisá tu conexión e intentá nuevamente.');
+    }
+  };
+
+  const editarPerfil=()=>{
+    if(!usuario)return;
+    setNombrePerfil(usuario.nombre);
+    setFotoPerfil(undefined);
+    setEditandoPerfil(true);
+  };
+
+  const elegirFoto=async()=>{
+    const resultado=await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:['images'],
+      allowsEditing:true,
+      aspect:[1,1],
+      quality:.75,
+    });
+    if(!resultado.canceled&&resultado.assets[0]?.uri)setFotoPerfil(resultado.assets[0].uri);
+  };
+
+  const guardarPerfil=async()=>{
+    if(!usuario||guardandoPerfil)return;
+    setGuardandoPerfil(true);
+    try{
+      const actualizado=await actualizarPerfil(usuario,{
+        nombre:nombrePerfil,
+        ...(fotoPerfil!==undefined?{avatarUri:fotoPerfil}:{}),
+      });
+      await actualizarUsuario(actualizado);
+      setEditandoPerfil(false);
+      Alert.alert('Perfil actualizado','Los cambios se guardaron correctamente.');
+    }catch(error){
+      Alert.alert('No se pudo actualizar el perfil',error instanceof Error?error.message:'Intentá nuevamente.');
+    }finally{
+      setGuardandoPerfil(false);
+    }
+  };
+
+  const configurarPush=async(accion:'activar'|'probar'|'desactivar')=>{
+    if(!usuario||procesandoPush)return;
+    setProcesandoPush(true);
+    try{
+      if(accion==='activar'){
+        await registrarAvisosPush(usuario.id);
+        Alert.alert('Avisos activados','El teléfono quedó registrado en la API.');
+      }else if(accion==='probar'){
+        const enviadas=await enviarAvisoPrueba();
+        Alert.alert('Avisos de prueba',`El servidor informó ${enviadas} envío(s).`);
+      }else{
+        await desvincularAvisosPush(usuario.id);
+        Alert.alert('Avisos desactivados','Este teléfono ya no está asociado a los avisos de la cuenta.');
+      }
+    }catch(error){
+      Alert.alert('Notificaciones',error instanceof Error?error.message:'No pudimos completar la operación.');
+    }finally{
+      setProcesandoPush(false);
     }
   };
 
@@ -188,7 +253,7 @@ export default function Cuenta(){
       </Reveal>
 
       <Reveal delay={250}>
-        <Text style={[s.demo,{color:colores.secundario}]}>Demo: lucia@mail.com · 123456</Text>
+        <Text style={[s.demo,{color:colores.secundario}]}>Demo: lucia@mail.com · lucia1234</Text>
       </Reveal>
     </ScrollView>
   </View>;
@@ -199,6 +264,49 @@ export default function Cuenta(){
       <Text style={[s.kicker,{color:colores.primario}]}>TU CUENTA</Text>
       <Text style={[s.h1,{color:colores.tinta}]}>Hola, {usuario.nombre.split(' ')[0]}.</Text>
       <Text style={[s.desc,{color:colores.secundario}]}>{usuario.email}</Text>
+    </Reveal>
+
+    <Reveal delay={100}>
+      <GlassSurface style={s.profileCard}>
+        <View style={[s.row,{alignItems:'center'}]}>
+          {usuario.avatarUrl?
+            <Image source={{uri:usuario.avatarUrl}} style={s.avatar}/>:
+            <View style={[s.avatar,{backgroundColor:colores.primarioSuave,alignItems:'center',justifyContent:'center'}]}>
+              <Ionicons name="person-outline" size={28} color={colores.primario}/>
+            </View>}
+          <View style={{flex:1}}>
+            <Text style={[s.rowText,{color:colores.tinta}]}>Mis datos</Text>
+            <Text style={[s.rowCaption,{color:colores.secundario}]}>{usuario.nombre}</Text>
+          </View>
+          <Pressable onPress={editarPerfil} style={s.altButton}>
+            <Text style={{color:colores.primario,fontWeight:'800'}}>Editar</Text>
+          </Pressable>
+        </View>
+        {editandoPerfil?<View style={{gap:10,marginTop:14}}>
+          <TextInput
+            value={nombrePerfil}
+            onChangeText={setNombrePerfil}
+            placeholder="Nombre"
+            placeholderTextColor={colores.secundario}
+            style={[s.field,{color:colores.tinta,borderColor:colores.borde}]}
+          />
+          <View style={{flexDirection:'row',gap:8,alignItems:'center'}}>
+            <Pressable onPress={elegirFoto} style={[s.option,{backgroundColor:colores.primarioSuave}]}>
+              <Text style={{color:colores.primario,fontWeight:'800'}}>Elegir foto</Text>
+            </Pressable>
+            <Pressable onPress={()=>setFotoPerfil(null)} style={[s.option,{backgroundColor:colores.superficie2}]}>
+              <Text style={{color:colores.tinta,fontWeight:'800'}}>Quitar foto</Text>
+            </Pressable>
+            {fotoPerfil?<Image source={{uri:fotoPerfil}} style={{width:42,height:42,borderRadius:14}}/>:null}
+          </View>
+          <Pressable disabled={guardandoPerfil} onPress={guardarPerfil} style={[s.btn,{backgroundColor:colores.primario}]}>
+            <Text style={s.btnText}>{guardandoPerfil?'Guardando…':'Guardar cambios'}</Text>
+          </Pressable>
+          <Pressable onPress={()=>setEditandoPerfil(false)} style={s.altButton}>
+            <Text style={{color:colores.secundario,textAlign:'center'}}>Cancelar</Text>
+          </Pressable>
+        </View>:null}
+      </GlassSurface>
     </Reveal>
 
     <Reveal delay={90}>
@@ -260,6 +368,27 @@ export default function Cuenta(){
       </GlassSurface>
     </Reveal>
 
+    {apiConfigurada()?<Reveal delay={180}>
+      <Text style={[s.section,{color:colores.tinta}]}>Avisos desde la API</Text>
+      <GlassSurface style={s.profileCard}>
+        <Text style={[s.rowCaption,{color:colores.secundario,marginBottom:12}]}>
+          Activación voluntaria en builds compatibles. El backend docente puede responder NO_IMPLEMENTADO hasta completar su módulo de notificaciones push.
+        </Text>
+        <View style={{gap:8}}>
+          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('activar')} style={[s.btn,{backgroundColor:colores.primario}]}>
+            <Ionicons name="notifications-outline" size={17} color="white"/>
+            <Text style={s.btnText}>{procesandoPush?'Procesando…':'Activar avisos push'}</Text>
+          </Pressable>
+          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('probar')} style={[s.option,{backgroundColor:colores.primarioSuave,alignItems:'center'}]}>
+            <Text style={{color:colores.primario,fontWeight:'800'}}>Enviar aviso de prueba</Text>
+          </Pressable>
+          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('desactivar')} style={[s.option,{backgroundColor:colores.superficie2,alignItems:'center'}]}>
+            <Text style={{color:colores.secundario,fontWeight:'800'}}>Desactivar en este dispositivo</Text>
+          </Pressable>
+        </View>
+      </GlassSurface>
+    </Reveal>:null}
+
     <Pressable onPress={logout} style={[s.logout,{borderColor:colores.peligro}]}>
       <Ionicons name="log-out-outline" size={20} color={colores.peligro}/>
       <Text style={{color:colores.peligro,fontWeight:'900'}}>Cerrar sesión</Text>
@@ -313,5 +442,6 @@ const s=StyleSheet.create({
   label:{fontSize:12,fontWeight:'800',marginBottom:9},
   options:{flexDirection:'row',gap:8,flexWrap:'wrap'},
   option:{paddingHorizontal:13,paddingVertical:9,borderRadius:12},
+  avatar:{width:56,height:56,borderRadius:19},
   logout:{borderWidth:1,borderRadius:17,padding:14,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7},
 });
