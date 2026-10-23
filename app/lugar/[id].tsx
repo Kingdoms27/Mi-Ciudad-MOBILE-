@@ -7,7 +7,7 @@ import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
-import { alternarFavorito, esFavorito } from '@/src/servicios/db';
+import { alternarFavorito, esFavorito } from '@/src/servicios/favoritos';
 import { descargarAudioguia, obtenerAudioguiaLocal } from '@/src/servicios/archivos';
 import { AudioGuiaPlayer } from '@/src/componentes/AudioGuiaPlayer';
 import { EstadoContenido } from '@/src/componentes/EstadoContenido';
@@ -40,7 +40,7 @@ export default function DetalleLugar(){
       }
       setLugar(r.datos);
       setAudioLocal(await obtenerAudioguiaLocal(r.datos.id));
-      if(usuario)setFav(await esFavorito(usuario.id,r.datos.id));
+      if(usuario)setFav(await esFavorito(usuario.id,r.datos.id).catch(()=>false));
       setCargando(false);
     })();
   },[id,usuario?.id]);
@@ -88,7 +88,11 @@ function ContenidoLugar({
       ]);
       return;
     }
-    setFav(await alternarFavorito(usuarioId,lugar.id));
+    try {
+      setFav(await alternarFavorito(usuarioId,lugar.id));
+    } catch (error) {
+      Alert.alert('No se pudo actualizar',error instanceof Error?error.message:'Volvé a intentarlo.');
+    }
   };
 
   const abrirMapa=()=>Alert.alert('Cómo querés llegar','Elegí el modo de viaje.',[
