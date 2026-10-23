@@ -33,6 +33,7 @@ export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
 
     const cache = await leerCache<Evento[]>(CACHE_EVENTOS);
     if (cache) return respuestaLista(cache);
+    return { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí la agenda una vez con conexión para consultarla después sin Internet.' } };
   }
 
   return respuestaLista(ordenar(eventosMock));
