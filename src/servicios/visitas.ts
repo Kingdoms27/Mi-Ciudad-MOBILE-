@@ -122,7 +122,7 @@ export async function actualizarVisitaServidor(
     return { error: { codigo: 'SIN_CONEXION', mensaje: 'Necesitás Internet para actualizar una visita sincronizada.' } } as const;
   }
   let fotoUri = cambios.fotoUri;
-  if (fotoUri && !/^https?:\\/\\//.test(fotoUri)) {
+  if (fotoUri && !/^https?:\/\//.test(fotoUri)) {
     const subida = await apiSubirImagen(fotoUri);
     if ('error' in subida) return subida;
     fotoUri = subida.datos.url;
