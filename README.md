@@ -90,7 +90,15 @@ cd .\api-proyectos-mobile-main\api-mi-ciudad
 docker compose up
 ```
 
-Verificar `http://localhost:3000/salud` desde la PC. Para Expo Go en un teléfono de la **misma Wi-Fi**, usar la IP LAN de la PC, no `localhost`:
+Verificar `http://localhost:3000/salud` desde la PC.
+
+Con la API funcionando en la PC, ejecutá este chequeo no destructivo del contrato:
+
+```powershell
+npm run api:check -- http://localhost:3000
+```
+
+Valida salud, catálogo, agenda, QR, ingreso, perfil, favoritos, eventos guardados y visitas sin crear ni borrar datos. Para Expo Go en un teléfono de la **misma Wi-Fi**, usar la IP LAN de la PC, no `localhost`:
 
 ```env
 EXPO_PUBLIC_API_URL=http://192.168.X.X:3000
