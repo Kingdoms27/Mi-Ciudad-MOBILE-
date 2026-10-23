@@ -15,7 +15,7 @@ export default function Cuenta(){
   const[modoForm,setModoForm]=useState<'login'|'registro'>('login');
   const[nombre,setNombre]=useState('');
   const[email,setEmail]=useState('lucia@mail.com');
-  const[password,setPassword]=useState('123456');
+  const[password,setPassword]=useState('lucia1234');
   const[procesando,setProcesando]=useState(false);
   const[verPassword,setVerPassword]=useState(false);
 
@@ -45,9 +45,13 @@ export default function Cuenta(){
 
   const pref=async(cambios:any)=>{
     if(!usuario)return;
-    const u=await actualizarPreferencias(usuario,cambios);
-    await actualizarUsuario(u);
-    if(cambios.tema)await setModo(cambios.tema);
+    try {
+      const u=await actualizarPreferencias(usuario,cambios);
+      await actualizarUsuario(u);
+      if(cambios.tema)await setModo(cambios.tema);
+    } catch(error) {
+      Alert.alert('No se pudieron guardar los cambios',error instanceof Error?error.message:'Revisá tu conexión e intentá nuevamente.');
+    }
   };
 
   if(cargando)return <View style={[s.center,{backgroundColor:colores.fondo}]}>
