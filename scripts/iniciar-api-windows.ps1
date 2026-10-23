@@ -10,7 +10,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $carpetaProyecto = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$destinoExtraccion = Join-Path $carpetaProyecto 'backend-local'
+$destinoExtraccion = Join-Path $env:LOCALAPPDATA 'MiCiudadColon\backend'
 
 function RutaApi([string] $directorio) {
   if (!$directorio -or !(Test-Path -LiteralPath $directorio -PathType Container)) { return $null }
