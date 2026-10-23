@@ -31,7 +31,11 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        <Image source={{uri:imagen}} style={s.image} resizeMode="cover"/>
+        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover"/>:
+          <View style={[s.image,s.placeholder]}>
+            <Ionicons name="images-outline" size={34} color="#D9EBE4"/>
+            <Text style={s.placeholderText}>IMAGEN NO DISPONIBLE</Text>
+          </View>}
         <View style={s.scrim}/>
         <View style={[s.badge,{backgroundColor:'rgba(13,45,39,.72)'}]}>
           <Ionicons name="location-outline" size={13} color="white"/>
@@ -65,6 +69,8 @@ const s=StyleSheet.create({
     shadowOffset:{width:0,height:8},
   },
   imageWrap:{position:'relative'},
+  placeholder:{backgroundColor:'#1F5449',alignItems:'center',justifyContent:'center',gap:10},
+  placeholderText:{color:'#D9EBE4',fontSize:10,fontWeight:'800',letterSpacing:1.2},
   image:{width:'100%',height:178,backgroundColor:'#d9d9d9'},
   scrim:{position:'absolute',left:0,right:0,bottom:0,height:72,backgroundColor:'rgba(0,0,0,.16)'},
   badge:{position:'absolute',left:12,bottom:12,borderRadius:999,paddingHorizontal:10,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:4},
