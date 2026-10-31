@@ -116,6 +116,8 @@ Si `node --version` indica v22 o anterior, instalá Node.js 24 y volvé a abrir 
 
 Con Node.js 24 y el ZIP `api-proyectos-mobile-main.zip` descargado:
 
+**Requisito previo:** instalá Node.js 24 (la API lo exige), y conservá el ZIP original del profesor en `Descargas`. No necesitás Docker. La conexión verifica que la API devuelva el catálogo y al menos una foto accesible desde la IP LAN antes de cambiar `.env` o `.env.local`.
+
 **Terminal 1**, desde la carpeta `Mi-Ciudad-MOBILE-`:
 
 ```powershell
@@ -131,7 +133,7 @@ npm run api:check -- http://localhost:3000
 npm run api:conectar:win
 ```
 
-El último comando verifica la API en `localhost` y en la IP LAN de Windows, configura `EXPO_PUBLIC_API_URL` en `.env` preservando las demás claves y abre Expo Go en modo LAN. Escaneá el QR con el teléfono conectado a la **misma red** que la computadora.
+El último comando verifica la API en `localhost` y en la IP LAN de Windows, comprueba el catálogo y una fotografía real de respuesta, configura `EXPO_PUBLIC_API_URL` en `.env` o `.env.local` (si existe, por su prioridad) y abre Expo Go en modo LAN. Escaneá el QR con el teléfono conectado a la **misma red** que la computadora.
 
 Si hay varias IPs, el script pedirá que especifiques una. Obtenela con `ipconfig` y repetí con `-PcIp`:
 
@@ -140,6 +142,8 @@ powershell -ExecutionPolicy Bypass -File .\scripts\conectar-app-windows.ps1 -PcI
 ```
 
 Reemplazá la IP de ejemplo por la real. Si falla el chequeo LAN, verificá que Windows permita Node.js en el firewall para **redes privadas**; no abras ese puerto a Internet.
+
+**Los medios de demostración que trae el backend son generados:** las imágenes sirven para verificar descargas y las audioguías MP3 de semilla pueden ser silenciosas. No deben presentarse como fotografías o narraciones oficiales de la ciudad. La portada de Inicio es un asset de la aplicación independiente de la API.
 
 **Importante:** usar Metro por `--tunnel` no hace pública la API. Para compañeros en otras redes y un APK final conectado necesitarás un backend desplegado con HTTPS.
 
