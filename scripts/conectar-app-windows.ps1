@@ -10,7 +10,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $proyecto = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$archivoEnv = Join-Path $proyecto '.env'
+# Expo carga .env.local con prioridad sobre .env; escribir la URL en el archivo efectivo.
+$envLocal = Join-Path $proyecto '.env.local'
+$envBase = Join-Path $proyecto '.env'
+$archivoEnv = if (Test-Path -LiteralPath $envLocal) { $envLocal } else { $envBase }
 
 if (!(Get-Command node -ErrorAction SilentlyContinue)) {
   throw 'No encuentro Node.js en Windows. Instalalo antes de ejecutar Expo.'
@@ -59,6 +62,35 @@ try {
   throw "La API funciona en localhost, pero no responde en $apiUrl. Revisá que Windows permita Node.js en el firewall para redes privadas y que el backend escuche en 0.0.0.0."
 }
 
+# Confirmar que las fotos de la API funcionan desde la misma IP que usara el telefono.
+try {
+  $catalogo = Invoke-RestMethod -Uri "$apiUrl/lugares?porPagina=500" -TimeoutSec 20
+  if ($null -eq $catalogo.datos -or $null -eq $catalogo.meta) {
+    throw 'El catalogo no devolvio el contrato de la API de la catedra.'
+  }
+  $total = @($catalogo.datos).Count
+  Write-Host "Catalogo de la catedra accesible: $total lugares activos." -ForegroundColor Green
+  if ($total -lt 20) {
+    Write-Warning 'El catalogo tiene menos lugares de los esperados. Puede faltar la semilla del profesor.'
+  }
+  $unaFoto = @($catalogo.datos | ForEach-Object { $_.imagenes } | Where-Object { $_ -match '^https?://' } | Select-Object -First 1)
+  if ($unaFoto.Count -gt 0) {
+    $foto = Invoke-WebRequest -Uri $unaFoto[0] -Headers @{ Range = 'bytes=0-31' } -TimeoutSec 15 -UseBasicParsing
+    $tipo = [string]$foto.Headers['Content-Type']
+    if ($foto.StatusCode -notin @(200,206) -or $tipo -notmatch '^image/') {
+      throw "El archivo de imagen no responde como imagen (HTTP $($foto.StatusCode), $tipo)."
+    }
+    Write-Host 'Archivo de imagen servido correctamente por la API.' -ForegroundColor Green
+  } else {
+    Write-Warning 'La API no incluyo imagenes. Revisar los medios de las semillas.'
+  }
+} catch {
+  throw "El servidor responde /salud pero no se pudo verificar el catalogo y sus fotos: $($_.Exception.Message)"
+}
+
+if (Test-Path -LiteralPath $envLocal) {
+  Write-Host 'Configurando .env.local (prioridad sobre .env en Expo).' -ForegroundColor Cyan
+}
 $linea = "EXPO_PUBLIC_API_URL=$apiUrl"
 if (Test-Path -LiteralPath $archivoEnv) {
   $original = Get-Content -LiteralPath $archivoEnv -Raw
