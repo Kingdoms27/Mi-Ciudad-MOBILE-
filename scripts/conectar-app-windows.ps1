@@ -119,14 +119,25 @@ Write-Host 'Importante: el teléfono debe estar en la MISMA Wi-Fi/red que la com
 
 if ($SoloConfigurar) { return }
 
+# Evitar ejecutar dos Metro al mismo tiempo. No detener otros procesos:
+# el backend de la catedra debe continuar en el puerto 3000.
+$ocupantes = @(Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue)
+if ($ocupantes.Count -gt 0) {
+  $identificadores = @($ocupantes | Select-Object -ExpandProperty OwningProcess -Unique)
+  Write-Warning "El puerto 8081 de Expo ya esta ocupado por el PID: $($identificadores -join ', ')."
+  Write-Host 'Cerrá con Ctrl+C la terminal anterior de Expo (NO la API que usa el puerto 3000).' -ForegroundColor Yellow
+  Write-Host 'Para identificar el proceso: Get-NetTCPConnection -LocalPort 8081 -State Listen' -ForegroundColor Cyan
+  throw 'Hay otro servidor ocupando el puerto habitual de Expo. Cerralo y repetí npm run api:conectar:win.'
+}
+
 Push-Location -LiteralPath $proyecto
 try {
   if ($Tunnel) {
-    Write-Host 'Iniciando Metro por tunnel. OJO: el tunnel no publica la API; el teléfono sigue necesitando la misma red.' -ForegroundColor Yellow
-    & npx expo start --clear --tunnel
+    Write-Host 'Iniciando Expo Go por tunel. OJO: el tunel no publica la API; el telefono sigue necesitando la misma red.' -ForegroundColor Yellow
+    & npx expo start --clear --tunnel --go --port 8081
   } else {
-    Write-Host 'Iniciando Expo Go por LAN. Escaneá el QR con el teléfono.' -ForegroundColor Cyan
-    & npx expo start --clear --lan
+    Write-Host 'Iniciando Expo Go por LAN en el puerto 8081. Dejá abierta esta terminal y escaneá el QR.' -ForegroundColor Cyan
+    & npx expo start --clear --lan --go --port 8081
   }
 } finally {
   Pop-Location
