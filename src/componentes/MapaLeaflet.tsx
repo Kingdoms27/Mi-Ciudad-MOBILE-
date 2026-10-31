@@ -46,6 +46,9 @@ export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
     }));
 
     const tema=oscuro?'dark_all':'light_all';
+    // CARTO exige clave desde septiembre de 2026; sin clave usamos OSM.
+    const claveCarto=(process.env.EXPO_PUBLIC_CARTO_BASEMAP_KEY??'').trim();
+    const usarCarto=/^[A-Za-z0-9_-]+$/.test(claveCarto);
 
     return `<!doctype html>
 <html>
@@ -77,7 +80,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     <button id="zoomIn" aria-label="Acercar">+</button>
     <button id="zoomOut" aria-label="Alejar">−</button>
   </div>
-  <div class="attribution">© OpenStreetMap · © CARTO</div>
+  <div class="attribution">${usarCarto?"© OpenStreetMap contributors · © CARTO":"© OpenStreetMap contributors"}</div>
 </div>
 <script>
 (function(){
@@ -110,11 +113,16 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     const lat=180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)));
     return {lat:clamp(lat,-85,85),lon:((lon+540)%360)-180};
   }
-  function tileUrl(z,x,y){
-    return 'https://a.basemaps.cartocdn.com/${tema}/'+z+'/'+x+'/'+y+'.png';
-  }
+  const CARTO_KEY=${JSON.stringify(claveCarto)};
+  const USE_CARTO=${usarCarto ? 'true' : 'false'};
   function osmUrl(z,x,y){
     return 'https://tile.openstreetmap.org/'+z+'/'+x+'/'+y+'.png';
+  }
+  function tileUrl(z,x,y){
+    if(USE_CARTO){
+      return 'https://a.basemaps.cartocdn.com/${tema}/'+z+'/'+x+'/'+y+'.png?key='+encodeURIComponent(CARTO_KEY);
+    }
+    return osmUrl(z,x,y);
   }
   function renderTiles(){
     const w=mapEl.clientWidth||window.innerWidth;
@@ -143,7 +151,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
           const tileY=ty;
           img.src=tileUrl(nivel,tileX,tileY);
           img.onerror=function(){
-            if(!img.dataset.fallback){
+            if(USE_CARTO && !img.dataset.fallback){
               img.dataset.fallback='1';
               img.src=osmUrl(nivel,tileX,tileY);
             }
@@ -289,6 +297,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
   return <WebView
     ref={webRef}
     source={{html}}
+    userAgent="MiCiudadColon/1.0 (ReactNativeWebView; educational tourism app)"
     style={s.web}
     originWhitelist={['*']}
     javaScriptEnabled
