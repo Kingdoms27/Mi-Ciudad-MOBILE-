@@ -75,7 +75,13 @@ try {
   }
   $unaFoto = @($catalogo.datos | ForEach-Object { $_.imagenes } | Where-Object { $_ -match '^https?://' } | Select-Object -First 1)
   if ($unaFoto.Count -gt 0) {
-    $foto = Invoke-WebRequest -Uri $unaFoto[0] -Headers @{ Range = 'bytes=0-31' } -TimeoutSec 15 -UseBasicParsing
+    # Windows PowerShell 5.1 rechaza el encabezado Range en -Headers.
+    # Una descarga GET normal evita el error y confirma que el archivo es una imagen.
+    $urlFoto = [string]$unaFoto[0]
+    if ($urlFoto -match '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?/archivos/') {
+      $urlFoto = $urlFoto -replace '^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?', $apiUrl
+    }
+    $foto = Invoke-WebRequest -Uri $urlFoto -TimeoutSec 15 -UseBasicParsing
     $tipo = [string]$foto.Headers['Content-Type']
     if ($foto.StatusCode -notin @(200,206) -or $tipo -notmatch '^image/') {
       throw "El archivo de imagen no responde como imagen (HTTP $($foto.StatusCode), $tipo)."
