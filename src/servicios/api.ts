@@ -31,7 +31,9 @@ async function ejecutar<T>(
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  // Las consultas públicas no deben congelar la interfaz 30 segundos cuando
+  // el teléfono está en 4G y la API funciona sólo en la Wi-Fi de la PC.
+  const timeout = setTimeout(() => controller.abort(), method === 'GET' ? 10000 : 30000);
 
   try {
     const token = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -60,11 +62,18 @@ async function ejecutar<T>(
     }
     return data as RespuestaApi<T>;
   } catch (err) {
+    const expirado = err instanceof Error && err.name === 'AbortError';
+    const hostLocal = /^https?:\/\/(?:localhost|127\.0\.0\.1)(?::|\/|$)/i.test(BASE);
+    const redPrivada = /^https?:\/\/(?:192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(BASE);
     return error(
       'RED',
-      err instanceof Error && err.name === 'AbortError'
-        ? 'La API tardó demasiado en responder.'
-        : 'No se pudo conectar con la API.',
+      hostLocal
+        ? 'La API usa localhost, que en Android apunta al propio teléfono. Conectala a la IP de tu PC.'
+        : redPrivada
+          ? 'La API de la PC no responde. Activá el servidor y conectá celular y computadora a la misma Wi-Fi (no 4G).'
+          : expirado
+            ? 'La API tardó demasiado en responder. Revisá que el servidor siga encendido.'
+            : 'No se pudo conectar con la API. Revisá la dirección del servidor y tu conexión.',
     );
   } finally {
     clearTimeout(timeout);
