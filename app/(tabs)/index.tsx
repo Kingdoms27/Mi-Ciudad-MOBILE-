@@ -15,18 +15,21 @@ import { Categoria, Coordenadas, Lugar } from '@/src/tipos';
 import { distanciaKm, formatearDistancia } from '@/src/utilidades/distancia';
 import { useTema } from '@/src/contexto/TemaContext';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 
 const HERO_LOCAL=require('../../assets/hero-colon.jpg');
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
-  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
+  const fotoLocal=fotoLocalParaLugar(lugar);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
 
   return <Pressable
     style={s.featureCard}
     onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
   >
-    {imagen?<Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
+    {fotoLocal?<Image source={fotoLocal} style={StyleSheet.absoluteFill} resizeMode="cover"/>:
+     imagen?<Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
       <Image source={HERO_LOCAL} style={StyleSheet.absoluteFill} resizeMode="cover"/>}
     <View style={s.featureShade}/>
     <View style={s.featureTop}>
