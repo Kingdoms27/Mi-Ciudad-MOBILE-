@@ -91,20 +91,21 @@ export async function obtenerImagenLugarGuardada(lugarId:string,urls:string|stri
 /** Una imagen corrupta no debe sobrevivir entre aperturas de pantalla.
  * Sólo descarta el registro si todavía corresponde a la URI que falló.
  */
-export async function descartarImagenLugarFallida(lugarId:string,uriFallida:string){
-  if(Platform.OS==='web'||!uriFallida)return;
+export async function descartarImagenLugarFallida(lugarId:string,uriFallida:string):Promise<string|null>{
+  if(Platform.OS==='web'||!uriFallida)return null;
   const key=`imagen-lugar:${lugarId}`;
   try{
     const raw=await Storage.getItem(key);
-    if(!raw)return;
+    if(!raw)return null;
     const registro=JSON.parse(raw) as RegistroImagen;
-    if(registro.uri!==uriFallida && registro.url!==uriFallida)return;
+    if(registro.uri!==uriFallida && registro.url!==uriFallida)return null;
     await Storage.removeItem(key);
     if(registro.uri.startsWith('file://')){
       const f=new File(registro.uri);
       if(f.exists)f.delete();
     }
-  }catch{}
+    return registro.url;
+  }catch{ return null; }
 }
 
 function hash(valor:string){

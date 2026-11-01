@@ -15,7 +15,8 @@
     "api:iniciar:win": "powershell -ExecutionPolicy Bypass -File scripts/iniciar-api-windows.ps1",
     "api:conectar:win": "powershell -ExecutionPolicy Bypass -File scripts/conectar-app-windows.ps1",
     "api:imagenes": "node scripts/auditar-imagenes.mjs",
-    "fotos:externas": "node scripts/auditar-fotos-externas.mjs"
+    "fotos:externas": "node scripts/auditar-fotos-externas.mjs",
+    "fotos:instalar": "node scripts/instalar-fotos-locales.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",

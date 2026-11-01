@@ -24,5 +24,9 @@ jobs:
         run: npm install
       - name: Validar versiones Expo
         run: npx expo install --check
+      - name: Validar scripts de fotografías
+        run: |
+          node --check scripts/instalar-fotos-locales.mjs
+          node --check scripts/auditar-fotos-externas.mjs
       - name: TypeScript
         run: npm run typecheck

@@ -14,6 +14,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
@@ -78,7 +79,8 @@ function ContenidoLugar({
   esOscuro:boolean;
   usuarioId?:string;
 }){
-  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
+  const fotoLocal=fotoLocalParaLugar(lugar);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -127,16 +129,13 @@ function ContenidoLugar({
       scrollEventThrottle={16}
     >
       <View style={s.heroWrap}>
-        {imagen?<Animated.Image
-          source={{uri:imagen}}
-          onError={(evento)=>reportarError(evento.nativeEvent.error)}
+        <Animated.Image
+          source={fotoLocal??(imagen?{uri:imagen}:require('../../assets/hero-colon.jpg'))}
+          onError={!fotoLocal&&imagen?(evento)=>reportarError(evento.nativeEvent.error):undefined}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
-        />:
-          <View style={[s.hero,{backgroundColor:'#1F5449',alignItems:'center',justifyContent:'center',gap:8}]}>
-            <Ionicons name="images-outline" size={48} color="#D9EBE4"/>
-            <Text style={{color:'#D9EBE4',fontWeight:'800'}}>Imagen no disponible</Text>
-          </View>}
+        />
+        {!fotoLocal&&!imagen?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>
@@ -238,6 +237,9 @@ function ContenidoLugar({
 }
 
 const s=StyleSheet.create({
+  genericBadge:{position:'absolute',right:12,top:56,borderRadius:99,backgroundColor:'rgba(15,24,22,.72)',paddingHorizontal:10,paddingVertical:6},
+  genericBadgeText:{color:'white',fontSize:10,fontWeight:'800'},
+
   root:{flex:1,overflow:'hidden'},
   center:{flex:1,justifyContent:'center',padding:20},
   scrollContent:{paddingBottom:115},

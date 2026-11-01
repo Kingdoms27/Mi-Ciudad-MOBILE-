@@ -7,10 +7,12 @@ import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
-  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
+  const fotoLocal=fotoLocalParaLugar(lugar);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -31,10 +33,13 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
-          <View style={[s.image,s.placeholder]}>
-            <Ionicons name="images-outline" size={34} color="#D9EBE4"/>
-            <Text style={s.placeholderText}>IMAGEN NO DISPONIBLE</Text>
+        {fotoLocal?<Image source={fotoLocal} style={s.image} resizeMode="cover"/>:
+         imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
+          <View style={s.imageWrap}>
+            <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
+            <View style={s.respaldoFoto}>
+              <Text style={s.respaldoFotoTexto}>VISTA GENERAL DE COLÓN</Text>
+            </View>
           </View>}
         <View style={s.scrim}/>
         <View style={[s.badge,{backgroundColor:'rgba(13,45,39,.72)'}]}>
@@ -58,6 +63,9 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
 }
 
 const s=StyleSheet.create({
+  respaldoFoto:{position:'absolute',top:9,right:9,backgroundColor:'rgba(9,32,29,.75)',paddingHorizontal:9,paddingVertical:5,borderRadius:99},
+  respaldoFotoTexto:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:.7},
+
   card:{
     borderRadius:26,
     overflow:'hidden',
