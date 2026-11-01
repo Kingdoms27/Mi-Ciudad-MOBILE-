@@ -255,3 +255,39 @@ Prueba recomendada con el backend encendido, el teléfono en la misma red y Expo
 ```powershell
 npm run api:conectar:win
 ```
+
+## Fotografías definitivas en Android y APK
+
+La app ya no presenta URLs HTTP de medios directamente al componente Image nativo:
+primero descarga el archivo con Expo FileSystem y muestra su copia local. Si
+una descarga falla (HTTP 403/404, sin señal o archivo dañado), usa **la portada
+de Colón incluida en la aplicación**, identificada como vista general, en vez de
+una tarjeta vacía. Las ilustraciones que devuelve la API docente pueden seguir
+apareciendo como respaldo cuando no hay fotografía real del lugar.
+
+**Para que cada lugar tenga su propia foto real sin depender de sitios externos**,
+se agregó un sistema de fotos empaquetadas en el APK:
+
+1. Reuní en una carpeta de Windows fotos de los lugares que tengas permiso de usar,
+   con nombres como `Molino Forclaz.jpg`, `Playa Norte.jpg` o IDs como
+   `lug-004.jpg` (nombre exacto de la ficha o ID de la API).
+2. Desde el proyecto ejecutá:
+   ```powershell
+   npm run fotos:instalar -- "C:\Mis fotos Colón"
+   ```
+3. El comando verifica la firma JPG/PNG/WEBP, copia los archivos a
+   `assets/lugares/` y genera automáticamente `src/servicios/fotosLocales.ts`
+   con referencias estáticas `require()`. No modifica la API de la cátedra.
+   Se puede repetir para sumar más fotografías sin perder las anteriores.
+4. Reiniciá Expo. Antes de construir el APK, **incluí las fotos y el catálogo
+   en el repositorio** (además de `assets/hero-colon.jpg`), por ejemplo
+   `git add assets/lugares src/servicios/fotosLocales.ts assets/hero-colon.jpg`
+   y luego commit/push; de lo contrario una compilación remota de EAS no
+   tendrá esas fotos.
+
+La app prioriza la foto propia del lugar incluida en el APK; si no existe,
+intenta el material remoto descargado a caché, después las ilustraciones de
+respaldo del backend y finalmente la vista general de Colón. **La vista general
+es un respaldo identificado, no una foto falsa del lugar.** No hay forma
+técnica de crear fotografías auténticas de 26 lugares sin contar con esas
+imágenes y sus correspondientes derechos de uso.
