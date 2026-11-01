@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { obtenerImagenLugarGuardada, resolverImagenLugar } from '@/src/servicios/imagenes';
+import { descartarImagenLugarFallida, obtenerImagenLugarGuardada, resolverImagenLugar } from '@/src/servicios/imagenes';
 
 /**
  * Si una URL falla en React Native, reintenta con la siguiente fotografía
@@ -45,10 +45,14 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
 
   const reportarError = useCallback(() => {
     setUri(actual => {
-      if (actual) fallidas.current.add(actual);
+      if (actual) {
+        fallidas.current.add(actual);
+        // Si la copia local está dañada, no reutilizarla en la próxima carga.
+        void descartarImagenLugarFallida(lugarId, actual);
+      }
       return candidatos.find(url => !fallidas.current.has(url)) ?? '';
     });
-  }, [clave]);
+  }, [clave, lugarId]);
 
   return { imagen: uri, reportarError };
 }

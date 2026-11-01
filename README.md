@@ -195,6 +195,21 @@ Las pantallas no importan mocks directamente. Los servicios asíncronos de `src/
 
 Horarios, tarifas, agenda de ejemplo y pistas de audio de demostración deben tratarse como contenido de prueba hasta que se reemplacen por información oficial.
 
+## Fotografías y nueva portada
+
+- **Portada:** usar la fotografía original de Colón, optimizada en alta definición como `assets/hero-colon.jpg`. La portada es un archivo local y se muestra sin conexión. No convertir a capturas pequeñas ni aumentar artificialmente la resolución. Reemplazar el archivo existente con el JPEG optimizado proporcionado junto con esta actualización.
+- **Fotos de lugares:** el catálogo, los nombres, los IDs y sus datos provienen de la API oficial cuando `EXPO_PUBLIC_API_URL` está definida; para los lugares que tienen una foto turística documentada se prioriza esa foto y se conserva el archivo del docente como respaldo. No confundir ilustraciones de semillas con fotografías reales.
+- **Fotos de eventos:** se leen de `imagenUrl` en la API y se guardan localmente después de una descarga correcta; los eventos sin medios muestran un respaldo identificado, sin inventar una fotografía.
+- **Caché:** una foto dañada deja de ser reutilizada en siguientes sesiones. Sin conexión se usa la última copia válida que exista.
+- **Auditoría:** con la API iniciada ejecutar:
+
+```powershell
+npm run api:check -- http://localhost:3000
+npm run api:imagenes -- http://localhost:3000
+```
+
+La segunda prueba recorre todas las páginas de lugares y eventos y revisa las URLs declaradas, los códigos HTTP y el tipo MIME. **No garantiza** que la foto represente el lugar ni que tenga licencia de uso: eso debe comprobarse con cada fuente. Si faltan fotos auténticas, deben aportarse medios autorizados o usarse los respaldos debidamente identificados. La auditoría no modifica ni borra los datos del servidor.
+
 ## APK de entrega
 
 Primero asociar el proyecto con la cuenta Expo del grupo:

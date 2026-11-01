@@ -20,7 +20,7 @@ const HERO_LOCAL=require('../../assets/hero-colon.jpg');
 
 function Destacado({lugar}:{lugar:Lugar}){
   const{colores}=useTema();
-  const { imagen, reportarError }=useImagenLugar(`destacado-${lugar.id}`,lugar.imagenes);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
 
   return <Pressable
     style={s.featureCard}

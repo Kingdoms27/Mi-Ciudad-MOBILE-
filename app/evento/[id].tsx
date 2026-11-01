@@ -14,6 +14,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
+import { ImagenEvento } from '@/src/componentes/ImagenEvento';
 
 export default function DetalleEvento(){
   const{id}=useLocalSearchParams<{id:string}>();
@@ -23,12 +24,10 @@ export default function DetalleEvento(){
   const[lugar,setLugar]=useState<string|null>(null);
   const[guardado,setGuardado]=useState(false);
   const[cargando,setCargando]=useState(true);
-  const[imagenFallida,setImagenFallida]=useState(false);
   const scrollY=useRef(new Animated.Value(0)).current;
 
   useEffect(()=>{
     if(!id)return;
-    setImagenFallida(false);
     (async()=>{
       const r=await obtenerEventoPorId(id);
       if('datos'in r){
@@ -78,16 +77,16 @@ export default function DetalleEvento(){
       onScroll={Animated.event([{nativeEvent:{contentOffset:{y:scrollY}}}],{useNativeDriver:true})}
       scrollEventThrottle={16}
     >
-      {e.imagenUrl&&!imagenFallida?<View style={s.heroWrap}>
-        <Animated.Image source={{uri:e.imagenUrl}} onError={()=>setImagenFallida(true)} style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]} resizeMode="cover"/>
+      <View style={s.heroWrap}>
+        <Animated.View style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}>
+          <ImagenEvento id={e.id} url={e.imagenUrl} style={s.heroImage}/>
+        </Animated.View>
         <View style={s.heroShade}/>
         <View style={s.heroPill}>
           <Ionicons name="calendar-outline" size={14} color="white"/>
           <Text style={s.heroPillText}>{fechaEvento(e.inicio)}</Text>
         </View>
-      </View>:<View style={[s.noHero,{backgroundColor:colores.primarioSuave}]}>
-        <Ionicons name="calendar-outline" size={48} color={colores.primario}/>
-      </View>}
+      </View>
 
       <Reveal delay={60} style={s.sheetWrap}>
         <GlassSurface style={s.sheet} intensity={esOscuro?52:64}>
@@ -154,6 +153,7 @@ const s=StyleSheet.create({
   scroll:{paddingBottom:85},
   heroWrap:{height:270,overflow:'hidden',position:'relative'},
   hero:{width:'100%',height:310},
+  heroImage:{width:'100%',height:'100%'},
   heroShade:{position:'absolute',left:0,right:0,bottom:0,height:120,backgroundColor:'rgba(0,0,0,.18)'},
   heroPill:{position:'absolute',left:18,bottom:40,borderRadius:999,paddingHorizontal:12,paddingVertical:8,backgroundColor:'rgba(15,24,22,.66)',flexDirection:'row',alignItems:'center',gap:5},
   heroPillText:{color:'white',fontSize:11,fontWeight:'900',textTransform:'capitalize'},
