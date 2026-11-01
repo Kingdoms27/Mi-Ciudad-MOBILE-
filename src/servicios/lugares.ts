@@ -24,7 +24,8 @@ function conFotosTuristicas(lugar: Lugar): Lugar {
 }
 
 const CACHE_CATEGORIAS = 'categorias:api-v2:' + obtenerBaseApi();
-const CACHE_LUGARES = 'lugares:api-v3:' + obtenerBaseApi();
+// Nueva versión: descartar registros anteriores con URLs localhost/cache antiguas.
+const CACHE_LUGARES = 'lugares:api-v4:' + obtenerBaseApi();
 
 function respuestaLista<T>(datos: T[]): RespuestaApi<T[]> {
   return { datos, meta: { total: datos.length, pagina: 1, porPagina: datos.length } };
@@ -68,7 +69,12 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
         if (!cambio.activo) mapa.delete(cambio.id);
         else mapa.set(cambio.id, conFotosTuristicas(cambio));
       }
-      const activos = [...mapa.values()].filter(l=>l.activo).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+      // Las entradas que no cambiaron en la API también deben volver a normalizarse.
+      // De lo contrario conservan URLs viejas aunque el código ya esté corregido.
+      const activos = [...mapa.values()]
+        .filter(l=>l.activo)
+        .map(conFotosTuristicas)
+        .sort((a,b)=>a.nombre.localeCompare(b.nombre));
       await guardarCache(CACHE_LUGARES, activos);
       return respuestaLista(activos);
     }
@@ -76,7 +82,7 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
   }
 
   return cache
-    ? respuestaLista(cache)
+    ? respuestaLista(cache.filter(l=>l.activo).map(conFotosTuristicas))
     : { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí el catálogo una vez con conexión para usarlo sin Internet.' } };
 }
 
