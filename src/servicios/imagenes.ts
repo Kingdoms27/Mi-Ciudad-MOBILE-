@@ -50,6 +50,11 @@ export async function resolverImagenLugar(lugarId:string,urls:string|string[]){
     try{
       const destino=new File(dir,`${lugarId}-${Math.abs(hash(url))}${extension(url)}`);
       const archivo=await File.downloadFileAsync(url,destino,{idempotent:true});
+      // No registrar descargas vacías o incompletas como si fueran fotos válidas.
+      if(!archivo.exists || !archivo.size){
+        if(archivo.exists)archivo.delete();
+        continue;
+      }
       await Storage.setItem(key,JSON.stringify({url,uri:archivo.uri} satisfies RegistroImagen));
       return archivo.uri;
     }catch{}
@@ -73,6 +78,26 @@ export async function obtenerImagenLugarGuardada(lugarId:string,urls:string|stri
   }catch{
     return null;
   }
+}
+
+
+/** Una imagen corrupta no debe sobrevivir entre aperturas de pantalla.
+ * Sólo descarta el registro si todavía corresponde a la URI que falló.
+ */
+export async function descartarImagenLugarFallida(lugarId:string,uriFallida:string){
+  if(Platform.OS==='web'||!uriFallida)return;
+  const key=`imagen-lugar:${lugarId}`;
+  try{
+    const raw=await Storage.getItem(key);
+    if(!raw)return;
+    const registro=JSON.parse(raw) as RegistroImagen;
+    if(registro.uri!==uriFallida && registro.url!==uriFallida)return;
+    await Storage.removeItem(key);
+    if(registro.uri.startsWith('file://')){
+      const f=new File(registro.uri);
+      if(f.exists)f.delete();
+    }
+  }catch{}
 }
 
 function hash(valor:string){
