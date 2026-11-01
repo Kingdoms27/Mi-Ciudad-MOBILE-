@@ -20,6 +20,15 @@ const fuentes: Record<string, string[]> = {
   'museo historico regional de colon': [
     'https://colon.gov.ar/wp-content/uploads/2021/06/el-sonido-a-travez-de-los-tiempos-02-06-2021-1.jpg',
   ],
+  'parque herminio j quiros': [
+    'https://colon.gov.ar/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-16-at-19.31.19-1-1024x576.jpeg',
+  ],
+  'parque dr herminio j quiros': [
+    'https://colon.gov.ar/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-16-at-19.31.19-1-1024x576.jpeg',
+  ],
+  'parque quiros': [
+    'https://colon.gov.ar/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-16-at-19.31.19-1-1024x576.jpeg',
+  ],
   'paseo costanera': [
     'https://colon.gov.ar/wp-content/uploads/2026/01/WhatsApp-Image-2026-01-01-at-20.14.08-1024x768.jpeg',
   ],
