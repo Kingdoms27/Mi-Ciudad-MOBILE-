@@ -1,4 +1,4 @@
-import { Image, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Image, ImageStyle, StyleProp, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 
@@ -8,7 +8,7 @@ import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 export function ImagenEvento({
   id, url, style,
 }: {
-  id: string; url: string | null; style?: StyleProp<ViewStyle>;
+  id: string; url: string | null; style?: StyleProp<ImageStyle>;
 }) {
   const { imagen, reportarError } = useImagenLugar(`evento-${id}`,url ?? []);
   if (imagen) {
