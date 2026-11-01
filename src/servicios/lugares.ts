@@ -6,6 +6,24 @@ import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet, apiListarTodos, obtenerBaseApi } from '@/src/servicios/api';
 import { normalizarLugar } from '@/src/servicios/normalizacion';
 
+/**
+ * El backend de la cátedra proporciona PNG de demostración, no fotos de turismo.
+ * Para lugares con nombre idéntico a nuestro catálogo visual, mostrar primero
+ * las fotos públicas ya usadas en la app y conservar los PNG oficiales de respaldo.
+ * Nunca combinar por ID: los IDs de los dos catálogos no coinciden en todos los lugares.
+ */
+function conFotosTuristicas(lugar: Lugar): Lugar {
+  const remoto = normalizarLugar(lugar);
+  const foto = lugaresMock.find(
+    candidato => candidato.nombre.trim().toLocaleLowerCase('es') === lugar.nombre.trim().toLocaleLowerCase('es'),
+  );
+  if (!foto?.imagenes.length) return remoto;
+  return {
+    ...remoto,
+    imagenes: [...new Set([...foto.imagenes, ...remoto.imagenes])],
+  };
+}
+
 const CACHE_CATEGORIAS = 'categorias:api-v2:' + obtenerBaseApi();
 const CACHE_LUGARES = 'lugares:api-v2:' + obtenerBaseApi();
 
@@ -49,7 +67,7 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
       const mapa = new Map((cache ?? []).map(lugar => [lugar.id, lugar]));
       for (const cambio of remoto.datos) {
         if (!cambio.activo) mapa.delete(cambio.id);
-        else mapa.set(cambio.id, normalizarLugar(cambio));
+        else mapa.set(cambio.id, conFotosTuristicas(cambio));
       }
       const activos = [...mapa.values()].filter(l=>l.activo).sort((a,b)=>a.nombre.localeCompare(b.nombre));
       await guardarCache(CACHE_LUGARES, activos);
@@ -66,7 +84,7 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
 export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>> {
   if (apiConfigurada() && await hayConexion().catch(()=>false)) {
     const remoto = await apiGet<Lugar>('/lugares/' + encodeURIComponent(id));
-    if ('datos' in remoto) return { datos: normalizarLugar(remoto.datos) };
+    if ('datos' in remoto) return { datos: conFotosTuristicas(remoto.datos) };
     if (remoto.error.codigo === 'LUGAR_NO_ENCONTRADO') return remoto;
   }
   const lista = await obtenerLugares();
@@ -80,7 +98,7 @@ export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>
 export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<Lugar>> {
   if (apiConfigurada() && await hayConexion().catch(()=>false)) {
     const remoto = await apiGet<Lugar>('/lugares/qr/' + encodeURIComponent(codigoQr));
-    return 'datos' in remoto ? { datos: normalizarLugar(remoto.datos) } : remoto;
+    return 'datos' in remoto ? { datos: conFotosTuristicas(remoto.datos) } : remoto;
   }
   const lista = await obtenerLugares();
   if ('error' in lista) return lista;
