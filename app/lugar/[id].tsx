@@ -14,6 +14,7 @@ import { EstadoContenido } from '@/src/componentes/EstadoContenido';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
@@ -78,7 +79,8 @@ function ContenidoLugar({
   esOscuro:boolean;
   usuarioId?:string;
 }){
-  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
+  const fotoLocal=fotoLocalParaLugar(lugar);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -128,12 +130,12 @@ function ContenidoLugar({
     >
       <View style={s.heroWrap}>
         <Animated.Image
-          source={imagen?{uri:imagen}:require('../../assets/hero-colon.jpg')}
-          onError={imagen?(evento)=>reportarError(evento.nativeEvent.error):undefined}
+          source={fotoLocal??(imagen?{uri:imagen}:require('../../assets/hero-colon.jpg'))}
+          onError={!fotoLocal&&imagen?(evento)=>reportarError(evento.nativeEvent.error):undefined}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
         />
-        {!imagen?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
+        {!fotoLocal&&!imagen?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>
