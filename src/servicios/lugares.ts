@@ -51,7 +51,7 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
   if (!apiConfigurada()) return respuestaLista(lugaresMock.filter(l=>l.activo));
 
   const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
-  if (await hayConexion().catch(()=>false)) {
+  {
     const ultimaActualizacion = cache?.reduce<string | null>(
       (mayor, lugar) => !mayor || lugar.actualizadoEn > mayor ? lugar.actualizadoEn : mayor,
       null,
