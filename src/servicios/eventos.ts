@@ -1,7 +1,6 @@
 import { eventosMock } from '@/src/mocks/eventos';
 import { Evento, RespuestaApi } from '@/src/tipos';
 import { guardarCache, leerCache } from '@/src/servicios/cache';
-import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet, apiListarTodos, obtenerBaseApi } from '@/src/servicios/api';
 import { normalizarEvento } from '@/src/servicios/normalizacion';
 
@@ -18,7 +17,7 @@ export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
   if (!apiConfigurada()) return lista(ordenar(eventosMock));
 
   const cache = await leerCache<Evento[]>(CACHE_EVENTOS);
-  if (await hayConexion().catch(()=>false)) {
+  {
     const respuesta = await apiListarTodos<Evento>('/eventos', 100);
     if ('datos' in respuesta) {
       const datos = ordenar([...new Map(respuesta.datos.map(e=>[e.id,normalizarEvento(e)])).values()]);
@@ -34,7 +33,7 @@ export async function obtenerEventos(): Promise<RespuestaApi<Evento[]>> {
 }
 
 export async function obtenerEventoPorId(id: string): Promise<RespuestaApi<Evento>> {
-  if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+  if (apiConfigurada()) {
     const remoto = await apiGet<Evento>('/eventos/' + encodeURIComponent(id));
     if ('datos' in remoto) return { datos: normalizarEvento(remoto.datos) };
     if (remoto.error.codigo === 'EVENTO_NO_ENCONTRADO') return remoto;
