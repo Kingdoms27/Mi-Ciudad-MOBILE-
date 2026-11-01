@@ -31,7 +31,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={reportarError}/>:
+        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
           <View style={[s.image,s.placeholder]}>
             <Ionicons name="images-outline" size={34} color="#D9EBE4"/>
             <Text style={s.placeholderText}>IMAGEN NO DISPONIBLE</Text>

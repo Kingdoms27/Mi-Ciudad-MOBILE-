@@ -129,7 +129,7 @@ function ContenidoLugar({
       <View style={s.heroWrap}>
         {imagen?<Animated.Image
           source={{uri:imagen}}
-          onError={reportarError}
+          onError={(evento)=>reportarError(evento.nativeEvent.error)}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
         />:

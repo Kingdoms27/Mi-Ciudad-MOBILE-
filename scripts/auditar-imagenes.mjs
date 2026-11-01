@@ -94,6 +94,23 @@ try {
   console.log(`Medios: ${unicas.length} URLs únicas comprobadas`);
   console.log(`Imágenes válidas: ${conFoto}/${registros.length} fichas`);
   console.log(`Sin URL: ${sinFoto.length} fichas; URLs inválidas: ${fallas.length} fichas`);
+  // Mostrar si un archivo del backend se reutiliza en fichas distintas.
+  const porImagenPrincipal = new Map();
+  for (const item of registros) {
+    if (!item.urls.length) continue;
+    const principal = urlParaDispositivo(item.urls[0]) || item.urls[0];
+    const grupo = porImagenPrincipal.get(principal) ?? [];
+    grupo.push(`${item.tipo}: ${item.nombre}`);
+    porImagenPrincipal.set(principal, grupo);
+  }
+  const repetidas = [...porImagenPrincipal.values()].filter(nombres => nombres.length > 1);
+  if (repetidas.length) {
+    console.log(`Imágenes principales reutilizadas: ${repetidas.length} grupo(s)`);
+    for (const nombres of repetidas) {
+      console.log(`  Archivo compartido por ${nombres.length} fichas: ${nombres.join(' | ')}`);
+    }
+  }
+
 
   for (const item of [...sinFoto,...fallas].slice(0,45)) {
     const ultimo = item.urls[0] && resultados.get(item.urls[0]);
