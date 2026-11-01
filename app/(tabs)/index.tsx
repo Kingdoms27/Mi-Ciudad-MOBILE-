@@ -27,9 +27,7 @@ function Destacado({lugar}:{lugar:Lugar}){
     onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
   >
     {imagen?<Image source={{uri:imagen}} style={StyleSheet.absoluteFill} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
-      <View style={[StyleSheet.absoluteFill,{backgroundColor:'#1D5147',alignItems:'center',justifyContent:'center'}]}>
-        <Ionicons name="images-outline" size={40} color="rgba(255,255,255,.38)"/>
-      </View>}
+      <Image source={HERO_LOCAL} style={StyleSheet.absoluteFill} resizeMode="cover"/>}
     <View style={s.featureShade}/>
     <View style={s.featureTop}>
       <View style={s.featureBadge}><Text style={s.featureBadgeText}>DESTACADO</Text></View>
