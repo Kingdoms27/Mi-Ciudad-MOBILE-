@@ -50,7 +50,7 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
     // React puede repetir el callback durante la renderización.
     void descartarImagenLugarFallida(lugarId, uri);
     if (__DEV__) {
-      console.warn('[Mi Ciudad] No se pudo mostrar la foto', {
+      console.info('[Mi Ciudad] Falló foto externa; se intenta alternativa', {
         lugarId, url: uri, motivo: motivo ?? 'Error de imagen nativa',
       });
     }

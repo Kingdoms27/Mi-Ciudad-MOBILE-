@@ -33,12 +33,18 @@ export async function resolverImagenLugar(lugarId:string,urls:string|string[]){
   const key=`imagen-lugar:${lugarId}`;
   const raw=await Storage.getItem(key);
 
+  let respaldoGuardado='';
   if(raw){
     try{
       const registro=JSON.parse(raw) as RegistroImagen;
       if(candidatas.includes(registro.url)){
         const existente=new File(registro.uri);
-        if(existente.exists)return registro.uri;
+        if(existente.exists && existente.size){
+          // Si cambió la foto principal, intentar descargarla. Una ilustración
+          // guardada de la API no debe bloquear una foto turística recién añadida.
+          if(registro.url===candidatas[0])return registro.uri;
+          respaldoGuardado=registro.uri;
+        }
       }
     }catch{}
   }
@@ -60,8 +66,9 @@ export async function resolverImagenLugar(lugarId:string,urls:string|string[]){
     }catch{}
   }
 
-  // No devolver una URL que ya falló: el llamador debe mostrar un respaldo visual.
-  return '';
+  // Si el teléfono quedó offline durante el cambio de foto, mantener la
+  // copia anterior válida hasta que se pueda descargar la principal.
+  return respaldoGuardado;
 }
 
 export async function obtenerImagenLugarGuardada(lugarId:string,urls:string|string[]){
