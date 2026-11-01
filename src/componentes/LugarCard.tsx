@@ -7,10 +7,12 @@ import { Lugar } from '@/src/tipos';
 import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
-  const { imagen, reportarError }=useImagenLugar(lugar.id,lugar.imagenes);
+  const fotoLocal=fotoLocalParaLugar(lugar);
+  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -31,7 +33,8 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
       accessibilityLabel={`Abrir ${lugar.nombre}`}
     >
       <View style={s.imageWrap}>
-        {imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
+        {fotoLocal?<Image source={fotoLocal} style={s.image} resizeMode="cover"/>:
+         imagen?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
           <View style={s.imageWrap}>
             <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
             <View style={s.respaldoFoto}>
