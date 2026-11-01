@@ -95,7 +95,7 @@ export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>
 }
 
 export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<Lugar>> {
-  if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+  if (apiConfigurada()) {
     const remoto = await apiGet<Lugar>('/lugares/qr/' + encodeURIComponent(codigoQr));
     if ('datos' in remoto) return { datos: conFotosTuristicas(remoto.datos) };
     if (remoto.error.codigo !== 'RED') return remoto;
