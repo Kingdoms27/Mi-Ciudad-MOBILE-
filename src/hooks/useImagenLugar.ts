@@ -43,16 +43,19 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
     return () => { activo = false; };
   }, [lugarId, clave]);
 
-  const reportarError = useCallback(() => {
-    setUri(actual => {
-      if (actual) {
-        fallidas.current.add(actual);
-        // Si la copia local está dañada, no reutilizarla en la próxima carga.
-        void descartarImagenLugarFallida(lugarId, actual);
-      }
-      return candidatos.find(url => !fallidas.current.has(url)) ?? '';
-    });
-  }, [clave, lugarId]);
+  const reportarError = useCallback((motivo?: string) => {
+    if (!uri || fallidas.current.has(uri)) return;
+    fallidas.current.add(uri);
+    // No ejecutar efectos secundarios dentro de un actualizador de setState:
+    // React puede repetir el callback durante la renderización.
+    void descartarImagenLugarFallida(lugarId, uri);
+    if (__DEV__) {
+      console.warn('[Mi Ciudad] No se pudo mostrar la foto', {
+        lugarId, url: uri, motivo: motivo ?? 'Error de imagen nativa',
+      });
+    }
+    setUri(candidatos.find(url => !fallidas.current.has(url)) ?? '');
+  }, [clave, lugarId, uri]);
 
   return { imagen: uri, reportarError };
 }
