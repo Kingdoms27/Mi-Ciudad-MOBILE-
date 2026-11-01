@@ -4,6 +4,7 @@ import { Categoria, Lugar, RespuestaApi } from '@/src/tipos';
 import { guardarCache, leerCache } from '@/src/servicios/cache';
 import { apiConfigurada, apiGet, apiListarTodos, obtenerBaseApi } from '@/src/servicios/api';
 import { normalizarLugar } from '@/src/servicios/normalizacion';
+import { fotosOficialesParaLugar } from '@/src/servicios/fotosTuristicas';
 
 /**
  * El backend de la cátedra proporciona PNG de demostración, no fotos de turismo.
@@ -16,10 +17,12 @@ function conFotosTuristicas(lugar: Lugar): Lugar {
   const foto = lugaresMock.find(
     candidato => candidato.nombre.trim().toLocaleLowerCase('es') === lugar.nombre.trim().toLocaleLowerCase('es'),
   );
-  if (!foto?.imagenes.length) return remoto;
+  const oficiales = fotosOficialesParaLugar(lugar.nombre);
+  // El backend docente entrega ilustraciones demo. Intentar antes fotografías
+  // oficiales del lugar, y conservar sus archivos como respaldo offline.
   return {
     ...remoto,
-    imagenes: [...new Set([...foto.imagenes, ...remoto.imagenes])],
+    imagenes: [...new Set([...oficiales, ...(foto?.imagenes ?? []), ...remoto.imagenes])],
   };
 }
 
