@@ -2,7 +2,6 @@ import { categoriasMock } from '@/src/mocks/categorias';
 import { lugaresMock } from '@/src/mocks/lugares';
 import { Categoria, Lugar, RespuestaApi } from '@/src/tipos';
 import { guardarCache, leerCache } from '@/src/servicios/cache';
-import { hayConexion } from '@/src/servicios/red';
 import { apiConfigurada, apiGet, apiListarTodos, obtenerBaseApi } from '@/src/servicios/api';
 import { normalizarLugar } from '@/src/servicios/normalizacion';
 
@@ -25,7 +24,7 @@ function conFotosTuristicas(lugar: Lugar): Lugar {
 }
 
 const CACHE_CATEGORIAS = 'categorias:api-v2:' + obtenerBaseApi();
-const CACHE_LUGARES = 'lugares:api-v2:' + obtenerBaseApi();
+const CACHE_LUGARES = 'lugares:api-v3:' + obtenerBaseApi();
 
 function respuestaLista<T>(datos: T[]): RespuestaApi<T[]> {
   return { datos, meta: { total: datos.length, pagina: 1, porPagina: datos.length } };
@@ -34,7 +33,7 @@ function respuestaLista<T>(datos: T[]): RespuestaApi<T[]> {
 export async function obtenerCategorias(): Promise<RespuestaApi<Categoria[]>> {
   if (!apiConfigurada()) return respuestaLista([...categoriasMock].sort((a,b)=>a.orden-b.orden));
   const cache = await leerCache<Categoria[]>(CACHE_CATEGORIAS);
-  if (await hayConexion().catch(()=>false)) {
+  {
     const remoto = await apiGet<Categoria[]>('/categorias');
     if ('datos' in remoto) {
       const datos = [...remoto.datos].sort((a,b)=>a.orden-b.orden);
@@ -82,7 +81,7 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
 }
 
 export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>> {
-  if (apiConfigurada() && await hayConexion().catch(()=>false)) {
+  if (apiConfigurada()) {
     const remoto = await apiGet<Lugar>('/lugares/' + encodeURIComponent(id));
     if ('datos' in remoto) return { datos: conFotosTuristicas(remoto.datos) };
     if (remoto.error.codigo === 'LUGAR_NO_ENCONTRADO') return remoto;
@@ -98,7 +97,9 @@ export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>
 export async function obtenerLugarPorQr(codigoQr: string): Promise<RespuestaApi<Lugar>> {
   if (apiConfigurada() && await hayConexion().catch(()=>false)) {
     const remoto = await apiGet<Lugar>('/lugares/qr/' + encodeURIComponent(codigoQr));
-    return 'datos' in remoto ? { datos: conFotosTuristicas(remoto.datos) } : remoto;
+    if ('datos' in remoto) return { datos: conFotosTuristicas(remoto.datos) };
+    if (remoto.error.codigo !== 'RED') return remoto;
+    // La cámara puede leer QR con la API desconectada; consultar caché local.
   }
   const lista = await obtenerLugares();
   if ('error' in lista) return lista;
