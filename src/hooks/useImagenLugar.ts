@@ -63,10 +63,13 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
         lugarId, motivo: motivo ?? 'Error de imagen', uri,
       });
     }
-    // Esperar la eliminación de la copia dañada antes de volver a resolver.
-    void descartarImagenLugarFallida(lugarId, uri).finally(() => {
-      setReintento(n => n + 1);
-    });
+    // Saltar la URL original que entregó bytes no legibles y probar la
+    // siguiente, en lugar de descargar el mismo archivo corrupto sin fin.
+    void descartarImagenLugarFallida(lugarId, uri)
+      .then(urlOriginal => {
+        if (urlOriginal) fallidas.current.add(urlOriginal);
+      })
+      .finally(() => { setReintento(n => n + 1); });
   }, [lugarId, uri]);
 
   return { imagen: uri, reportarError };
