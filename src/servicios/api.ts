@@ -150,5 +150,8 @@ export function urlArchivoParaDispositivo(url: string | null): string | null {
   if (!url || !apiConfigurada()) return url;
   const local = url.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(\/archivos\/.*)$/i);
   const origen = BASE.match(/^https?:\/\/[^/]+/i)?.[0];
-  return local && origen ? origen + local[1] : url;
+  if (!origen) return url;
+  // También admitir rutas relativas entregadas por el servidor docente.
+  if (url.startsWith('/archivos/')) return origen + url;
+  return local ? origen + local[1] : url;
 }
