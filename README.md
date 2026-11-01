@@ -239,3 +239,19 @@ eas build --platform android --profile preview
 ## Imágenes
 
 La portada usa un archivo incluido en `assets/hero-colon.jpg` para no depender de la conexión. Las fotos de los lugares se cargan desde las URLs definidas en los mocks y se guardan localmente después de la primera carga correcta. Las fuentes y licencias conocidas están en [docs/CREDITOS-IMAGENES.md](docs/CREDITOS-IMAGENES.md).
+
+
+### Fotografías que se ven como ilustraciones en Android
+
+La API de la cátedra puede entregar ilustraciones PNG de demostración (HTTP 200), aunque las fichas no tengan fotografías turísticas reales. También se verificó en Expo un error **HTTP 403** para varias miniaturas de Wikimedia Commons.
+
+- La app prioriza fotografías reales de fuentes oficiales cuando existe una URL identificada para ese lugar en `src/servicios/fotosTuristicas.ts`, luego intenta las alternativas del catálogo y por último mantiene el archivo de la API como respaldo.
+- En Android, cuando falla una foto se intenta la siguiente sin disparar una ventana amarilla por cada URL. Los fallos quedan registrados en la terminal de desarrollo.
+- La caché de fotos mantiene la copia anterior para uso offline, pero descarga una nueva si cambia la fotografía prioritaria.
+- La portada `assets/hero-colon.jpg` es independiente de estas fotos.
+- Para que **todos** los lugares tengan fotografías propias es necesario incorporar material auténtico con autorización de uso o licencia compatible. Los enlaces a sitios oficiales **no implican licencia de redistribución**. No publicar ni distribuir copias sin verificar sus términos.
+
+Prueba recomendada con el backend encendido, el teléfono en la misma red y Expo reiniciado:
+```powershell
+npm run api:conectar:win
+```
