@@ -48,12 +48,12 @@ if($extension -eq '.jpg' -or $extension -eq '.jpeg'){
 }elseif($extension -eq '.png'){
   $original=[System.Drawing.Image]::FromFile($origen)
   try{
-    $bitmap=New-Object System.Drawing.Bitmap($original)
+    $bitmap=[System.Drawing.Bitmap]::new($original)
     try{
       $codec=[System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() |
         Where-Object { $_.MimeType -eq 'image/jpeg' } | Select-Object -First 1
-      $parametros=New-Object System.Drawing.Imaging.EncoderParameters(1)
-      $parametros.Param[0]=New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality,[long]94)
+      $parametros=[System.Drawing.Imaging.EncoderParameters]::new(1)
+      $parametros.Param[0]=[System.Drawing.Imaging.EncoderParameter]::new([System.Drawing.Imaging.Encoder]::Quality,[long]94)
       $bitmap.Save($destino,$codec,$parametros)
     }finally{$bitmap.Dispose()}
   }finally{$original.Dispose()}
