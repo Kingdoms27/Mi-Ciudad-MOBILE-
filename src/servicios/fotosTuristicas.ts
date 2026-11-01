@@ -15,7 +15,7 @@ const fuentes: Record<string, string[]> = {
     'https://www.argentina.gob.ar/sites/default/files/pn_el_palmar_ecosistema_ph_parquesnacionales.jpg',
   ],
   'termas de colon': [
-    'https://termascolon.gov.ar/wp-content/uploads/2018/06/DSC_0219.jpg',
+    'https://termascolon.gov.ar/wp-content/uploads/2018/06/inicio-institucional.png',
   ],
   'museo historico regional de colon': [
     'https://colon.gov.ar/wp-content/uploads/2021/06/el-sonido-a-travez-de-los-tiempos-02-06-2021-1.jpg',
