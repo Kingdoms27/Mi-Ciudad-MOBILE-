@@ -16,7 +16,7 @@ export function ImagenEvento({
       source={{uri:imagen}}
       style={style}
       resizeMode="cover"
-      onError={reportarError}
+      onError={(evento)=>reportarError(evento.nativeEvent.error)}
       accessibilityLabel="Fotografía del evento"
     />;
   }
