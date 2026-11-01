@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
@@ -14,6 +14,7 @@ import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
+import { ImagenEvento } from '@/src/componentes/ImagenEvento';
 
 export default function Agenda(){
   const{colores,esOscuro}=useTema();
@@ -22,7 +23,6 @@ export default function Agenda(){
   const[guardados,setGuardados]=useState<Record<string,boolean>>({});
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
-  const[imagenesFallidas,setImagenesFallidas]=useState<Record<string,boolean>>({});
 
   const cargar=async()=>{
     setCargando(true);
@@ -98,17 +98,17 @@ export default function Agenda(){
        eventos.map((e,i)=><Reveal key={e.id} delay={Math.min(80+i*55,420)}>
          <Pressable onPress={()=>router.push({pathname:'/evento/[id]',params:{id:e.id}})}>
            <GlassSurface style={s.card} intensity={42}>
-             {e.imagenUrl&&!imagenesFallidas[e.id]?<View style={s.imageWrap}>
-               <Image source={{uri:e.imagenUrl}} style={s.image} onError={()=>setImagenesFallidas(prev=>({...prev,[e.id]:true}))}/>
+             <View style={s.imageWrap}>
+               <ImagenEvento id={e.id} url={e.imagenUrl} style={s.image}/>
                <View style={s.imageShade}/>
                <View style={[s.datePill,{backgroundColor:'rgba(13,45,39,.76)'}]}>
                  <Ionicons name="time-outline" size={13} color="white"/>
                  <Text style={s.datePillText}>{fechaEvento(e.inicio)}</Text>
                </View>
-             </View>:null}
+             </View>
              <View style={s.cardBody}>
                <View style={s.row}>
-                 {(!e.imagenUrl||imagenesFallidas[e.id])?<Text style={[s.fecha,{color:colores.primario}]}>{fechaEvento(e.inicio)}</Text>:<View/>}
+                 <View/>
                  <Text style={[s.estado,{color:e.estado==='programado'?colores.exito:colores.peligro}]}>{e.estado}</Text>
                </View>
                <Text style={[s.title,{color:colores.tinta}]}>{e.titulo}</Text>
