@@ -315,7 +315,7 @@ Si necesitás fotografías estables en un APK, reuní fotos propias o licenciada
 en una carpeta (una por lugar, con nombre de ficha o ID según el CSV) y ejecutá:
 
 ```powershell
-npm run fotos:instalar -- "C:Mis fotos Colon"
+npm run fotos:instalar -- "C:\\Mis fotos Colon"
 npx expo start --clear --lan
 ```
 
