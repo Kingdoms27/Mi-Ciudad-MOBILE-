@@ -210,6 +210,32 @@ npm run api:imagenes -- http://localhost:3000
 
 La segunda prueba recorre todas las páginas de lugares y eventos y revisa las URLs declaradas, los códigos HTTP y el tipo MIME. **No garantiza** que la foto represente el lugar ni que tenga licencia de uso: eso debe comprobarse con cada fuente. Si faltan fotos auténticas, deben aportarse medios autorizados o usarse los respaldos debidamente identificados. La auditoría no modifica ni borra los datos del servidor.
 
+## Diagnóstico automático del backend docente (Windows)
+
+Si la API responde correctamente pero `GET /eventos` devuelve cero fichas,
+podés inspeccionar la copia **ya extraída** del ZIP del profesor sin volver
+a descargarlo ni reiniciar la base:
+
+```powershell
+npm run api:diagnosticar:win
+```
+
+El comando busca `api-mi-ciudad` dentro de
+`%LOCALAPPDATA%\MiCiudadColon\backend` y en ubicaciones conocidas,
+muestra rutas de archivos de semillas/eventos, nombres de variables de
+`.env.example`, existencia de `render.yaml`, y resultados de
+`GET /salud`, `GET /lugares` y `GET /eventos`. No muestra
+valores de `.env`, no copia secretos y **no modifica datos**.
+
+Si la API está en otra carpeta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\diagnosticar-backend-windows.ps1 -ApiPath "C:\ruta\api-mi-ciudad"
+```
+
+Con la salida podremos investigar filtros/semillas y después preparar el
+despliegue HTTPS del backend, sin asumir que el ZIP esté publicado en GitHub.
+
 ## Agenda vacía con API configurada
 
 Si `npm run api:imagenes -- http://localhost:3000` muestra **0 eventos**,
