@@ -30,6 +30,13 @@ try {
   const categorias = await peticion('categorías', '/categorias');
   const lugares = await peticion('catálogo offline', '/lugares?porPagina=500&actualizadoDesde=2000-01-01T00%3A00%3A00-03%3A00');
   const eventos = await peticion('agenda', '/eventos?porPagina=100');
+  if (eventos.length === 0) {
+    console.warn(
+      'AGENDA VACÍA: GET /eventos respondió correctamente, pero devolvió 0 eventos. ' +
+      'Revisá la carga de datos de prueba y los filtros de fecha del backend docente. ' +
+      'No se mostrarán eventos de prueba inventados mientras la API esté configurada.',
+    );
+  }
   // Comprobar también el servidor de imágenes: /salud puede funcionar
   // mientras que /archivos devuelve 404 si no se cargaron los medios.
   const imagenes = lugares.flatMap(l => l.imagenes ?? []).slice(0, 3);

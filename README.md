@@ -210,6 +210,25 @@ npm run api:imagenes -- http://localhost:3000
 
 La segunda prueba recorre todas las páginas de lugares y eventos y revisa las URLs declaradas, los códigos HTTP y el tipo MIME. **No garantiza** que la foto represente el lugar ni que tenga licencia de uso: eso debe comprobarse con cada fuente. Si faltan fotos auténticas, deben aportarse medios autorizados o usarse los respaldos debidamente identificados. La auditoría no modifica ni borra los datos del servidor.
 
+## Agenda vacía con API configurada
+
+Si `npm run api:imagenes -- http://localhost:3000` muestra **0 eventos**,
+significa que la respuesta actual de `GET /eventos` no contiene fichas de
+agenda. La app **no reemplaza silenciosamente datos del profesor por eventos
+mock**: informa que la agenda remota está vacía y permite reintentar.
+
+Comprobación no destructiva:
+
+```powershell
+npm run api:check -- http://localhost:3000
+Invoke-RestMethod "http://localhost:3000/eventos?porPagina=100" | ConvertTo-Json -Depth 5
+```
+
+El chequeo ahora avisa claramente si `/eventos` respondió 200 sin resultados.
+La causa exacta (semillas, ausencia de eventos o filtro por fechas) debe
+confirmarse en el backend docente. No ejecutar reinicios destructivos de la
+base solo para rellenar la agenda.
+
 ## APK de entrega
 
 Primero asociar el proyecto con la cuenta Expo del grupo:
