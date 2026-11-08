@@ -65,6 +65,7 @@ const registros=[...nuevas.entries()].sort(([a],[b])=>a.localeCompare(b))
   .map(([clave,archivo])=>'  '+JSON.stringify(clave)+': require('+JSON.stringify('../../assets/lugares/'+archivo)+'),');
 const texto=[
 "import type { Lugar } from '@/src/tipos';",
+"import { apiConfigurada } from '@/src/servicios/api';",
 '// GENERADO por fotos:instalar. Archivos incluidos en el APK.',
 'const FOTOS: Record<string, number> = {',
 ...registros,
@@ -74,7 +75,7 @@ const texto=[
 "    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');",
 '}',
 'export function fotoLocalParaLugar(lugar: Lugar): number | undefined {',
-'  return FOTOS[lugar.id] ?? FOTOS[slug(lugar.nombre)];',
+'  return FOTOS[slug(lugar.nombre)] ?? (apiConfigurada() ? FOTOS[lugar.id] : undefined);',
 '}',
 ].join('\n')+'\n';
 await writeFile(manifiesto,texto,'utf8');
