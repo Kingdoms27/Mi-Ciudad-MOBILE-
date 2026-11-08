@@ -291,3 +291,37 @@ respaldo del backend y finalmente la vista general de Colón. **La vista general
 es un respaldo identificado, no una foto falsa del lugar.** No hay forma
 técnica de crear fotografías auténticas de 26 lugares sin contar con esas
 imágenes y sus correspondientes derechos de uso.
+
+### Diagnóstico por lugar y fotos definitivas (Windows)
+
+Con la API docente encendida, este comando genera un CSV con **todos los
+lugares activos que devuelve tu servidor**, su ID, cantidad de URLs en la API,
+si ya tienen una foto empaquetada y el nombre sugerido del archivo:
+
+```powershell
+npm run fotos:reporte -- http://localhost:3000
+```
+
+Abrí `reportes/fotos-para-revisar.csv` con Excel. Es un **inventario**:
+que una ficha tenga URL no garantiza que pueda descargarse ni que sea una
+fotografía auténtica. Para comprobar el estado HTTP de las imágenes remotas:
+
+```powershell
+npm run api:imagenes -- http://localhost:3000
+npm run fotos:externas
+```
+
+Si necesitás fotografías estables en un APK, reuní fotos propias o licenciadas
+en una carpeta (una por lugar, con nombre de ficha o ID según el CSV) y ejecutá:
+
+```powershell
+npm run fotos:instalar -- "C:\Mis fotos Colon"
+npx expo start --clear --lan
+```
+
+La app prioriza las fotos empaquetadas y conserva la API para los datos del
+catálogo, favoritos, eventos y visitas. No hace falta copiar manualmente cada
+imagen dentro del código, ni modificar el backend del profesor. Antes del build
+final, incluí `assets/lugares/` y `src/servicios/fotosLocales.ts` en Git.
+El CSV es local y no se versiona. Evitá usar sin permiso fotos tomadas de
+portales municipales, redes sociales o servicios comerciales.
