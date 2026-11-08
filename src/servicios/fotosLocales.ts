@@ -1,4 +1,5 @@
 import type { Lugar } from '@/src/tipos';
+import { apiConfigurada } from '@/src/servicios/api';
 
 /**
  * Catálogo de fotografías propias empaquetadas con Expo.
@@ -14,5 +15,8 @@ function slug(nombre: string): string {
 }
 
 export function fotoLocalParaLugar(lugar: Lugar): number | undefined {
-  return FOTOS[lugar.id] ?? FOTOS[slug(lugar.nombre)];
+  // La API y los mocks pueden asignar el mismo ID a lugares diferentes.
+  // El nombre es la clave segura para ambos modos. Los IDs se aceptan
+  // solamente cuando la API está configurada.
+  return FOTOS[slug(lugar.nombre)] ?? (apiConfigurada() ? FOTOS[lugar.id] : undefined);
 }

@@ -288,8 +288,10 @@ apareciendo como respaldo cuando no hay fotografía real del lugar.
 se agregó un sistema de fotos empaquetadas en el APK:
 
 1. Reuní en una carpeta de Windows fotos de los lugares que tengas permiso de usar,
-   con nombres como `Molino Forclaz.jpg`, `Playa Norte.jpg` o IDs como
-   `lug-004.jpg` (nombre exacto de la ficha o ID de la API).
+   con nombres como `Molino Forclaz.jpg`, `Playa Norte.jpg` o el nombre exacto
+   de la ficha de la API. **Preferí nombres en lugar de IDs**: el catálogo demo
+   y la API docente usan algunos IDs iguales para sitios diferentes. También
+   se aceptan IDs de la API como `lug-004.jpg` cuando está configurada la API.
 2. Desde el proyecto ejecutá:
    ```powershell
    npm run fotos:instalar -- "C:\Mis fotos Colón"
