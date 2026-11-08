@@ -5,7 +5,8 @@
  *
  * No usa credenciales, no modifica .env, no reinicia la API y no publica datos.
  */
-import { readFile, stat, access } from 'node:fs/promises';
+import { readFile, access } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -88,8 +89,19 @@ try {
     else if (!ausentes) aprobado('Fotografías locales referenciadas y presentes: ' + archivos.length + '.');
   }
 
-  if (await existe('package-lock.json')) aprobado('package-lock.json presente para una instalación reproducible.');
-  else aviso('Falta package-lock.json en la carpeta del proyecto: conviene versionarlo antes de EAS.');
+  if (await existe('package-lock.json')) {
+    aprobado('package-lock.json presente para una instalación reproducible.');
+    try {
+      execFileSync('git', ['ls-files', '--error-unmatch', '--', 'package-lock.json'], {
+        cwd: raiz, stdio: 'ignore',
+      });
+      aprobado('package-lock.json está versionado en Git.');
+    } catch {
+      aviso('package-lock.json existe, pero no pude confirmar que esté versionado. Revisá git status antes de compartir el proyecto.');
+    }
+  } else {
+    aviso('Falta package-lock.json en la carpeta del proyecto: conviene versionarlo antes de EAS.');
+  }
 
   if (!(await existe('eas.json'))) {
     fallo('Falta eas.json.');
