@@ -302,6 +302,8 @@ si ya tienen una foto empaquetada y el nombre sugerido del archivo:
 npm run fotos:reporte -- http://localhost:3000
 ```
 
+El comando también crea `reportes/fotos-prioritarias.csv` con los lugares sin URL de imagen y los que comparten su imagen principal con otros lugares, siempre que todavía no tengan una foto local. Las filas muestran qué otros lugares comparten la imagen y el nombre recomendado para guardarla. **Que una imagen sea compartida no implica que haya que reemplazarla en todos los lugares**: revisá cuál ficha corresponde realmente a esa foto.
+
 Abrí `reportes/fotos-para-revisar.csv` con Excel. Es un **inventario**:
 que una ficha tenga URL no garantiza que pueda descargarse ni que sea una
 fotografía auténtica. Para comprobar el estado HTTP de las imágenes remotas:
