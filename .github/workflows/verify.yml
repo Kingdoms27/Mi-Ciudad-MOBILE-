@@ -30,5 +30,15 @@ jobs:
           node --check scripts/auditar-fotos-externas.mjs
           node --check scripts/reporte-fotos.mjs
           node --check scripts/verificar-entrega.mjs
+      - name: Revisar sintaxis del diagnostico PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("scripts/diagnosticar-backend-windows.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host $_.ToString() }
+            exit 1
+          }
       - name: TypeScript
         run: npm run typecheck
