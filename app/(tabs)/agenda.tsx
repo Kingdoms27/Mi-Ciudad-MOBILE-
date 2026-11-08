@@ -5,6 +5,7 @@ import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
 import { Evento } from '@/src/tipos';
 import { obtenerEventos } from '@/src/servicios/eventos';
+import { apiConfigurada } from '@/src/servicios/api';
 import { cargarEventosGuardados, guardarEvento, quitarEvento } from '@/src/servicios/eventosGuardados';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
@@ -94,7 +95,13 @@ export default function Agenda(){
 
       {cargando?<SkeletonLista cantidad={3}/>:
        error?<EstadoContenido tipo="error" mensaje={error} onReintentar={cargar}/>:
-       eventos.length===0?<EstadoContenido tipo="vacio"/>:
+       eventos.length===0?<EstadoContenido
+         tipo="vacio"
+         mensaje={apiConfigurada()
+           ? 'La API de la cátedra no devolvió eventos para la agenda. Podés seguir explorando los lugares turísticos.'
+           : 'No hay eventos para mostrar en este momento.'}
+         onReintentar={cargar}
+       />:
        eventos.map((e,i)=><Reveal key={e.id} delay={Math.min(80+i*55,420)}>
          <Pressable onPress={()=>router.push({pathname:'/evento/[id]',params:{id:e.id}})}>
            <GlassSurface style={s.card} intensity={42}>
