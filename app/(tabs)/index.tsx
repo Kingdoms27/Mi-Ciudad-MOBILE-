@@ -66,11 +66,7 @@ export default function Inicio(){
       setLugares(l.datos);
       setCategorias(c.datos);
 
-      const p=await Location.requestForegroundPermissionsAsync();
-      if(p.granted){
-        const u=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        setUbicacion({latitud:u.coords.latitude,longitud:u.coords.longitude});
-      }
+
     }catch(e){
       setError(e instanceof Error?e.message:'No se pudo cargar.');
     }finally{
@@ -78,7 +74,24 @@ export default function Inicio(){
     }
   };
 
-  useEffect(()=>{cargar()},[]);
+  // La ubicación es opcional: una demora del GPS o un permiso denegado
+  // nunca debe bloquear el catálogo ni mostrar un error de carga de lugares.
+  const cargarUbicacion=async()=>{
+    try{
+      const p=await Location.requestForegroundPermissionsAsync();
+      if(!p.granted)return;
+      const ultima=await Location.getLastKnownPositionAsync();
+      if(ultima){
+        setUbicacion({latitud:ultima.coords.latitude,longitud:ultima.coords.longitude});
+      }
+      const u=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
+      setUbicacion({latitud:u.coords.latitude,longitud:u.coords.longitude});
+    }catch(e){
+      if(__DEV__)console.info('[Mi Ciudad] No se pudo obtener GPS; el catálogo sigue disponible',e);
+    }
+  };
+
+  useEffect(()=>{void cargar();void cargarUbicacion()},[]);
 
   const visibles=useMemo(
     ()=>lugares
@@ -87,9 +100,16 @@ export default function Inicio(){
     [lugares,categoria,buscar,ubicacion],
   );
 
+  // Los IDs cambian de significado entre mocks y API docente.
+  // Elegir destacados por nombre evita mostrar otro atractivo accidentalmente.
   const destacados=useMemo(()=>{
-    const ids=['lug-002','lug-004','lug-003'];
-    return ids.map(id=>lugares.find(l=>l.id===id)).filter(Boolean) as Lugar[];
+    const clave=(nombre:string)=>nombre.normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'').trim().toLocaleLowerCase('es');
+    const indice=new Map(lugares.map(lugar=>[clave(lugar.nombre),lugar]));
+    const preferidos=['Playa Norte','Molino Forclaz','Parque Nacional El Palmar',
+      'Termas de Colón','Puerto Viejo'];
+    return preferidos.map(nombre=>indice.get(clave(nombre)))
+      .filter((lugar):lugar is Lugar=>Boolean(lugar)).slice(0,3);
   },[lugares]);
 
   const heroScale=scrollY.interpolate({inputRange:[-160,0,260],outputRange:[1.22,1,1],extrapolate:'clamp'});
