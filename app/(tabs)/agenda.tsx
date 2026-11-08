@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
@@ -47,8 +47,11 @@ export default function Agenda(){
     setCargando(false);
   };
 
-  useEffect(()=>{cargar()},[usuario?.id]);
-  useFocusEffect(useCallback(()=>{if(usuario)cargar();},[usuario?.id]));
+  // Una sola recarga cuando la pantalla toma foco, con o sin sesión.
+  // Evita dos solicitudes simultáneas de eventos/guardados al iniciar sesión.
+  useFocusEffect(useCallback(()=>{
+    void cargar();
+  },[usuario?.id]));
 
   const toggle=async(e:Evento)=>{
     if(!usuario){
