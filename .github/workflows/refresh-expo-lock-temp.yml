@@ -1,0 +1,38 @@
+name: Actualizar lock Expo SDK 57 (temporal)
+on:
+  push:
+    branches: [fix/mobile-expo-sdk57-deps-lock-20261108]
+permissions:
+  contents: write
+jobs:
+  actualizar-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: fix/mobile-expo-sdk57-deps-lock-20261108
+          persist-credentials: true
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - name: Regenerar lockfile con dependencias compatibles
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Instalación limpia
+        run: npm ci
+      - name: Verificación Expo
+        run: npx expo install --check
+      - name: Verificación TypeScript
+        run: npm run typecheck
+      - name: Publicar solo package-lock.json en rama de corrección
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "fix(expo): actualizar lockfile compatible con SDK 57"
+            git push origin HEAD:fix/mobile-expo-sdk57-deps-lock-20261108
+          else
+            echo "package-lock.json ya está sincronizado"
+          fi
