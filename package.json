@@ -17,7 +17,8 @@
     "api:imagenes": "node scripts/auditar-imagenes.mjs",
     "fotos:externas": "node scripts/auditar-fotos-externas.mjs",
     "fotos:instalar": "node scripts/instalar-fotos-locales.mjs",
-    "fotos:reporte": "node scripts/reporte-fotos.mjs"
+    "fotos:reporte": "node scripts/reporte-fotos.mjs",
+    "entrega:check": "node scripts/verificar-entrega.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
