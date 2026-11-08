@@ -229,6 +229,31 @@ La causa exacta (semillas, ausencia de eventos o filtro por fechas) debe
 confirmarse en el backend docente. No ejecutar reinicios destructivos de la
 base solo para rellenar la agenda.
 
+## Comprobar requisitos de preentrega
+
+La verificación local **no modifica archivos ni datos** y revisa la portada
+JPEG, el manifiesto de fotografías locales, el lockfile, el perfil APK de
+EAS y la URL configurada para la API.
+
+```powershell
+npm run entrega:check
+```
+
+Antes de generar un APK que se vaya a utilizar **fuera de tu Wi-Fi**:
+
+```powershell
+npm run entrega:check -- --apk
+npm run typecheck
+npm run api:check -- http://localhost:3000
+```
+
+El modo `--apk` considera bloqueante usar `localhost`, una IP de red privada
+o HTTP público para `EXPO_PUBLIC_API_URL`, porque la app debe poder
+conectarse a un backend público HTTPS. Esto **no** prueba que el backend sea
+accesible ni que el usuario tenga permiso para publicarlo: esas verificaciones
+se hacen por separado. Que falten fotos locales se informa como aviso y la app
+mantiene sus respaldos. El script no modifica la configuración ni inicia EAS.
+
 ## APK de entrega
 
 Primero asociar el proyecto con la cuenta Expo del grupo:
