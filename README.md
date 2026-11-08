@@ -254,6 +254,33 @@ accesible ni que el usuario tenga permiso para publicarlo: esas verificaciones
 se hacen por separado. Que falten fotos locales se informa como aviso y la app
 mantiene sus respaldos. El script no modifica la configuración ni inicia EAS.
 
+### Configuración de la API para el APK remoto (EAS preview)
+
+El perfil `preview` de `eas.json` utiliza explícitamente el entorno
+`preview` de EAS Build. La variable `EXPO_PUBLIC_API_URL` que se configura
+en un `.env` local **no prueba** que esté disponible para la compilación
+remota: los `.env` ignorados por Git no se suben automáticamente.
+
+**Una vez que tengas una API pública HTTPS propia y autorizada para la demo**,
+vinculá primero este proyecto con tu cuenta Expo mediante `eas build:configure`
+(si todavía no lo está) y configurá el valor real en el entorno preview:
+
+```powershell
+npx eas-cli@latest login
+npx eas-cli@latest build:configure
+npx eas-cli@latest env:set --environment preview --name EXPO_PUBLIC_API_URL --value "https://TU-API-REAL" --visibility plaintext
+npx eas-cli@latest env:list --environment preview
+```
+
+Reemplazá `https://TU-API-REAL` por una URL real que responda al contrato
+del profesor. No uses `localhost`, `192.168.x.x` ni inventes una URL. Esta
+variable es pública y se incorpora al código del cliente: **nunca** pongas
+contraseñas, tokens privados o secretos en `EXPO_PUBLIC_*`.
+
+Antes del build, verificá el origen HTTPS desde una red externa
+(`/salud`, `/lugares`, `/eventos` y archivos). El APK requiere
+reconstrucción si cambiás la dirección de la API integrada.
+
 ## APK de entrega
 
 Primero asociar el proyecto con la cuenta Expo del grupo:

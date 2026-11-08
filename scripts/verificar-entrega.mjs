@@ -108,6 +108,9 @@ try {
   } else {
     try {
       const eas = JSON.parse(await leer('eas.json'));
+      if (modoApk && eas.build?.preview?.environment !== 'preview') {
+        aviso('El perfil EAS preview no selecciona explícitamente environment=preview.');
+      }
       if (eas.build?.preview?.android?.buildType === 'apk') {
         aprobado('EAS tiene un perfil preview que genera APK Android.');
       } else {
@@ -116,6 +119,12 @@ try {
     } catch {
       fallo('No se pudo interpretar eas.json como JSON.');
     }
+  }
+
+  if (modoApk) {
+    // Una URL en .env local NO garantiza que EAS Build la reciba: los .env
+    // ignorados en Git no se suben de forma automática a la nube.
+    aviso('Verificá que el proyecto EAS tenga EXPO_PUBLIC_API_URL en el entorno preview: npx eas-cli@latest env:list --environment preview. La configuración local no prueba la del APK.');
   }
 
   const api = await baseConfigurada();
