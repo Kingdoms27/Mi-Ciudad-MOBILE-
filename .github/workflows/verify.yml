@@ -28,5 +28,7 @@ jobs:
         run: |
           node --check scripts/instalar-fotos-locales.mjs
           node --check scripts/auditar-fotos-externas.mjs
+          node --check scripts/reporte-fotos.mjs
+          node --check scripts/verificar-entrega.mjs
       - name: TypeScript
         run: npm run typecheck
