@@ -329,6 +329,36 @@ Antes del build, verificá el origen HTTPS desde una red externa
 (`/salud`, `/lugares`, `/eventos` y archivos). El APK requiere
 reconstrucción si cambiás la dirección de la API integrada.
 
+## Mapa Android nativo y respaldo OpenStreetMap
+
+El proyecto incluye `react-native-maps` para iOS. Desde esta revisión
+también puede utilizarlo en Android con una clave **real y restringida** del
+SDK de Google Maps. Sin clave mantiene la cartografía OSM/WebView y no
+rompe la versión actual.
+
+Antes de activar mapas nativos en Android hay que:
+
+1. Obtener autorización para habilitar Google Maps Platform en Google Cloud
+   (puede requerir configurar facturación).
+2. Activar **Maps SDK for Android** y restringir la clave de API al paquete
+   `ar.edu.uner.miciudadcolon` y huella SHA-1 del certificado de la
+   compilación Android correspondiente.
+3. Guardar `GOOGLE_MAPS_ANDROID_API_KEY` en el entorno EAS que se usará
+   para compilar (`preview` o `production`). Elegir visibilidad
+   `sensitive` desde Expo Dashboard. No pegar claves en GitHub.
+4. Ejecutar una **nueva compilación**; `app.config.js` activa el plugin
+   `react-native-maps` y la pantalla selecciona el mapa nativo cuando
+   detecta la configuración. Cambiar la clave requiere reconstruir el APK.
+5. Comprobar en un Android real calles/mosaicos, marcadores, filtros, GPS,
+   detalle y gestos. La alternativa WebView queda disponible si no se
+   configuró la clave. La aceptación del docente sigue siendo necesaria
+   si se entrega con WebView.
+
+La clave, aunque se gestione desde EAS, termina incorporada al APK para
+el SDK nativo. Su protección real depende de restringir paquete y SHA-1
+en Google Cloud, no de ocultarla en el repositorio. La compilación iOS
+no necesita esa clave y conserva Apple Maps.
+
 ## Control de consignas antes de entregar
 
 Verificá `docs/CONTROL-CONSIGNAS-100.md`: relaciona los seis módulos
