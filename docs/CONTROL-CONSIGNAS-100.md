@@ -22,7 +22,7 @@ Esta matriz distingue código presente de pruebas ejecutadas; la compilación o 
 | React Native / Expo / TypeScript / Expo Router / StyleSheet | `package.json`, `app/` | Presente; CI valida dependencias y TypeScript |
 | Cámara (`expo-camera`) y galería (`expo-image-picker`) | `app/escanear.tsx`, `app/registrar-visita.tsx` | Código presente; falta prueba hardware en Android e iOS |
 | Geolocalización (`expo-location`) | `app/(tabs)/mapa.tsx`, `src/servicios/proximidad.ts` | Código presente; GPS debe ser opcional y no bloquear marcadores |
-| `react-native-maps` | iOS en `app/(tabs)/mapa.tsx` | **Pendiente estricto en Android:** WebView/OSM es alternativa; para mapa nativo en APK Android se requiere Google Maps SDK y clave configurada, o aprobación docente de la alternativa |
+| `react-native-maps` | iOS en `app/(tabs)/mapa.tsx` | Existe un modo nativo Android con `react-native-maps` preparado en `app.config.js`, **sujeto a clave Google Maps SDK restringida y build real**; sin clave sigue WebView/OSM y requiere aprobación docente |
 | Notificaciones (`expo-notifications`) | `src/servicios/notificaciones.ts` | Código presente; demostrar aviso de proximidad y recordatorio/cambio de estado |
 | SQLite, kv-store y red | `src/servicios/db.ts`, `cache.ts`, `red.ts` | Código presente; faltan pruebas de modo avión, reintentos, sincronización |
 | `expo-secure-store` y biometría | `src/contexto/SesionContext.tsx`, `src/servicios/auth.ts` | Código presente; pruebas de sesiones y cambio de dispositivo |
@@ -37,7 +37,7 @@ Esta matriz distingue código presente de pruebas ejecutadas; la compilación o 
 1. **API pública:** `EXPO_PUBLIC_API_URL` apunta a una IP LAN en desarrollo; el entorno `preview` de EAS no tenía variables. El APK fuera del Wi-Fi necesita backend HTTPS con persistencia real y variable configurada **antes del build**.
 2. **Agenda:** el backend original filtra eventos anteriores a hoy, y los eventos sembrados tienen fechas relativas a la primera carga. Ejecutar `npm run api:diagnosticar:win` y comparar actuales con históricos antes de intervenir SQLite. **No ejecutar `db:reiniciar`**.
 3. **Fotografías:** 19 fichas prioritarias detectadas; cero fotos locales empaquetadas por lugar. Una URL 200 no prueba autenticidad ni derechos de uso.
-4. **Mapa Android:** no afirmar cumplimiento estricto de `react-native-maps` hasta conseguir clave nativa y probar en APK o aceptación docente documentada de WebView.
+4. **Mapa Android:** el código nativo está preparado, pero sin `GOOGLE_MAPS_ANDROID_API_KEY` sigue WebView. No afirmar cumplimiento estricto hasta conseguir clave nativa, generar APK y probarlo o documentar aceptación docente de WebView.
 5. **Multimedia:** audios de demo no son audioguías oficiales; `expo-video` aparece en la tabla de tecnología sin funcionalidad de video definida.
 6. **Pruebas manuales:** ninguna CI demuestra por sí misma permisos, GPS físico, sensor, suspensión de app, red offline ni notificaciones.
 
