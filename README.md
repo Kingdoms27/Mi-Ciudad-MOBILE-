@@ -236,6 +236,48 @@ powershell -ExecutionPolicy Bypass -File .\scripts\diagnosticar-backend-windows.
 Con la salida podremos investigar filtros/semillas y después preparar el
 despliegue HTTPS del backend, sin asumir que el ZIP esté publicado en GitHub.
 
+## Recuperar la agenda de demostración sin borrar SQLite
+
+Cuando los ocho eventos iniciales están en el pasado, `GET /eventos`
+devuelve cero porque por contrato solo lista eventos desde hoy. Se creó
+una herramienta de **dos fases** para recuperar los ocho registros demo,
+preservando IDs, estados, relaciones, favoritos, usuarios y visitas:
+
+**Fase 1 (solo lectura):**
+
+```powershell
+npm run eventos:reprogramar:demo
+```
+
+Muestra la base de datos detectada, los ocho eventos de semilla
+`evt-017` a `evt-024`, el desplazamiento de días y las fechas
+resultantes. Por seguridad, solo actúa sobre **una base SQLite local** que
+contiene exactamente los ocho IDs esperados y ninguno adicional.
+Si no encuentra una ruta SQLite única, permite especificarla con
+`node scripts/reprogramar-eventos-demo.mjs --db "C:\ruta\api.sqlite"`.
+Nunca opera sobre un proveedor remoto.
+
+**Fase 2 (escritura, solo si la simulación es correcta):**
+
+1. Detener primero el backend con `Ctrl+C` en la terminal donde se ejecuta NestJS.
+2. Ejecutar `npm run eventos:reprogramar:demo -- --aplicar`.
+3. El script comprueba que el servidor no responda en `localhost:3000`,
+   genera un respaldo SQLite completo en
+   `%LOCALAPPDATA%\MiCiudadColon\respaldos` y luego mueve de forma
+   transaccional `inicio`, `fin` y `finEfectivo` de los ocho eventos
+   a fechas futuras, conservando sus horas, IDs y estados.
+4. Volver a iniciar la API y ejecutar `npm run api:diagnosticar:win`.
+
+Se elige mañana como fecha de base para que los eventos del ejemplo
+queden disponibles incluso si la reparación se ejecuta por la noche.
+La muestra `evt-024` permanece histórica, para probar `finalizado`.
+**No ejecuta `db:reiniciar`**. Si aparece cualquier estructura distinta,
+dato modificado o falta el respaldo, cancela la escritura.
+
+Es una corrección puntual para las semillas docentes, no una función
+de programación de eventos reales. Los datos de demostración se volverán
+a vencer con el tiempo; no reprogramar eventos reales.
+
 ## Por qué pueden desaparecer los eventos de demostración
 
 En `api-mi-ciudad`, `GET /eventos` consulta **desde el día actual**
