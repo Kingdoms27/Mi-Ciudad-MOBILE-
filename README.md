@@ -329,6 +329,16 @@ Antes del build, verificá el origen HTTPS desde una red externa
 (`/salud`, `/lugares`, `/eventos` y archivos). El APK requiere
 reconstrucción si cambiás la dirección de la API integrada.
 
+## Control de consignas antes de entregar
+
+Verificá `docs/CONTROL-CONSIGNAS-100.md`: relaciona los seis módulos
+funcionales y las capacidades técnicas exigidas por el PDF de la cátedra
+con código comprobable, pruebas obligatorias y pendientes (eventos, mapa
+Android, multimedia, fotografías, API HTTPS, build de producción y dispositivos).
+
+**Implementado no equivale a probado**. No declarar cumplimiento completo
+hasta cerrar las casillas y registrar evidencia del funcionamiento real.
+
 ## APK de entrega
 
 Primero asociar el proyecto con la cuenta Expo del grupo:

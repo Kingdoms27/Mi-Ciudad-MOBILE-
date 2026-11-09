@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
@@ -44,15 +44,7 @@ export default function Mapa(){
       setLugares(l.datos);
       setCategorias(c.datos);
 
-      const p=await Location.requestForegroundPermissionsAsync();
-      if(!p.granted){
-        setPermiso('negado');
-        return;
-      }
 
-      const u=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-      setCoord({latitud:u.coords.latitude,longitud:u.coords.longitude});
-      setPermiso('ok');
     }catch(e){
       setError(e instanceof Error?e.message:'No se pudo cargar el mapa.');
     }finally{
@@ -60,7 +52,31 @@ export default function Mapa(){
     }
   };
 
-  useEffect(()=>{cargar()},[]);
+  // El permiso y el GPS son opcionales: no deben retrasar ni ocultar el mapa.
+  const cargarUbicacion=async()=>{
+    try{
+      const p=await Location.requestForegroundPermissionsAsync();
+      if(!p.granted){
+        setPermiso('negado');
+        return;
+      }
+      const anterior=await Location.getLastKnownPositionAsync();
+      if(anterior){
+        setCoord({latitud:anterior.coords.latitude,longitud:anterior.coords.longitude});
+        setPermiso('ok');
+      }
+      const actual=await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
+      setCoord({latitud:actual.coords.latitude,longitud:actual.coords.longitude});
+      setPermiso('ok');
+    }catch(e){
+      // El permiso puede estar concedido aunque GPS/servicios de ubicación fallen.
+      // La cartografía y los marcadores siguen disponibles.
+      setPermiso('negado');
+      if(__DEV__)console.info('[Mi Ciudad] GPS no disponible en mapa:',e);
+    }
+  };
+
+  useEffect(()=>{void cargar();void cargarUbicacion();},[]);
 
   const visibles=useMemo(
     ()=>lugares.filter(l=>filtro==='todas'||l.categoriaId===filtro),
@@ -122,6 +138,9 @@ export default function Mapa(){
         },480);
       }
       await Haptics.selectionAsync().catch(()=>undefined);
+    }catch(e){
+      Alert.alert('Ubicación no disponible', 'No pudimos obtener tu ubicación. Podés explorar el mapa y los lugares sin activar el GPS.');
+      if(__DEV__)console.info('[Mi Ciudad] No se pudo centrar el mapa en el usuario:',e);
     }finally{
       setUbicando(false);
     }
