@@ -19,7 +19,8 @@
     "fotos:instalar": "node scripts/instalar-fotos-locales.mjs",
     "fotos:reporte": "node scripts/reporte-fotos.mjs",
     "entrega:check": "node scripts/verificar-entrega.mjs",
-    "api:diagnosticar:win": "powershell -ExecutionPolicy Bypass -File scripts/diagnosticar-backend-windows.ps1"
+    "api:diagnosticar:win": "powershell -ExecutionPolicy Bypass -File scripts/diagnosticar-backend-windows.ps1",
+    "eventos:reprogramar:demo": "node scripts/reprogramar-eventos-demo.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
