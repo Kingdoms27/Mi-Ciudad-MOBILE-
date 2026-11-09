@@ -1,0 +1,47 @@
+name: Incorporar fotos Commons (temporal)
+on:
+  push:
+    branches: [feature/mobile-fotos-commons-verificadas-20261108]
+permissions:
+  contents: write
+jobs:
+  incluir-fotografias:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar rama
+        uses: actions/checkout@v4
+        with:
+          ref: feature/mobile-fotos-commons-verificadas-20261108
+          persist-credentials: true
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+      - name: Descargar fotografías verificadas
+        run: node scripts/descargar-fotos-commons.mjs
+      - name: Comprobar foto y manifest Metro
+        run: |
+          test -d assets/lugares
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const files=fs.readdirSync('assets/lugares').filter(n=>n.endsWith('.jpg'));
+          if(!files.length)throw new Error('No se descargaron fotografías; no publicar un catálogo vacío');
+          for(const f of files){
+            const b=fs.readFileSync('assets/lugares/'+f);
+            if(b.length<1500||b[0]!==255||b[1]!==216||b[2]!==255){
+              throw new Error('No es JPEG: '+f);
+            }
+          }
+          const catalogo=fs.readFileSync('src/servicios/fotosLocales.ts','utf8');
+          if(!catalogo.includes('require('))throw new Error('No se regeneró el catálogo estático para Metro');
+          console.log('Fotografías verificadas:',files.length);
+          NODE
+      - name: Registrar fotografías y catálogo en rama
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/lugares src/servicios/fotosLocales.ts
+          if ! git diff --cached --quiet; then
+            git commit -m "feat(fotos): incorporar JPEG verificadas de atractivos de Colón"
+            git push origin HEAD:feature/mobile-fotos-commons-verificadas-20261108
+          fi
