@@ -236,6 +236,28 @@ powershell -ExecutionPolicy Bypass -File .\scripts\diagnosticar-backend-windows.
 Con la salida podremos investigar filtros/semillas y después preparar el
 despliegue HTTPS del backend, sin asumir que el ZIP esté publicado en GitHub.
 
+## Por qué pueden desaparecer los eventos de demostración
+
+En `api-mi-ciudad`, `GET /eventos` consulta **desde el día actual**
+salvo que se indique `fecha` o `desde`. El archivo
+`src/seeds/data/events.ts` contiene ocho eventos relativos al día de la
+siembra inicial, y `src/seeds/seed.ts` solo detecta una base totalmente
+vacía según el conteo de usuarios. Por eso los datos pueden seguir en SQLite
+aunque la Agenda muestre cero eventos después de unos días.
+
+**Diagnóstico sin escribir en la base:**
+
+```powershell
+npm run api:diagnosticar:win
+```
+
+El comando ahora compara los próximos eventos con
+`GET /eventos?desde=2020-01-01&porPagina=100` y enumera algunas fechas de
+los registros históricos. Si aparecen eventos antiguos, no es un error de
+Expo ni implica que se hayan borrado: hace falta decidir cómo actualizar
+**solo datos de demostración**, con respaldo previo, respetando el contrato
+"desde hoy". No usar `db:reiniciar` para reparar esta situación.
+
 ## Agenda vacía con API configurada
 
 Si `npm run api:imagenes -- http://localhost:3000` muestra **0 eventos**,
