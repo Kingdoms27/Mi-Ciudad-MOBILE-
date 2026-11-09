@@ -59,5 +59,7 @@ jobs:
           assert.equal(native.plugins.at(-1)[1].androidGoogleMapsApiKey,'clave-ficticia-solo-ci');
           NODE
           npx expo config --type public > /dev/null
+      - name: Validar sintaxis de reprogramación segura de eventos
+        run: node --check scripts/reprogramar-eventos-demo.mjs
       - name: TypeScript
         run: npm run typecheck
