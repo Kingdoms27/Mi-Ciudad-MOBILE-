@@ -278,6 +278,33 @@ Es una corrección puntual para las semillas docentes, no una función
 de programación de eventos reales. Los datos de demostración se volverán
 a vencer con el tiempo; no reprogramar eventos reales.
 
+## Fotografías reales verificadas (sin descargarlas a mano)
+
+Para incorporar un lote inicial de **siete lugares reconocibles** de
+Wikimedia Commons y empaquetarlas dentro de Expo, con fuentes y licencias
+documentadas en `docs/CREDITOS-FOTOS-COMMONS.md`:
+
+```powershell
+npm run fotos:commons
+```
+
+El script consulta la API de Wikimedia Commons, descarga sólo archivos
+JPEG válidos en `assets/lugares/` y reconstruye automáticamente
+`src/servicios/fotosLocales.ts`. Si ya hay una fotografía propia con
+ese nombre, **no la reemplaza**. Si Wikimedia devuelve 403/429 o falla la
+red, identifica los lugares pendientes sin poner datos inválidos en Metro.
+Es un lote inicial, **no afirma resolver los 26 lugares**; especialmente
+no inventa imágenes para comercios sin una fotografía documentada.
+
+Después de incorporarlas, reiniciá Expo Go:
+
+```powershell
+npx expo start --clear
+```
+
+No modifica la portada HD, la base de datos ni las demás pantallas.
+Conservar `assets/lugares` y los créditos al publicar la aplicación.
+
 ## Por qué pueden desaparecer los eventos de demostración
 
 En `api-mi-ciudad`, `GET /eventos` consulta **desde el día actual**
