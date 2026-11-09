@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -21,6 +22,9 @@ const COLON={latitude:-32.2231,longitude:-58.1440,latitudeDelta:0.07,longitudeDe
 export default function Mapa(){
   const{colores,esOscuro}=useTema();
   const insets=useSafeAreaInsets();
+  // APK Android con clave SDK: react-native-maps nativo.
+  // Sin clave nativa, conservar el mapa OSM/WebView que funciona sin Google.
+  const mapaNativo=Platform.OS!=='android' || Constants.expoConfig?.extra?.androidNativeMapsEnabled===true;
   const mapRef=useRef<MapView|null>(null);
   const leafletRef=useRef<MapaLeafletRef|null>(null);
 
@@ -99,7 +103,7 @@ export default function Mapa(){
   const enfocarLugar=async(l:Lugar)=>{
     await Haptics.selectionAsync().catch(()=>undefined);
     setSeleccion(l);
-    if(Platform.OS==='android'){
+    if(!mapaNativo){
       leafletRef.current?.enfocar(l.coordenadas.latitud,l.coordenadas.longitud,15);
     }else{
       mapRef.current?.animateToRegion({
@@ -127,7 +131,7 @@ export default function Mapa(){
       setCoord(actual);
       setPermiso('ok');
       setSeleccion(null);
-      if(Platform.OS==='android'){
+      if(!mapaNativo){
         leafletRef.current?.enfocar(actual.latitud,actual.longitud,15);
       }else{
         mapRef.current?.animateToRegion({
@@ -148,7 +152,7 @@ export default function Mapa(){
 
   const volverColon=async()=>{
     setSeleccion(null);
-    if(Platform.OS==='android'){
+    if(!mapaNativo){
       leafletRef.current?.enfocar(COLON.latitude,COLON.longitude,13);
     }else{
       mapRef.current?.animateToRegion(COLON,480);
@@ -163,7 +167,7 @@ export default function Mapa(){
 
   return <View style={s.root}>
     <NetworkBanner/>
-    {Platform.OS==='android'?<MapaLeaflet
+    {!mapaNativo?<MapaLeaflet
       ref={leafletRef}
       lugares={visibles}
       coord={coord}
@@ -174,6 +178,7 @@ export default function Mapa(){
       }}
     />:<MapView
       ref={mapRef}
+      provider={Platform.OS==='android'?PROVIDER_GOOGLE:undefined}
       style={s.map}
       initialRegion={COLON}
       showsUserLocation={permiso==='ok'}
