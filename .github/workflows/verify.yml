@@ -40,5 +40,24 @@ jobs:
             $errors | ForEach-Object { Write-Host $_.ToString() }
             exit 1
           }
+      - name: Validar configuración Expo dinámica (mapas opcionales)
+        run: |
+          node --check app.config.js
+          node - <<'NODE'
+          const assert=require('node:assert/strict');
+          const cfg=require('./app.config.js');
+          const base=require('./app.json').expo;
+          delete process.env.GOOGLE_MAPS_ANDROID_API_KEY;
+          const web=cfg({config:base});
+          assert.equal(web.extra.androidNativeMapsEnabled,false);
+          assert.equal(web.extra.eas.projectId,base.extra.eas.projectId);
+          assert.deepEqual(web.plugins,base.plugins);
+          process.env.GOOGLE_MAPS_ANDROID_API_KEY='clave-ficticia-solo-ci';
+          const native=cfg({config:base});
+          assert.equal(native.extra.androidNativeMapsEnabled,true);
+          assert.equal(native.plugins.at(-1)[0],'react-native-maps');
+          assert.equal(native.plugins.at(-1)[1].androidGoogleMapsApiKey,'clave-ficticia-solo-ci');
+          NODE
+          npx expo config --type public > /dev/null
       - name: TypeScript
         run: npm run typecheck
