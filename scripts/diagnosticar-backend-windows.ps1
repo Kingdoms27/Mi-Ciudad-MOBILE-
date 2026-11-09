@@ -121,7 +121,30 @@ foreach ($recurso in @('salud', 'lugares?porPagina=500', 'eventos?porPagina=100'
     } else { 'sin meta.total' }
     Write-Host ('[OK] GET /' + $recurso + ': elementos=' + $numero + ', total=' + $total) -ForegroundColor Green
     if ($recurso -like 'eventos*' -and $numero -eq 0) {
-      Write-Host '[AVISO] La Agenda remota esta vacia. Hay que revisar semillas/filtros en el backend, no en Expo.'
+      Write-Host '[AVISO] La Agenda visible esta vacia; el backend filtra eventos anteriores a hoy.' -ForegroundColor Yellow
+      try {
+        # La ruta publica acepta desde=AAAA-MM-DD. Esta consulta no modifica datos.
+        $historico = Invoke-RestMethod -Uri ($BaseUrl + '/eventos?desde=2020-01-01&porPagina=100') -Method Get -TimeoutSec 12
+        $totalHistorico = if ($historico.meta -and $null -ne $historico.meta.total) {
+          [int]$historico.meta.total
+        } else {
+          @($historico.datos).Count
+        }
+        Write-Host ('[OK] Eventos desde 2020-01-01 (incluidos vencidos): ' + $totalHistorico) -ForegroundColor Cyan
+        if ($totalHistorico -gt 0) {
+          Write-Host '[DIAGNOSTICO] Los eventos existen; probablemente sus fechas ya quedaron en el pasado.' -ForegroundColor Yellow
+          $muestra = @($historico.datos | Select-Object -Last 3)
+          foreach ($evento in $muestra) {
+            Write-Host ('  Evento ' + $evento.id + ' | inicio=' + $evento.inicio + ' | fin=' + $evento.fin)
+          }
+          Write-Host '[SIGUIENTE] Conservar los eventos existentes. No usar db:reiniciar.'
+        } else {
+          Write-Host '[DIAGNOSTICO] Tampoco hay eventos historicos desde 2020; comprobar la tabla y la carga inicial.'
+          Write-Host '[SIGUIENTE] No usar db:reiniciar sin antes respaldar y analizar la base.'
+        }
+      } catch {
+        Write-Host ('[AVISO] No se pudo consultar el historico: ' + $_.Exception.Message)
+      }
     }
   } catch {
     Write-Host ('[AVISO] GET /' + $recurso + ' no se pudo consultar: ' + $_.Exception.Message)
