@@ -9,8 +9,8 @@
  *   node scripts/reprogramar-eventos-demo.mjs --db "C:\ruta\base.sqlite"
  */
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync, readdirSync, mkdirSync, statSync } from 'node:fs';
-import { resolve, join, dirname, isAbsolute, extname } from 'node:path';
+import { existsSync, readFileSync, readdirSync, mkdirSync, statSync, openSync, readSync, closeSync } from 'node:fs';
+import { resolve, join, isAbsolute, extname } from 'node:path';
 import { homedir } from 'node:os';
 
 const aplicar = process.argv.includes('--aplicar');
@@ -40,8 +40,14 @@ function variablesEnv(ruta) {
   return out;
 }
 function esSqlite(ruta){
-  try{return readFileSync(ruta).subarray(0,16).toString() === 'SQLite format 3\u0000';}
-  catch{return false;}
+  let fd;
+  try {
+    fd=openSync(ruta,'r');
+    const encabezado=Buffer.alloc(16);
+    return readSync(fd,encabezado,0,16,0)===16 &&
+      encabezado.toString()==='SQLite format 3\\u0000';
+  } catch { return false; }
+  finally { if(fd!==undefined)closeSync(fd); }
 }
 function buscarBases(carpeta,profundidad=0) {
   if(profundidad>3 || !existsSync(carpeta))return [];
@@ -84,6 +90,15 @@ function fechaLocal(ms){
   return [valor('year'),valor('month'),valor('day')].join('-');
 }
 function fechaUTC(dia){return Date.parse(dia+'T00:00:00.000Z')}
+function msDeFecha(valor){
+  if(typeof valor==='number'){
+    return Math.abs(valor)<10_000_000_000 ? valor*1000 : valor;
+  }
+  if(typeof valor==='string'){
+    return Date.parse(valor.replace(' ','T')+(valor.includes('Z')?'':'Z'));
+  }
+  return NaN;
+}
 function mover(valor,dias){
   if(valor===null)return null;
   const msDelta=dias*86_400_000;
@@ -153,16 +168,14 @@ async function main(){
     antes=filasEventos(db,tabla);
     validarFilas(antes);
     const primera=antes.find(f=>f.id==='evt-017');
-    const fechaInicio=typeof primera.inicio==='number' ? new Date(primera.inicio).getTime() :
-      Date.parse(primera.inicio.replace(' ','T')+(primera.inicio.includes('Z')?'':'Z'));
+    const fechaInicio=msDeFecha(primera.inicio);
     if(!Number.isFinite(fechaInicio))fallar('No pude interpretar la fecha inicial.');
     const origen=fechaLocal(fechaInicio);
     const hoy=fechaLocal(Date.now());
     // Elegimos mañana para asegurar eventos futuros incluso si se ejecuta de noche.
     delta=Math.round((fechaUTC(hoy)+86_400_000-fechaUTC(origen))/86_400_000);
     if(delta<=0)fallar('Los eventos demo no necesitan reprogramación hacia el futuro.');
-    if(antes.some(x=> x.id!=='evt-024' && Date.parse(String(x.inicio).replace(' ','T')+
-      (String(x.inicio).includes('Z')?'':'Z'))>Date.now()))
+    if(antes.some(x=> x.id!=='evt-024' && msDeFecha(x.inicio)>Date.now()))
       fallar('Ya hay eventos futuros en la tabla; la reparación no es necesaria.');
     plan=antes.map(x=>({
       ...x,
