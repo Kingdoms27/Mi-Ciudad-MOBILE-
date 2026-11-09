@@ -45,7 +45,8 @@ function esSqlite(ruta){
     fd=openSync(ruta,'r');
     const encabezado=Buffer.alloc(16);
     return readSync(fd,encabezado,0,16,0)===16 &&
-      encabezado.toString()==='SQLite format 3\\u0000';
+      encabezado.toString('ascii',0,15)==='SQLite format 3' &&
+      encabezado[15]===0;
   } catch { return false; }
   finally { if(fd!==undefined)closeSync(fd); }
 }
