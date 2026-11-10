@@ -48,6 +48,22 @@ docs/                        Mapeo, decisiones, pruebas y defensa
 - Teléfono Android/iPhone para probar cámara, GPS, biometría, notificaciones y sensores.
 - Cuenta de Expo para vincular el proyecto y generar builds con EAS.
 
+## Probar iPhone — Giovanni Percara (Expo SDK 57)
+
+La prueba en el iPhone de Giovanni se documenta en
+[docs/PRUEBA-IOS-GIOVANNI.md](docs/PRUEBA-IOS-GIOVANNI.md).
+
+**Importante:** Expo Go para iPhone físico no se instala igual que en
+Android cuando el proyecto está en SDK 57. Una prueba nativa sin cambiar
+el SDK requiere Apple Developer activo y distribución EAS iOS (por
+ejemplo, `preview` *ad hoc* con el iPhone de Giovanni registrado).
+No crear un build con `EXPO_PUBLIC_API_URL=localhost`: el iPhone debe
+acceder al backend docente y a `/archivos/`. Si el tester está fuera de
+tu Wi-Fi, usar una API HTTPS accesible públicamente.
+
+El proyecto, el mapa y las imágenes de la API no necesitan migrarse a
+SDK 58 para hacer esa prueba.
+
 ## Ejecutar
 
 ```bash
