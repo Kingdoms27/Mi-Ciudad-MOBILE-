@@ -22,7 +22,8 @@
     "api:diagnosticar:win": "powershell -ExecutionPolicy Bypass -File scripts/diagnosticar-backend-windows.ps1",
     "eventos:reprogramar:demo": "node scripts/reprogramar-eventos-demo.mjs",
     "fotos:commons": "node scripts/descargar-fotos-commons.mjs",
-    "api:fotos:grupo": "node scripts/diagnosticar-imagenes-grupo.mjs"
+    "api:fotos:grupo": "node scripts/diagnosticar-imagenes-grupo.mjs",
+    "grupo:conectar": "powershell -ExecutionPolicy Bypass -File scripts/conectar-grupo-remoto-windows.ps1"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
