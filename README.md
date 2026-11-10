@@ -50,21 +50,31 @@ docs/                        Mapeo, decisiones, pruebas y defensa
 
 ## Probar iPhone — Giovanni Percara (Expo SDK 57)
 
-La prueba en el iPhone de Giovanni se documenta en
-[docs/PRUEBA-IOS-GIOVANNI.md](docs/PRUEBA-IOS-GIOVANNI.md).
+En septiembre de 2026, Expo confirmó que **Expo Go de la App Store
+admite SDK 57**. Giovanni puede abrir el QR remoto si tanto su
+Expo Go del iPhone como la terminal Expo CLI de la computadora
+iniciaron sesión con la **misma cuenta Expo**. No necesita TestFlight
+para este primer intento. Ver:
+[la guía de Giovanni](docs/PRUEBA-IOS-GIOVANNI.md) y
+[el anuncio de Expo](https://expo.dev/changelog/expo-go-57-login).
 
-**Importante:** Expo Go para iPhone físico no se instala igual que en
-Android cuando el proyecto está en SDK 57. Una prueba nativa sin cambiar
-el SDK requiere Apple Developer activo y distribución EAS iOS (por
-ejemplo, `preview` *ad hoc* con el iPhone de Giovanni registrado).
-No crear un build con `EXPO_PUBLIC_API_URL=localhost`: el iPhone debe
-acceder al backend docente y a `/archivos/`. Si el tester está fuera de
-tu Wi-Fi, usar una API HTTPS accesible públicamente.
-
-El proyecto, el mapa y las imágenes de la API no necesitan migrarse a
-SDK 58 para hacer esa prueba.
+Para imágenes, debe ser accesible desde su iPhone **la API de la cátedra**
+a través de HTTPS, no una IP privada de tu PC. El túnel de Expo no publica
+la API.
 
 ## Pruebas compartidas con compañeros
+
+**Para compañeros en otras redes**, manteniendo Expo SDK 57:
+`npm run api:iniciar:win` en una terminal;
+`cloudflared tunnel --url http://localhost:3000` en otra;
+copiar la dirección temporal HTTPS y finalmente ejecutar
+`npm run grupo:conectar -- https://tu-api.trycloudflare.com`.
+El último comando verifica la API, escribe `.env.local` y abre Expo
+por túnel. Ver
+[pasos completos y precauciones](docs/PRUEBAS-COMPANEROS.md).
+Usar la API de desarrollo **sólo con cuentas y datos ficticios** porque
+el Quick Tunnel expone una URL pública temporal.
+
 
 Ver [la guía de Android/iPhone y diagnóstico de imágenes de la API](docs/PRUEBAS-COMPANEROS.md).
 
