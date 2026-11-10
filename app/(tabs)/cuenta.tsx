@@ -242,6 +242,9 @@ export default function Cuenta(){
 
       <Reveal delay={250}>
         <Text style={[s.demo,{color:colores.secundario}]}>Demo: lucia@mail.com · lucia1234</Text>
+        <Pressable onPress={()=>router.push('/creditos')} style={s.altButton}>
+          <Text style={{color:colores.primario,textAlign:'center',fontWeight:'800'}}>Créditos de fotografías</Text>
+        </Pressable>
       </Reveal>
     </ScrollView>
   </View>;
@@ -382,6 +385,9 @@ export default function Cuenta(){
       </GlassSurface>
     </Reveal>
 
+    <Pressable onPress={()=>router.push('/creditos')} style={[s.option,{marginBottom:14,paddingVertical:14,alignItems:'center',backgroundColor:colores.superficie2}]}>
+      <Text style={{color:colores.primario,fontWeight:'800'}}>Créditos y licencias de fotografías</Text>
+    </Pressable>
     <Pressable onPress={logout} style={[s.logout,{borderColor:colores.peligro}]}>
       <Ionicons name="log-out-outline" size={20} color={colores.peligro}/>
       <Text style={{color:colores.peligro,fontWeight:'900'}}>Cerrar sesión</Text>
