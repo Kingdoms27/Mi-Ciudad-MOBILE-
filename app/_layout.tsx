@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, router, ThemeProvider as NavigationThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
@@ -14,6 +14,34 @@ import { prepararNotificacionesLocales } from '@/src/servicios/notificaciones';
 
 function Efectos(){
   const{usuario}=useSesion();
+
+  useEffect(()=>{
+    let activo=true;
+    let listener: {remove:()=>void}|undefined;
+    let pendiente: ReturnType<typeof setTimeout>|undefined;
+    // Si el usuario TOCA un recordatorio, Android abre la aplicación.
+    // Redirigir a la ficha adecuada y limpiar la respuesta para evitar
+    // otra navegación automática al actualizar la pantalla.
+    void (async()=>{
+      if(!(await prepararNotificacionesLocales()))return;
+      const Notifications=await import('expo-notifications');
+      if(!activo)return;
+      const abrir=(r:import('expo-notifications').NotificationResponse)=>{
+        if(!activo||r.actionIdentifier!==Notifications.DEFAULT_ACTION_IDENTIFIER)return;
+        Notifications.clearLastNotificationResponse();
+        const datos=r.notification.request.content.data;
+        if(typeof datos?.eventoId==='string'&&datos.eventoId){
+          router.push({pathname:'/evento/[id]',params:{id:datos.eventoId}});
+        }else if(typeof datos?.lugarId==='string'&&datos.lugarId){
+          router.push({pathname:'/lugar/[id]',params:{id:datos.lugarId}});
+        }
+      };
+      listener=Notifications.addNotificationResponseReceivedListener(abrir);
+      const ultima=Notifications.getLastNotificationResponse();
+      if(ultima)pendiente=setTimeout(()=>abrir(ultima),250);
+    })().catch(()=>undefined);
+    return()=>{activo=false;listener?.remove();if(pendiente)clearTimeout(pendiente)};
+  },[]);
 
   useEffect(()=>{
     // Registrar el manejador de avisos locales desde el inicio, también
