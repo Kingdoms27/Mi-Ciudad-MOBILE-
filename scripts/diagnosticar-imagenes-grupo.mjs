@@ -20,7 +20,9 @@ function urlImagen(url){
     const host=u.hostname.toLowerCase();
     const local=['localhost','127.0.0.1','0.0.0.0','[::1]'].includes(host);
     const lan=/^(?:192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(host);
-    if(u.pathname.startsWith('/archivos/')&&(local||lan)){
+    const api=new URL(base);
+    const mismoHostHttp=api.protocol==='https:'&&u.protocol==='http:'&&u.hostname.toLowerCase()===api.hostname.toLowerCase();
+    if(u.pathname.startsWith('/archivos/')&&(local||lan||mismoHostHttp)){
       return base+u.pathname+u.search+u.hash;
     }
     return u.href;
