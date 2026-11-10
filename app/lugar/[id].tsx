@@ -82,7 +82,7 @@ function ContenidoLugar({
 }){
   const fotoLocal=fotoLocalParaLugar(lugar);
   const apiActiva=apiConfigurada();
-  const { imagen, reportarError }=useImagenLugar(
+  const { imagen, cargando, reportarError }=useImagenLugar(
     lugar.id,apiActiva||!fotoLocal?lugar.imagenes:[],
   );
   const mostrarRemota=Boolean(imagen)&&(apiActiva||!fotoLocal);
@@ -134,12 +134,17 @@ function ContenidoLugar({
       scrollEventThrottle={16}
     >
       <View style={s.heroWrap}>
-        <Animated.Image
-          source={mostrarRemota?{uri:imagen}:fotoLocal??require('../../assets/hero-colon.jpg')}
-          onError={mostrarRemota?(evento)=>reportarError(evento.nativeEvent.error):undefined}
-          style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
-          resizeMode="cover"
-        />
+        {apiActiva&&cargando&&!mostrarRemota?
+          <View style={[s.hero,s.heroPending,{backgroundColor:colores.superficie2}]}>
+            <Ionicons name="image-outline" size={32} color={colores.secundario}/>
+            <Text style={[s.heroPendingText,{color:colores.secundario}]}>Cargando imagen de la API…</Text>
+          </View>:
+          <Animated.Image
+            source={mostrarRemota?{uri:imagen}:fotoLocal??require('../../assets/hero-colon.jpg')}
+            onError={mostrarRemota?(evento)=>reportarError(evento.nativeEvent.error):undefined}
+            style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
+            resizeMode="cover"
+          />}
         {!fotoLocal&&!mostrarRemota?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
@@ -250,6 +255,8 @@ const s=StyleSheet.create({
   scrollContent:{paddingBottom:115},
   heroWrap:{height:318,overflow:'hidden',position:'relative'},
   hero:{width:'100%',height:350,backgroundColor:'#ddd'},
+  heroPending:{alignItems:'center',justifyContent:'center',gap:12},
+  heroPendingText:{fontSize:12,fontWeight:'800'},
   heroShade:{position:'absolute',left:0,right:0,bottom:0,height:140,backgroundColor:'rgba(0,0,0,.20)'},
   heroBadge:{position:'absolute',left:18,bottom:48,borderRadius:999,paddingHorizontal:12,paddingVertical:8,backgroundColor:'rgba(15,24,22,.62)',flexDirection:'row',alignItems:'center',gap:5},
   heroBadgeText:{color:'white',fontSize:11,fontWeight:'900'},
