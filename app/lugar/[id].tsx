@@ -15,6 +15,7 @@ import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { apiConfigurada } from '@/src/servicios/api';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
@@ -80,7 +81,11 @@ function ContenidoLugar({
   usuarioId?:string;
 }){
   const fotoLocal=fotoLocalParaLugar(lugar);
-  const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
+  const apiActiva=apiConfigurada();
+  const { imagen, reportarError }=useImagenLugar(
+    lugar.id,apiActiva||!fotoLocal?lugar.imagenes:[],
+  );
+  const mostrarRemota=Boolean(imagen)&&(apiActiva||!fotoLocal);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -130,12 +135,12 @@ function ContenidoLugar({
     >
       <View style={s.heroWrap}>
         <Animated.Image
-          source={fotoLocal??(imagen?{uri:imagen}:require('../../assets/hero-colon.jpg'))}
-          onError={!fotoLocal&&imagen?(evento)=>reportarError(evento.nativeEvent.error):undefined}
+          source={mostrarRemota?{uri:imagen}:fotoLocal??require('../../assets/hero-colon.jpg')}
+          onError={mostrarRemota?(evento)=>reportarError(evento.nativeEvent.error):undefined}
           style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
           resizeMode="cover"
         />
-        {!fotoLocal&&!imagen?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
+        {!fotoLocal&&!mostrarRemota?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>
