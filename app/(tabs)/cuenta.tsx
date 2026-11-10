@@ -424,6 +424,18 @@ export default function Cuenta(){
       </GlassSurface>
     </Reveal>
 
+    <Pressable onPress={()=>router.push('/creditos-fotos')}
+      accessibilityRole="link" style={[s.row,s.creditos,{borderColor:colores.borde}]}>
+      <View style={{flexDirection:'row',alignItems:'center',gap:10,flex:1}}>
+        <Ionicons name="images-outline" size={22} color={colores.primario}/>
+        <View style={{flex:1}}>
+          <Text style={{fontSize:15,fontWeight:'900',color:colores.tinta}}>Créditos fotográficos</Text>
+          <Text style={{fontSize:12,color:colores.secundario,marginTop:3}}>Autores, fuentes y licencias de las imágenes</Text>
+        </View>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={colores.secundario}/>
+    </Pressable>
+
     <Pressable onPress={logout} style={[s.logout,{borderColor:colores.peligro}]}>
       <Ionicons name="log-out-outline" size={20} color={colores.peligro}/>
       <Text style={{color:colores.peligro,fontWeight:'900'}}>Cerrar sesión</Text>
@@ -478,5 +490,6 @@ const s=StyleSheet.create({
   options:{flexDirection:'row',gap:8,flexWrap:'wrap'},
   option:{paddingHorizontal:13,paddingVertical:9,borderRadius:12},
   avatar:{width:56,height:56,borderRadius:19},
+  creditos:{borderWidth:1,borderRadius:17,padding:15,marginBottom:18},
   logout:{borderWidth:1,borderRadius:17,padding:14,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7},
 });
