@@ -25,17 +25,34 @@ jobs:
       - name: Instalar Expo SDK 58
         run: npm install expo@^58.0.0 --save
       - name: Alinear todas las dependencias de Expo
-        run: npx expo install --fix --npm
+        id: alinear
+        shell: bash
+        run: |
+          set +e
+          npx expo install --fix --npm > sdk58-instalacion.log 2>&1
+          estado=$?
+          echo "estado=$estado" >> "$GITHUB_OUTPUT"
+          if [ "$estado" -ne 0 ]; then
+            echo "Error de alineacion SDK 58 (extracto, no incluir credenciales):" > sdk58-error.txt
+            grep -E 'npm error|ERESOLVE|Could not resolve|peer|Found:|from the root project|^The following|^Error:' sdk58-instalacion.log | tail -80 >> sdk58-error.txt || true
+          fi
+          cat sdk58-instalacion.log
+          exit 0
       - name: Guardar versiones reproducibles sólo en rama de prueba
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json
+          if [ -f sdk58-error.txt ]; then
+            git add -f sdk58-error.txt
+          fi
           if ! git diff --cached --quiet; then
             git commit -m "chore(expo): alinear dependencias y lockfile para SDK 58"
             git push origin HEAD:upgrade/sdk58-grupo-20261110
           fi
+      - name: Detener si hay incompatibilidades entre dependencias
+        run: test "${{ steps.alinear.outputs.estado }}" = "0"
       - name: Verificar dependencias Expo
         run: npx expo install --check
       - name: Ejecutar Expo Doctor
