@@ -55,14 +55,24 @@ export async function resolverImagenLugar(lugarId:string,urls:string|string[]){
   for(const url of candidatas){
     try{
       const destino=new File(dir,`${lugarId}-${Math.abs(hash(url))}${extension(url)}`);
-      const archivo=await File.downloadFileAsync(url,destino,{idempotent:true});
-      // No registrar descargas vacías o incompletas como si fueran fotos válidas.
-      if(!archivo.exists || !archivo.size){
-        if(archivo.exists)archivo.delete();
-        continue;
+      // Nunca dejar la tarjeta en "Cargando imagen de la API" sin límite
+      // cuando el backend/Cloudflare se desconecta o un CDN no responde.
+      const control=new AbortController();
+      const limite=setTimeout(()=>control.abort(),9000);
+      try{
+        const archivo=await File.downloadFileAsync(url,destino,{
+          idempotent:true,signal:control.signal,
+        });
+        // No registrar descargas vacías o incompletas como si fueran fotos válidas.
+        if(!archivo.exists || !archivo.size){
+          if(archivo.exists)archivo.delete();
+          continue;
+        }
+        await Storage.setItem(key,JSON.stringify({url,uri:archivo.uri} satisfies RegistroImagen));
+        return archivo.uri;
+      }finally{
+        clearTimeout(limite);
       }
-      await Storage.setItem(key,JSON.stringify({url,uri:archivo.uri} satisfies RegistroImagen));
-      return archivo.uri;
     }catch{}
   }
 

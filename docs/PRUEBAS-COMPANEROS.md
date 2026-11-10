@@ -123,6 +123,41 @@ La aplicación evita esas llamadas en Expo Go, conserva la reproducción
 en primer plano y las mantiene para una build nativa compatible.
 Esta limitación **no afecta las fotografías de la API**.
 
+## Fotografías externas y criterios de la consigna
+
+En el PRD de **Mi Ciudad — Guía turística de Colón** se pide ver fotos en
+el detalle del lugar y poder guardar contenido sin señal. En el Trabajo
+Integrador Final se exige **consumir la API de la cátedra** detrás de una
+capa de servicios, pero **no se indica que las fotografías deban estar
+alojadas exclusivamente en esa API**. Se mantiene la API como fuente
+oficial para nombres, ubicaciones, descripciones, horarios, categorías
+y demás datos del catálogo.
+
+Desde esta versión, cuando una foto verificable está incluida en
+`assets/lugares/`, la app la prioriza frente a los PNG genéricos
+de semilla de la API. Esto impide el reemplazo inesperado, ayuda
+a que se vean las fotos sin conexión y evita que una URL lenta
+congele la interfaz. Las fichas sin foto local siguen consultando
+las imágenes del backend, con tiempo limitado de descarga y respaldo
+si fallan.
+
+Para incorporar **más fotos autorizadas y correctas**, colocarlas en
+una carpeta con el nombre slug del lugar (por ejemplo,
+`molino-forclaz.jpg`) y ejecutar:
+
+```powershell
+npm run fotos:instalar -- "C:\MisFotosDeColon"
+```
+
+El instalador crea referencias estáticas para que Expo empaquete esos
+archivos. Revisar los créditos en `docs/CREDITOS-FOTOS-COMMONS.md`
+y **registrar autor, licencia y fuente de cada foto nueva**; una
+fotografía de otro lugar no sirve para completar una ficha. En
+producción, los créditos deben ser accesibles desde la aplicación.
+
+No es necesario ejecutar el importador de la base del profesor
+para que se vean las fotografías empaquetadas.
+
 ## Corrección del parpadeo de imágenes
 
 Con API docente configurada, las fichas ya no enseñan durante un segundo
