@@ -126,6 +126,7 @@ function Navegacion(){
       <Stack.Screen name="lugar/[id]"/>
       <Stack.Screen name="evento/[id]"/>
       <Stack.Screen name="favoritos"/>
+      <Stack.Screen name="creditos"/>
       <Stack.Screen name="escanear" options={{presentation:'modal',animation:'slide_from_bottom'}}/>
       <Stack.Screen name="registrar-visita"/>
       <Stack.Screen name="orientar/[id]"/>
