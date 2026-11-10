@@ -14,6 +14,8 @@ const FOTOS = [
   { lugar: 'Costanera Gobernador Quirós', autor: 'Juandrovandi', licencia: 'CC BY-SA 4.0', archivo: 'Costanera_de_Colon,_Entre_Rios.JPG' },
   { lugar: 'Parque Dr. Herminio J. Quirós', autor: 'Pablo D. Flores', licencia: 'CC BY-SA 2.5', archivo: 'Parque_Quirós,_Colón_-_1.jpg' },
   { lugar: 'Mirador del Puente General Artigas (vista del puente)', autor: 'Dario Alpern', licencia: 'CC BY-SA 3.0', archivo: 'Puente_General_Artigas.jpg' },
+  { lugar: 'Termas de Colón (toboganes acuáticos, fotografía 2013)', autor: 'Leisuregroup', licencia: 'CC BY-SA 3.0', archivo: 'Toboganes_Acuaticos.JPG' },
+  { lugar: 'Parroquia Santos Justo y Pastor', autor: 'Juandrovandi', licencia: 'CC BY-SA 4.0', archivo: 'Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG' },
 ] as const;
 
 export default function CreditosFotos() {
@@ -27,7 +29,7 @@ export default function CreditosFotos() {
       </Pressable>
       <Text style={[s.title,{color:colores.tinta}]}>Créditos fotográficos</Text>
       <Text style={[s.intro,{color:colores.secundario}]}>
-        Las fotografías indicadas se incluyen en la app para que puedan verse sin conexión.
+        Las primeras siete fotografías se incluyen en la app para funcionar sin conexión. Las fotos de Termas de Colón y la iglesia se descargan desde Commons y quedan guardadas después de la primera carga.
         Los archivos pertenecen a sus autores originales y conservan las licencias de Wikimedia Commons.
         La presencia de una imagen no confirma que muestre el estado actual del lugar.
       </Text>
