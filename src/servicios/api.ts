@@ -143,15 +143,31 @@ export async function apiListarTodos<T>(
 }
 
 /**
- * La API puede emitir URLs locales con "localhost". Reemplazamos sólo el
- * origen de archivos propios para que el teléfono use la IP de EXPO_PUBLIC_API_URL.
+ * Los archivos de NestJS pueden traer URLs `localhost` o la IP antigua
+ * de la computadora. Desde Expo Go deben solicitarse al mismo origen
+ * actualmente configurado en EXPO_PUBLIC_API_URL.
+ *
+ * Sólo se reescriben archivos del propio servidor (/archivos/); las
+ * fotografías externas se mantienen intactas.
  */
 export function urlArchivoParaDispositivo(url: string | null): string | null {
   if (!url || !apiConfigurada()) return url;
-  const local = url.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(\/archivos\/.*)$/i);
   const origen = BASE.match(/^https?:\/\/[^/]+/i)?.[0];
   if (!origen) return url;
-  // También admitir rutas relativas entregadas por el servidor docente.
+
   if (url.startsWith('/archivos/')) return origen + url;
-  return local ? origen + local[1] : url;
+
+  try {
+    const archivo = new URL(url);
+    if (!/^\/archivos\//i.test(archivo.pathname)) return url;
+    const host = archivo.hostname.toLowerCase();
+    const hostLocal = ['localhost','127.0.0.1','0.0.0.0','[::1]'].includes(host);
+    const hostLan = /^(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.)/.test(host);
+    if (hostLocal || hostLan) {
+      return origen + archivo.pathname + archivo.search + archivo.hash;
+    }
+  } catch {
+    // Las URL inválidas se descartan más adelante al cargar las imágenes.
+  }
+  return url;
 }

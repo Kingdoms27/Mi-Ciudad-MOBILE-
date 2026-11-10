@@ -195,6 +195,38 @@ Las pantallas no importan mocks directamente. Los servicios asíncronos de `src/
 
 Horarios, tarifas, agenda de ejemplo y pistas de audio de demostración deben tratarse como contenido de prueba hasta que se reemplacen por información oficial.
 
+## Imágenes de la API oficial de la cátedra — Expo Go
+
+Cuando `EXPO_PUBLIC_API_URL` está configurada, las fichas usan **las
+imágenes originales de `GET /lugares`**, con el mismo orden de la API.
+Las fotos de Wikimedia/locales NO se anteponen. Sólo aparecen como respaldo
+si el archivo de la API no está disponible, o cuando el lugar no tiene URL.
+
+La aplicación también transforma las URL de `/archivos/...` que el
+backend genera con `localhost` o una IP LAN antigua para que apunten al
+origen actual de Expo Go (mismo servidor que `EXPO_PUBLIC_API_URL`).
+El catálogo se consulta completo y usa una versión de caché nueva, para
+no conservar imágenes que antes se mezclaban con mocks externos.
+
+Para probar imágenes **servidas por la API**, iniciá NestJS
+(`npm run api:iniciar:win`) y, desde otra terminal:
+
+```powershell
+npm run api:imagenes -- http://localhost:3000
+```
+
+El informe muestra cuántos lugares devuelve la cátedra, cuáles tienen
+una URL válida, qué archivos se reutilizan y cuáles no existen. Una imagen
+compartida entre varios lugares puede ser correcta técnicamente, pero
+**no es una foto distinta por lugar**. Si la API devuelve la misma imagen
+para 18 fichas o falta la foto de un lugar, hay que corregir el catálogo
+o los medios **en el backend docente**; no se arregla cambiando el mapa.
+
+Para abrir Expo Go como antes, dejá la API encendida y en otra terminal
+ejecutá `npm run api:conectar:win` (teléfono y PC en la misma Wi-Fi).
+Reiniciá Expo/Metro si estaba abierto; no hace falta modificar SQLite,
+eventos, Google Maps ni EAS para probar fotografías.
+
 ## Fotografías y nueva portada
 
 - **Portada:** usar la fotografía original de Colón, optimizada en alta definición como `assets/hero-colon.jpg`. La portada es un archivo local y se muestra sin conexión. No convertir a capturas pequeñas ni aumentar artificialmente la resolución. Reemplazar el archivo existente con el JPEG optimizado proporcionado junto con esta actualización.
