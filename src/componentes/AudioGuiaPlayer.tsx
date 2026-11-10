@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Constants from 'expo-constants';
 import * as Haptics from 'expo-haptics';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
@@ -10,19 +11,34 @@ export function AudioGuiaPlayer({source,titulo,esDemostracion=false}:{source:str
   const{colores,esOscuro}=useTema();
   const player=useAudioPlayer(source,{updateInterval:500});
   const status=useAudioPlayerStatus(player);
+  // Expo Go no incorpora los servicios nativos particulares de nuestra app.
+  // Activar AudioControlsService desde Expo Go produce un error rojo en Android.
+  const esExpoGo=Constants.expoGoConfig != null;
 
   useEffect(()=>{
     setAudioModeAsync({
       playsInSilentMode:true,
-      shouldPlayInBackground:true,
+      shouldPlayInBackground:!esExpoGo,
       interruptionMode:'doNotMix',
     }).catch(()=>undefined);
-  },[]);
+  },[esExpoGo]);
 
   const play=async()=>{
     await Haptics.selectionAsync().catch(()=>undefined);
-    player.setActiveForLockScreen(true,{title:titulo,artist:'Mi Ciudad Colón'});
-    status.playing?player.pause():player.play();
+    if (status.playing) {
+      player.pause();
+      return;
+    }
+    // Los controles de pantalla bloqueada requieren el servicio nativo que
+    // instala el config plugin durante una build; Expo Go no lo contiene.
+    if (!esExpoGo) {
+      try {
+        player.setActiveForLockScreen(true,{title:titulo,artist:'Mi Ciudad Colón'});
+      } catch (error) {
+        if (__DEV__) console.warn('[Mi Ciudad] Controles de bloqueo no disponibles', error);
+      }
+    }
+    player.play();
   };
 
   const seek=async(delta:number)=>{
