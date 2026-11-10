@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { apiConfigurada } from '@/src/servicios/api';
 import { actualizarPerfil } from '@/src/servicios/perfil';
 import { pedirPermisoNotificaciones, programarAvisoLocalDePrueba, permisoNotificacionesConcedido } from '@/src/servicios/notificaciones';
 import { useSesion } from '@/src/contexto/SesionContext';
