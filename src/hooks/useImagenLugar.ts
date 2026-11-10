@@ -87,7 +87,7 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
         if (urlOriginal) fallidas.current.add(urlOriginal);
       })
       .finally(() => { setReintento(n => n + 1); });
-  }, [lugarId, uri]);
+  }, [lugarId, identidad, uri]);
 
   return { imagen: uri, cargando, reportarError };
 }
