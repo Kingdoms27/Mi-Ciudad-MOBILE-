@@ -1,0 +1,48 @@
+name: Generar candidato Expo SDK 58 para pruebas del grupo
+
+on:
+  push:
+    branches:
+      - upgrade/sdk58-grupo-20261110
+    paths:
+      - .github/workflows/sdk58-candidate.yml
+
+permissions:
+  contents: write
+
+jobs:
+  migrar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de rama de prueba
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Node compatible con SDK 58
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.3.0
+      - name: Instalar Expo SDK 58
+        run: npm install expo@^58.0.0 --save
+      - name: Alinear todas las dependencias de Expo
+        run: npx expo install --fix --npm
+      - name: Guardar versiones reproducibles sólo en rama de prueba
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(expo): alinear dependencias y lockfile para SDK 58"
+            git push origin HEAD:upgrade/sdk58-grupo-20261110
+          fi
+      - name: Verificar dependencias Expo
+        run: npx expo install --check
+      - name: Ejecutar Expo Doctor
+        run: npx expo-doctor@latest
+      - name: Compilar TypeScript
+        run: npm run typecheck
+      - name: Comprobar pruebas de imagenes de API
+        run: node --test scripts/test-imagenes-api.mjs
+      - name: Validar configuracion publica
+        run: npx expo config --type public
