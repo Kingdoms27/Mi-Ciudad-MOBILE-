@@ -163,7 +163,13 @@ export function urlArchivoParaDispositivo(url: string | null): string | null {
     const host = archivo.hostname.toLowerCase();
     const hostLocal = ['localhost','127.0.0.1','0.0.0.0','[::1]'].includes(host);
     const hostLan = /^(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.)/.test(host);
-    if (hostLocal || hostLan) {
+    // Cloudflare/Render reciben HTTPS pero NestJS puede construir URLs HTTP
+    // cuando CONFIAR_PROXY=false. Para archivos del MISMO host de API, usar
+    // siempre el origen HTTPS configurado en Expo; no tocar sitios externos.
+    const urlApi = new URL(origen);
+    const mismoHostHttp = urlApi.protocol === 'https:' &&
+      archivo.protocol === 'http:' && archivo.hostname.toLowerCase() === urlApi.hostname.toLowerCase();
+    if (hostLocal || hostLan || mismoHostHttp) {
       return origen + archivo.pathname + archivo.search + archivo.hash;
     }
   } catch {
