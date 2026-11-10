@@ -46,38 +46,24 @@ export async function obtenerLugares(): Promise<RespuestaApi<Lugar[]>> {
   if (!apiConfigurada()) return respuestaLista(lugaresMock.filter(l=>l.activo));
 
   const cache = await leerCache<Lugar[]>(CACHE_LUGARES);
-  {
-    const ultimaActualizacion = cache?.reduce<string | null>(
-      (mayor, lugar) => !mayor || lugar.actualizadoEn > mayor ? lugar.actualizadoEn : mayor,
-      null,
-    );
 
-    // Si hay caché se solicitan sólo cambios, incluidas las bajas. Sin caché se obtiene todo.
-    const actualizadoDesde = ultimaActualizacion ?? '2000-01-01T00:00:00-03:00';
-    const ruta = '/lugares?actualizadoDesde=' + encodeURIComponent(actualizadoDesde);
-    const remoto = await apiListarTodos<Lugar>(ruta, 500);
-
-    if ('datos' in remoto) {
-      const mapa = new Map((cache ?? []).map(lugar => [lugar.id, lugar]));
-      for (const cambio of remoto.datos) {
-        if (!cambio.activo) mapa.delete(cambio.id);
-        else mapa.set(cambio.id, conImagenesDeApi(cambio));
-      }
-      // Las entradas que no cambiaron en la API también deben volver a normalizarse.
-      // De lo contrario conservan URLs viejas aunque el código ya esté corregido.
-      const activos = [...mapa.values()]
-        .filter(l=>l.activo)
-        .map(conImagenesDeApi)
-        .sort((a,b)=>a.nombre.localeCompare(b.nombre));
-      await guardarCache(CACHE_LUGARES, activos);
-      return respuestaLista(activos);
-    }
-    if (!cache) return remoto;
+  // El catálogo docente es pequeño (26 lugares activos). Pedirlo completo
+  // evita conservar fotos anteriores si el docente reemplaza archivos pero
+  // su registro no actualiza el campo actualizadoEn.
+  const remoto = await apiListarTodos<Lugar>('/lugares', 500);
+  if ('datos' in remoto) {
+    const activos = remoto.datos.filter(lugar => lugar.activo)
+      .map(conImagenesDeApi)
+      .sort((a,b) => a.nombre.localeCompare(b.nombre));
+    await guardarCache(CACHE_LUGARES, activos);
+    return respuestaLista(activos);
   }
 
+  // Sólo recurrir a la última respuesta de la API ante fallos de red.
+  // No introducir mocks mezclados mientras la URL docente esté configurada.
   return cache
-    ? respuestaLista(cache.filter(l=>l.activo).map(conImagenesDeApi))
-    : { error: { codigo: 'SIN_CACHE', mensaje: 'Abrí el catálogo una vez con conexión para usarlo sin Internet.' } };
+    ? respuestaLista(cache.filter(lugar=>lugar.activo).map(conImagenesDeApi))
+    : remoto;
 }
 
 export async function obtenerLugarPorId(id: string): Promise<RespuestaApi<Lugar>> {
