@@ -108,6 +108,43 @@ compatible, Expo Go no ejecutará ese proyecto. La vía independiente de
 Expo Go es una compilación iOS propia distribuida mediante
 Apple Developer y EAS/TestFlight, no un APK Android.
 
+## Avisos locales y diferencia con push remoto (SDK 58)
+
+Los **diez requisitos de la entrega** incluyen notificaciones **locales**
+disparadas por acciones reales: guardar un evento futuro programa un
+recordatorio (una hora antes) y, con permiso, estar cerca de un lugar
+puede generar un aviso (máximo uno por lugar y día).
+Al detectar un evento guardado que cambió a suspendido o cancelado se
+programa un aviso local sobre el cambio.
+
+En el video de prueba aparecía un error `NO_IMPLEMENTADO` al intentar
+activar `/dispositivos` y `/dispositivos/prueba`: el backend docente
+no implementó push remoto. **No es una prueba fallida de los avisos
+locales.** Android Expo Go SDK 58 no admite push remoto; eso requiere
+APK/development build con credenciales FCM y backend realmente implementado.
+Por eso la pantalla Mi cuenta ya no ofrece botones push sin soporte:
+muestra **Notificaciones locales**, petición voluntaria de permiso y
+una prueba local de cinco segundos. La prueba sirve para verificar el
+dispositivo; el requisito académico se cumple con los recordatorios
+de eventos y la proximidad, no solo con el botón de prueba.
+
+**Prueba física de un recordatorio real:** iniciar sesión, conceder
+notificaciones en Mi cuenta, entrar a Agenda, guardar un evento futuro,
+verificar que se programe el recordatorio; en Ajustes de Android
+asegurar notificaciones permitidas. Si el evento empieza en más de
+una hora, el aviso llegará una hora antes, no inmediatamente.
+Cerrar Expo no es lo mismo que cerrar la API; un recordatorio local
+ya programado depende del dispositivo, no del backend en ese momento.
+
+Un toque sobre una notificación desde el sistema puede traer la
+aplicación al primer plano: es el comportamiento normal del sistema
+operativo, **no demuestra un reinicio del proceso**. Si Expo Go
+se recarga inesperadamente sin pulsar el aviso, registrar logs de Metro.
+
+**Pendiente de validar físicamente:** permisos Android e iPhone, avisos
+con app abierta/cerrada, cancelación y reprogramación de recordatorios,
+prueba en APK preview. La CI TypeScript no prueba entrega en el sistema.
+
 ## Audioguías en Expo Go SDK 58
 
 La reproducción de audio dentro de la pantalla se puede probar en
