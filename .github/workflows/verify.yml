@@ -63,5 +63,7 @@ jobs:
           npx expo config --type public > /dev/null
       - name: Validar sintaxis de reprogramación segura de eventos
         run: node --check scripts/reprogramar-eventos-demo.mjs
+      - name: Pruebas de imágenes de la API docente
+        run: node --test scripts/test-imagenes-api.mjs
       - name: TypeScript
         run: npm run typecheck
