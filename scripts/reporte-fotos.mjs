@@ -3,7 +3,7 @@
  * Uso: npm run fotos:reporte -- http://localhost:3000
  * Genera reportes/fotos-para-revisar.csv para planificar fotos autorizadas.
  */
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -45,6 +45,13 @@ async function obtenerLugares() {
   throw new Error('La API superó el límite de paginación de la auditoría.');
 }
 
+async function obtenerExternasVerificadas() {
+  // Extraer IDs declarados en el catálogo de Commons curado por nosotros.
+  // No confundir 25 URLs de semillas con fotografías reales.
+  const contenido = await readFile(join(raiz,'src','servicios','fotosExternas.ts'),'utf8');
+  return new Set([...contenido.matchAll(/^\s*'(lug-\d{3})':\s*'https?:\/\//gm)].map(x=>x[1]));
+}
+
 async function obtenerLocales() {
   try {
     const dir = join(raiz, 'assets', 'lugares');
@@ -59,7 +66,7 @@ async function obtenerLocales() {
 }
 
 try {
-  const [lugares, fotos] = await Promise.all([obtenerLugares(), obtenerLocales()]);
+  const [lugares, fotos, externas] = await Promise.all([obtenerLugares(), obtenerLocales(), obtenerExternasVerificadas()]);
   const activos = lugares.filter(lugar => lugar.activo !== false);
   const filas = [];
   const prioritarias = [];
@@ -73,20 +80,26 @@ try {
     grupos.set(principal, grupo);
   }
   let empaquetadas = 0;
+  let conExterna = 0;
+  let pendientesVerificadas = 0;
   let sinUrl = 0;
   let compartidas = 0;
   for (const lugar of activos.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))) {
     const encontrado = fotos.get(slug(lugar.id)) || fotos.get(slug(lugar.nombre)) || '';
     const urls = Array.isArray(lugar.imagenes) ? lugar.imagenes.filter(Boolean) : [];
+    const verificadaExterna = !encontrado && externas.has(lugar.id);
     if (encontrado) empaquetadas++;
+    if (verificadaExterna) conExterna++;
+    if (!encontrado && !verificadaExterna) pendientesVerificadas++;
     if (!urls.length) sinUrl++;
     const archivoRecomendado = slug(lugar.nombre) + '.jpg';
-    const estado = encontrado ? 'Foto local incluida' : urls.length
-      ? 'Sin foto local (API con medio)' : 'Sin foto local (API sin medio)';
+    const estado = encontrado ? 'Foto local incluida' : verificadaExterna
+      ? 'Foto curada externa en línea (necesita primera descarga)' : urls.length
+        ? 'Sin foto propia (API con imagen de semilla)' : 'Sin foto propia (API sin URL)';
     const grupo = urls.length ? (grupos.get(claveDeImagen(urls[0])) ?? []) : [];
     const compartida = grupo.length > 1;
     if (compartida) compartidas++;
-    const prioridad = encontrado ? 'Resuelto localmente' : !urls.length
+    const prioridad = encontrado ? 'Resuelto localmente' : verificadaExterna ? 'Con fotografía externa curada' : !urls.length
       ? 'Alta - API sin foto' : compartida
         ? 'Alta - principal compartida' : 'Revisar foto del lugar';
     const diagnostico = !urls.length ? 'Sin imagen principal' : compartida
@@ -94,7 +107,7 @@ try {
     const otros = compartida
       ? grupo.filter(x => x.id !== lugar.id).map(x => x.nombre).join(' | ')
       : '';
-    const fila = [lugar.id, lugar.nombre, estado, encontrado, urls.length, archivoRecomendado,
+    const fila = [lugar.id, lugar.nombre, estado, encontrado, verificadaExterna ? 'Sí' : '', urls.length, archivoRecomendado,
       prioridad, diagnostico, otros];
     filas.push(fila);
     if (prioridad.startsWith('Alta')) prioritarias.push(fila);
@@ -104,7 +117,7 @@ try {
   const ruta = join(carpeta, 'fotos-para-revisar.csv');
   const rutaPrioritarias = join(carpeta, 'fotos-prioritarias.csv');
   const encabezados = [
-    'ID', 'Lugar', 'Estado', 'Foto en assets/lugares', 'Cantidad de URLs en API',
+    'ID', 'Lugar', 'Estado', 'Foto en assets/lugares', 'Foto externa curada', 'Cantidad de URLs en API',
     'Nombre sugerido', 'Prioridad', 'Diagnóstico de imagen principal', 'Otros lugares con misma imagen',
   ];
   const convertir = (filasCsv) =>
@@ -117,8 +130,11 @@ try {
   const repeticionesExtra = gruposCompartidos.reduce((n, x) => n + x.length - 1, 0);
   console.log('Lugares activos en API: ' + activos.length);
   console.log('Fotos ya incluidas en assets/lugares: ' + empaquetadas);
+  console.log('Fotos externas curadas para descargar una vez: ' + conExterna);
+  console.log('Lugares con foto propia/local o externa: ' + (empaquetadas + conExterna) + '/' + activos.length);
+  console.log('Lugares pendientes de fotografía específica verificada: ' + pendientesVerificadas);
   console.log('Sin URL en la API: ' + sinUrl);
-  console.log('Pendientes de foto empaquetada: ' + (activos.length - empaquetadas));
+  console.log('Nota: los medios restantes de la API pueden ser PNG genéricos y repetidos.');
   console.log('Grupos con imagen principal compartida: ' + gruposCompartidos.length);
   console.log('Fichas en esos grupos: ' + compartidas);
   console.log('Repeticiones adicionales de imagen principal: ' + repeticionesExtra);

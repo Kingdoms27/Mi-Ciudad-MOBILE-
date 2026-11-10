@@ -15,7 +15,7 @@ import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
-import { imagenesParaLugar } from '@/src/servicios/fotosExternas';
+import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
@@ -87,6 +87,7 @@ function ContenidoLugar({
     lugar.id,fotoLocal?[]:imagenesParaLugar(lugar),
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
+  const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -146,7 +147,8 @@ function ContenidoLugar({
             style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
             resizeMode="cover"
           />}
-        {!fotoLocal&&!mostrarRemota?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Vista general de Colón</Text></View>:null}
+        {mostrarRemota&&demoApi?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Imagen de demostración de la cátedra</Text></View>:null}
+        {!fotoLocal&&!mostrarRemota&&!cargando?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Sin fotografía específica · Vista de Colón</Text></View>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>

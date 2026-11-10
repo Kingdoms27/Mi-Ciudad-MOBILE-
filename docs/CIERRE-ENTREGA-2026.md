@@ -41,6 +41,39 @@ pero no push remoto de servidor en Android.
   `npm run fotos:instalar -- "C:\MisFotosDeColon"`.
   Comprobar origen, licencia y correspondencia con cada lugar.
 
+### ¿Por qué la API tiene 27 lugares pero no 27 fotos?
+
+El backend docente tiene **27 registros, de los cuales 26 están activos**.
+En la auditoría local que reportó el equipo, 25 de los 26 activos
+tienen una URL de archivo accesible y `lug-003` no tiene ninguna
+(intencionalmente). Las URLs no son fotos diferentes: los 25 registros
+referencian **14 archivos principales distintos**, con siete grupos
+de imágenes de semilla repetidas.
+
+El objetivo académico se cumple mostrando el catálogo que proviene de
+la API y fotografías o respaldos asociados correctamente. No es un
+requisito que las imágenes externas se almacenen en el backend.
+
+Las fuentes propias identificadas actualmente son:
+- 7 fotografías ya empaquetadas en `assets/lugares/` (no precisan red).
+- 2 fotos acreditadas de Wikimedia Commons para `lug-001` y
+  `lug-008` (requieren conexión la primera vez).
+- 17 fichas todavía sin una foto propia verificable; muestran el recurso
+  de la API, con marca **Imagen de demostración**, o un respaldo.
+  Esto no equivale a 17 errores de descarga.
+
+Para ver cada ID, nombre, imágenes y prioridades con la API funcionando:
+
+```powershell
+npm run fotos:reporte -- http://localhost:3000
+```
+
+Consultar el CSV generado en `reportes/fotos-para-revisar.csv`.
+Sólo incorporar fotografías que correspondan **al lugar concreto** con
+licencia adecuada. No confundir `Camping Piedras Coloradas inundado`
+(foto histórica de 2014) con una imagen turística vigente. `lug-003`
+puede seguir sin URL en la API para demostrar el estado sin fotografía.
+
 ## Prueba en Android Expo Go
 
 Abrir desde PowerShell:
