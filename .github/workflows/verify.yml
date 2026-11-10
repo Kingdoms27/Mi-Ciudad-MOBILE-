@@ -2,7 +2,9 @@ name: Verificación mobile
 
 on:
   push:
-    branches: [main]
+    # Verificar también ramas de trabajo, incluso si un PR creado por un bot
+    # no dispara el evento pull_request en GitHub Actions.
+    branches: [main, 'fix/**', 'feature/**']
   pull_request:
     branches: [main]
 
