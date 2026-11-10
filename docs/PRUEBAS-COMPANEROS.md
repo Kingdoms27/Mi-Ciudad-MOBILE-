@@ -108,6 +108,21 @@ compatible, Expo Go no ejecutará ese proyecto. La vía independiente de
 Expo Go es una compilación iOS propia distribuida mediante
 Apple Developer y EAS/TestFlight, no un APK Android.
 
+## Audioguías en Expo Go SDK 58
+
+La reproducción de audio dentro de la pantalla se puede probar en
+Expo Go. Los controles de la pantalla bloqueada y la reproducción
+sostenida en segundo plano **requieren una build nativa** con
+`enableBackgroundPlayback: true` aplicado durante la generación
+del binario. Expo Go no contiene obligatoriamente
+`AudioControlsService` de Mi Ciudad y puede mostrar
+`Failed to activate lock screen controls` si se llama
+`setActiveForLockScreen`.
+
+La aplicación evita esas llamadas en Expo Go, conserva la reproducción
+en primer plano y las mantiene para una build nativa compatible.
+Esta limitación **no afecta las fotografías de la API**.
+
 ## Verificación obligatoria de imágenes
 
 Con la API local encendida:
