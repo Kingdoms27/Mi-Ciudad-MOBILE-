@@ -44,6 +44,21 @@ test('los medios de NestJS usan la misma API de Expo, incluso si cambia la IP', 
   assert.equal(url(null), null);
 });
 
+test('la URL HTTP generada por NestJS detrás de Cloudflare se convierte a HTTPS sin tocar otros dominios', () => {
+  const apiHttps = 'https://mi-ciudad-ejemplo.trycloudflare.com';
+  const api = cargarTs('src/servicios/api.ts', {
+    'expo-secure-store': {},
+  }, { EXPO_PUBLIC_API_URL: apiHttps });
+  const fotoHttp = 'http://mi-ciudad-ejemplo.trycloudflare.com/archivos/imagenes/2026/11/semilla-museums-1.png';
+  assert.equal(api.urlArchivoParaDispositivo(fotoHttp), apiHttps + '/archivos/imagenes/2026/11/semilla-museums-1.png');
+  assert.equal(api.urlArchivoParaDispositivo('http://mi-ciudad-ejemplo.trycloudflare.com/archivos/a.png?q=1'),
+    apiHttps + '/archivos/a.png?q=1');
+  assert.equal(api.urlArchivoParaDispositivo('http://otras-fotos.ejemplo.com/archivos/a.png'),
+    'http://otras-fotos.ejemplo.com/archivos/a.png');
+  assert.equal(api.urlArchivoParaDispositivo('http://mi-ciudad-ejemplo.trycloudflare.com/otra-ruta/file.jpg'),
+    'http://mi-ciudad-ejemplo.trycloudflare.com/otra-ruta/file.jpg');
+});
+
 test('el catálogo respeta solo las fotos de la cátedra, incluso con caché antigua y mocks', async () => {
   const fotoApi = 'http://localhost:3000/archivos/imagen-docente.png';
   const lugar = { id: 'lug-004', nombre: 'Molino Forclaz', activo: true,
