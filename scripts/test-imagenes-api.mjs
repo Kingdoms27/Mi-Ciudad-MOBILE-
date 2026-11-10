@@ -95,3 +95,20 @@ test('el catálogo respeta solo las fotos de la cátedra, incluso con caché ant
   assert.deepEqual(Array.from(molino.imagenes), [base+'/archivos/imagen-docente.png']);
   assert.deepEqual(Array.from(res.datos.find(x=>x.id==='lug-sin').imagenes), []);
 });
+
+test('una ilustración secundaria en caché no parpadea antes de la foto principal verificada', async () => {
+  const antigua='https://api.ejemplo.com/archivos/museums-1.png';
+  const nueva='https://upload.wikimedia.org/wikipedia/commons/5/54/Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG';
+  const cache=JSON.stringify({url:antigua,uri:'file://foto-vieja.png'});
+  const fotos=cargarTs('src/servicios/imagenes.ts',{
+    'react-native':{Platform:{OS:'android'}},
+    'expo-file-system':{
+      File:class { constructor(uri){this.uri=uri;this.exists=true;this.size=100;} },
+      Directory:class {},
+      Paths:{document:'file://test'},
+    },
+    'expo-sqlite/kv-store':{getItem:async()=>cache},
+  });
+  assert.equal(await fotos.obtenerImagenLugarGuardada('lug-008',[nueva,antigua]),null);
+  assert.equal(await fotos.obtenerImagenLugarGuardada('lug-008',[antigua]),'file://foto-vieja.png');
+});
