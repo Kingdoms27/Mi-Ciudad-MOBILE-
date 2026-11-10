@@ -1,0 +1,64 @@
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTema } from '@/src/contexto/TemaContext';
+
+// Atribución verificable de las fotografías empaquetadas en assets/lugares.
+// Fuente detallada: docs/CREDITOS-FOTOS-COMMONS.md
+const FOTOS = [
+  { lugar: 'Molino Forclaz', autor: 'Dario Alpern', licencia: 'CC BY-SA 4.0', archivo: 'Molino_Forclaz_en_Colón.JPG' },
+  { lugar: 'Parque Nacional El Palmar', autor: 'Pablo D. Flores', licencia: 'Dominio público (declarado)', archivo: 'Parque_Nacional_El_Palmar_(3).jpg' },
+  { lugar: 'Palacio San José', autor: 'Pablo D. Flores', licencia: 'Dominio público (declarado)', archivo: 'Palacio_San_José_1.jpg' },
+  { lugar: 'Puerto Viejo (vista del puerto; sector exacto por verificar)', autor: 'Fernando de Gorocica', licencia: 'CC BY-SA 4.0', archivo: 'Puerto_de_Colón_-_Entre_Ríos.jpg' },
+  { lugar: 'Costanera Gobernador Quirós', autor: 'Juandrovandi', licencia: 'CC BY-SA 4.0', archivo: 'Costanera_de_Colon,_Entre_Rios.JPG' },
+  { lugar: 'Parque Dr. Herminio J. Quirós', autor: 'Pablo D. Flores', licencia: 'CC BY-SA 2.5', archivo: 'Parque_Quirós,_Colón_-_1.jpg' },
+  { lugar: 'Mirador del Puente General Artigas (vista del puente)', autor: 'Dario Alpern', licencia: 'CC BY-SA 3.0', archivo: 'Puente_General_Artigas.jpg' },
+] as const;
+
+export default function CreditosFotos() {
+  const { colores } = useTema();
+  const insets = useSafeAreaInsets();
+  return <View style={[s.root, { backgroundColor: colores.fondo }]}>
+    <ScrollView contentContainerStyle={[s.content, { paddingTop: insets.top + 20 }]}>
+      <Pressable onPress={()=>router.back()} style={s.back} accessibilityRole="button" accessibilityLabel="Volver a mi cuenta">
+        <Ionicons name="arrow-back-outline" color={colores.primario} size={22}/>
+        <Text style={{ color: colores.primario, fontWeight: '800' }}>Volver</Text>
+      </Pressable>
+      <Text style={[s.title,{color:colores.tinta}]}>Créditos fotográficos</Text>
+      <Text style={[s.intro,{color:colores.secundario}]}>
+        Las fotografías indicadas se incluyen en la app para que puedan verse sin conexión.
+        Los archivos pertenecen a sus autores originales y conservan las licencias de Wikimedia Commons.
+        La presencia de una imagen no confirma que muestre el estado actual del lugar.
+      </Text>
+      {FOTOS.map(f=>{
+        const url = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.archivo);
+        return <Pressable key={f.archivo} onPress={()=>{void Linking.openURL(url)}}
+          accessibilityRole="link"
+          style={[s.card,{backgroundColor:colores.superficie,borderColor:colores.borde}]}>
+          <View style={{flex:1,gap:5}}>
+            <Text style={{fontSize:16,fontWeight:'900',color:colores.tinta}}>{f.lugar}</Text>
+            <Text style={{color:colores.secundario,fontSize:13}}>Autor: {f.autor}</Text>
+            <Text style={{color:colores.primario,fontSize:12,fontWeight:'800'}}>{f.licencia} · Ver archivo y licencia</Text>
+          </View>
+          <Ionicons name="open-outline" size={19} color={colores.primario}/>
+        </Pressable>;
+      })}
+      <Text style={[s.note,{color:colores.secundario}]}>
+        Las demás imágenes de lugares y eventos pueden proceder del backend de la cátedra.
+        Cuando incorporemos fotografías adicionales, también registraremos su fuente y licencia aquí.
+        Algunas vistas se identifican expresamente como aproximadas y requieren validación antes de publicar.
+      </Text>
+    </ScrollView>
+  </View>;
+}
+
+const s=StyleSheet.create({
+  root:{flex:1},
+  content:{paddingHorizontal:20,paddingBottom:110,gap:14},
+  back:{flexDirection:'row',alignItems:'center',gap:7,alignSelf:'flex-start',paddingVertical:8},
+  title:{fontSize:30,fontWeight:'900',letterSpacing:-.7},
+  intro:{fontSize:14,lineHeight:22,marginBottom:4},
+  card:{padding:15,borderWidth:1,borderRadius:18,flexDirection:'row',alignItems:'center',gap:8},
+  note:{fontSize:12,lineHeight:20,marginTop:8},
+});
