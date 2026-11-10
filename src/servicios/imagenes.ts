@@ -89,7 +89,10 @@ export async function obtenerImagenLugarGuardada(lugarId:string,urls:string|stri
 
   try{
     const registro=JSON.parse(raw) as RegistroImagen;
-    if(!candidatas.includes(registro.url))return null;
+    // Si hay una nueva foto principal, no mostrar durante un segundo el PNG
+    // de semilla anterior. Mantenerlo solo como respaldo si la nueva descarga
+    // termina fallando (resolverImagenLugar ya contempla el caso offline).
+    if(!candidatas.length || registro.url!==candidatas[0])return null;
     const f=new File(registro.uri);
     return f.exists?registro.uri:null;
   }catch{
