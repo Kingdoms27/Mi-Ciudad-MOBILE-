@@ -83,9 +83,9 @@ function ContenidoLugar({
   const fotoLocal=fotoLocalParaLugar(lugar);
   const apiActiva=apiConfigurada();
   const { imagen, cargando, reportarError }=useImagenLugar(
-    lugar.id,apiActiva||!fotoLocal?lugar.imagenes:[],
+    lugar.id,fotoLocal?[]:lugar.imagenes,
   );
-  const mostrarRemota=Boolean(imagen)&&(apiActiva||!fotoLocal);
+  const mostrarRemota=Boolean(imagen)&&!fotoLocal;
 
   const toggle=async()=>{
     if(!usuarioId){
