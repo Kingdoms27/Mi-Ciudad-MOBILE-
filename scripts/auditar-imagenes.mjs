@@ -9,13 +9,18 @@ if (!/^https?:\/\//i.test(BASE)) {
 
 function urlParaDispositivo(url) {
   if (typeof url !== 'string' || !url.trim()) return null;
-  // El backend puede devolver localhost, que no sirve desde el celular.
-  const local = url.match(/^https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::\d+)?(\/archivos\/.*)$/i);
-  if (local) return BASE + local[1];
   if (url.startsWith('/archivos/')) return BASE + url;
   try {
     const parsed = new URL(url);
-    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : null;
+    if (!['http:', 'https:'].includes(parsed.protocol)) return null;
+    const host = parsed.hostname.toLowerCase();
+    const local = ['localhost','127.0.0.1','0.0.0.0','[::1]'].includes(host);
+    const lan = /^(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.)/.test(host);
+    // La verificación debe pedir al MISMO origen de API que usa Expo Go.
+    if ((local || lan) && parsed.pathname.startsWith('/archivos/')) {
+      return BASE + parsed.pathname + parsed.search + parsed.hash;
+    }
+    return parsed.href;
   } catch { return null; }
 }
 
@@ -119,6 +124,8 @@ try {
   }
   const locales = unicas.filter(url=>/^https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0)(?::|\/)/i.test(url));
   if (locales.length) console.log(`ATENCIÓN: ${locales.length} URL(s) usan localhost; comprobar que EXPO_PUBLIC_API_URL apunte a la IP LAN o HTTPS pública.`);
+  console.log('La API es la fuente principal: estas verificaciones muestran si /archivos entrega fotos al dispositivo.');
+  console.log('Si un lugar carece de URL o repite el archivo de otro, hay que corregir el dato de la API; Expo no puede crear fotografías distintas desde una misma semilla.');
   console.log('Nota: una imagen válida puede ser una ilustración de semilla; esta auditoría no certifica autenticidad ni licencia de fotografías.');
   if (fallas.length || sinFoto.length) process.exitCode=1;
 } catch(error) {
