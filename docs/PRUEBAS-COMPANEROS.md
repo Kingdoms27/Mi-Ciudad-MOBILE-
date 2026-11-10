@@ -123,6 +123,72 @@ La aplicación evita esas llamadas en Expo Go, conserva la reproducción
 en primer plano y las mantiene para una build nativa compatible.
 Esta limitación **no afecta las fotografías de la API**.
 
+## Corrección del parpadeo de imágenes
+
+Con API docente configurada, las fichas ya no enseñan durante un segundo
+una foto local empaquetada para luego sustituirla por la ilustración
+de la API. Mientras se descarga, indican **Cargando imagen de la API**.
+Una vez terminada la carga se muestra el medio real que la API entrega;
+si falla, aparece el respaldo local. No se manipulan ni falsifican fotos
+de la cátedra.
+
+El ZIP original de la API solo incluye imágenes PNG ilustrativas,
+compartidas por categoría. Para que se vea una foto diferente por lugar
+hay que incorporarla a la **copia de desarrollo** del backend.
+
+### Sin descargar ZIP extra: preparar cinco fotos verificadas
+
+Las cinco fotografías de Commons de molino, palmar, palacio, costanera y
+parque Quirós ya están en `assets/lugares/` y cuentan con créditos en
+`docs/CREDITOS-FOTOS-COMMONS.md`. El repositorio incorpora también un
+importador separado de la API. No incluye por defecto fotos de
+Puerto Viejo ni del mirador porque sus localizaciones exactas no están
+certificadas por las imágenes disponibles.
+
+Desde la **raíz del proyecto móvil**, ejecutá:
+
+```powershell
+git pull --ff-only origin main
+npm run fotos:api:preparar:win
+```
+
+Este comando detecta la instalación de la API en
+`%LOCALAPPDATA%\MiCiudadColon\backend`, copia cinco fotos a
+`%LOCALAPPDATA%\MiCiudadColon\fotos-para-api`, instala una herramienta
+**solo en la copia local** de `api-mi-ciudad/src/tools/`, la compila y
+muestra un **plan de simulación**; **NO modifica la base SQLite**.
+
+Si estás conforme con la simulación, detené la terminal de la API
+con `Ctrl+C` y ejecutá:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/preparar-fotos-api-windows.ps1 -Aplicar
+```
+
+El script exige configuración de desarrollo, SQLite y archivos locales,
+rechaza una API activa en el puerto 3000 y guarda primero una copia del
+archivo `datos/api.sqlite` y la carpeta `archivos/` en
+`%LOCALAPPDATA%\MiCiudadColon\respaldos-fotos`. Solo reemplaza las
+referencias a imágenes de semilla en los cinco registros indicados:
+no borra medios originales ni altera lugares sin fotos. No uses
+`db:reiniciar`.
+
+Reiniciá la API normalmente y verificá:
+
+```powershell
+npm run api:fotos:grupo -- http://localhost:3000
+```
+
+Si se necesitan más fotografías, colocá JPEG/PNG/WebP con sus ID oficiales
+(ej.: `lug-007.jpg`) en una carpeta separada y pasá `-Fotos "C:\FotosColón"`
+al script. Comprobá antes origen, derechos de uso y correspondencia real
+de cada fotografía. **Conservá sin imágenes el registro lug-003** en la
+base destinada a las pruebas de la cátedra.
+
+**Importante**: el importador es nuevo y no ha sido ejecutado contra la
+base del usuario. Su primera ejecución debe ser la simulación; los tests
+del cliente Expo no sustituyen esa validación local.
+
 ## Verificación obligatoria de imágenes
 
 Con la API local encendida:
