@@ -67,6 +67,8 @@ jobs:
         run: node --check scripts/reprogramar-eventos-demo.mjs
       - name: Pruebas de imágenes de la API docente
         run: node --test scripts/test-imagenes-api.mjs
+      - name: Verificar notificaciones locales y nuevas fotos verificadas
+        run: node --test scripts/test-cierre-mobile.mjs
       - name: Validar diagnóstico completo de imágenes para el grupo
         run: node --check scripts/diagnosticar-imagenes-grupo.mjs
       - name: Revisar sintaxis de conexión remota PowerShell
