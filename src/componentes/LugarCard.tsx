@@ -8,6 +8,7 @@ import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { imagenesParaLugar } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
@@ -19,7 +20,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   // genéricos de las semillas. Para el resto, intentar imágenes de la API.
   const apiActiva=apiConfigurada();
   const { imagen, cargando, reportarError }=useImagenLugar(
-    lugar.id,fotoLocal?[]:lugar.imagenes,
+    lugar.id,fotoLocal?[]:imagenesParaLugar(lugar),
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const escala=useRef(new Animated.Value(1)).current;
