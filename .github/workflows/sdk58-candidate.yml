@@ -40,8 +40,6 @@ jobs:
           fi
           cat sdk58-instalacion.log
           exit 0
-      - name: Instalar expo-asset requerido por expo-audio SDK 58
-        run: npx expo install expo-asset --npm
       - name: Guardar versiones reproducibles sólo en rama de prueba
         shell: bash
         run: |
