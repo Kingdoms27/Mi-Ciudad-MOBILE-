@@ -20,13 +20,20 @@ reemplazar las imágenes oficiales de la API de la cátedra.
 
 ## Requisito indispensable para iPhone físico
 
-Se necesita una **membresía Apple Developer Program activa y de pago**
+Para **compilar en la nube con EAS y compartir un enlace de instalación**
+se necesita una **membresía Apple Developer Program activa y de pago**
 del propietario/equipo que firma la aplicación, además del acceso al
 proyecto EAS para iniciar la compilación. La cuenta Expo de Giovanni
 (`giovannipercara`) **no equivale** a Apple Developer, ni le permite
 instalar por sí sola un .ipa. No pedir ni compartir contraseñas de Apple.
 
 No se puede instalar el APK de Android en iPhone.
+
+**Alternativa sin membresía paga:** si Giovanni tiene una **Mac con Xcode**
+y el iPhone a mano, Expo documenta instalación local de una development
+build con `npx expo run:ios --device` usando firma local de desarrollo.
+Esto no sirve para generar desde Windows un enlace remoto instalable ni
+sustituye el perfil de distribución de EAS.
 
 Con SDK 57 no basta con que Giovanni descargue Expo Go de App Store. A
 partir de SDK 54, Expo documenta que la distribución compatible de Expo
@@ -39,10 +46,18 @@ Revisar compatibilidad: Expo SDK 57 requiere **iOS 16.4 o posterior**.
 ## 1. Elegir cómo llegará la API al iPhone
 
 **Giovanni y la PC están en la misma Wi-Fi:** la API puede ejecutarse en
-la PC y servir datos a través de `http://IP-DE-TU-PC:3000`. Verificar
-desde Safari del iPhone que la URL `/salud` responde. La IP concreta
-se configura en el entorno EAS de la compilación. Si cambia la IP,
-será necesario generar una nueva compilación de prueba con la URL nueva.
+la PC. Primero comprobar desde Safari en el iPhone
+`http://IP-DE-TU-PC:3000/salud`. Pero **Safari funcionando no garantiza
+que React Native cargue HTTP**: iOS impone *App Transport Security* (ATS)
+y, sin una excepción de red local en Info.plist, el build propio puede
+bloquear las imágenes y peticiones `http://`. **La opción recomendada es
+una API HTTPS accesible desde el iPhone**. Si se necesita específicamente
+HTTP en la misma Wi-Fi, habilitar en una compilación de prueba una
+excepción ATS limitada a red local, verificar su alcance y reconstruir
+el .ipa. No desactivar ATS globalmente para publicar.
+
+La URL concreta se configura en el entorno EAS de la compilación.
+Si cambia, será necesario generar una nueva compilación de prueba.
 
 **Giovanni está en otra red o en su casa:** `localhost` y la IP privada
 de tu PC **no funcionan**. Para mostrar las fotos del docente, se
@@ -155,3 +170,5 @@ compilación requiere **Beta App Review** de Apple. Esta alternativa es
 - [Expo: build de iOS para dispositivos reales](https://docs.expo.dev/tutorial/eas/ios-development-build-for-devices/)
 - [Expo: Developer Mode en iOS](https://docs.expo.dev/guides/ios-developer-mode/)
 - [Expo: TestFlight](https://docs.expo.dev/submit/testflight/)
+- [Expo: build local en iOS sin Apple Developer pago](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Apple: App Transport Security (ATS)](https://developer.apple.com/documentation/security/preventing-insecure-network-connections)
