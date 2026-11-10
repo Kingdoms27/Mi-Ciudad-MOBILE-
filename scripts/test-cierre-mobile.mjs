@@ -43,7 +43,7 @@ test('guardar un evento futuro programa una notificación LOCAL con destino al e
   const fake = crearNotificaciones();
   const servicio = cargarTs('src/servicios/notificaciones.ts', {
     'react-native': { Platform: { OS:'android' } },
-    'expo-sqlite/kv-store': { default: { getItem: async () => null, setItem: async () => {} } },
+    'expo-sqlite/kv-store': { getItem: async () => null, setItem: async () => {} },
     'expo-notifications': fake.Notifications,
   });
   const inicio = new Date(Date.now()+3*60*60*1000).toISOString();
@@ -62,7 +62,7 @@ test('sin permiso, proximidad no abre permisos ni programa avisos', async () => 
   const fake = crearNotificaciones({conPermiso:false});
   const servicio = cargarTs('src/servicios/notificaciones.ts', {
     'react-native': { Platform: { OS:'android' } },
-    'expo-sqlite/kv-store': { default: { getItem: async () => null, setItem: async () => {} } },
+    'expo-sqlite/kv-store': { getItem: async () => null, setItem: async () => {} },
     'expo-notifications': fake.Notifications,
   });
   assert.equal(await servicio.notificarProximidad({id:'lug-008',nombre:'Iglesia',descripcionCorta:'Sitio histórico'}),false);
@@ -75,7 +75,7 @@ test('un lugar cercano genera como máximo un aviso por día', async () => {
   const datos = new Map();
   const servicio = cargarTs('src/servicios/notificaciones.ts', {
     'react-native': { Platform: { OS:'android' } },
-    'expo-sqlite/kv-store': { default: { getItem: async k => datos.get(k), setItem: async (k,v) => datos.set(k,v) } },
+    'expo-sqlite/kv-store': { getItem: async k => datos.get(k), setItem: async (k,v) => datos.set(k,v) },
     'expo-notifications': fake.Notifications,
   });
   const lugar={id:'lug-004',nombre:'Molino Forclaz',descripcionCorta:'Monumento histórico'};
