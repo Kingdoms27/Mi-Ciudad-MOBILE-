@@ -8,7 +8,7 @@ import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
-import { imagenesParaLugar } from '@/src/servicios/fotosExternas';
+import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
@@ -23,6 +23,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
     lugar.id,fotoLocal?[]:imagenesParaLugar(lugar),
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
+  const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -55,6 +56,9 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
               <Text style={s.respaldoFotoTexto}>VISTA GENERAL DE COLÓN</Text>
             </View>
           </View>}
+        {mostrarRemota&&demoApi?<View style={s.demoBadge}>
+          <Text style={s.demoBadgeText}>IMAGEN DE DEMOSTRACIÓN</Text>
+        </View>:null}
         <View style={s.scrim}/>
         <View style={[s.badge,{backgroundColor:'rgba(13,45,39,.72)'}]}>
           <Ionicons name="location-outline" size={13} color="white"/>
@@ -77,6 +81,9 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
 }
 
 const s=StyleSheet.create({
+  demoBadge:{position:'absolute',top:10,right:10,backgroundColor:'rgba(9,32,29,.80)',paddingHorizontal:9,paddingVertical:5,borderRadius:99},
+  demoBadgeText:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:.5},
+
   respaldoFoto:{position:'absolute',top:9,right:9,backgroundColor:'rgba(9,32,29,.75)',paddingHorizontal:9,paddingVertical:5,borderRadius:99},
   respaldoFotoTexto:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:.7},
 
