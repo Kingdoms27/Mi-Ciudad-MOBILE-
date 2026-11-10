@@ -17,7 +17,10 @@ function urlParaDispositivo(url) {
     const local = ['localhost','127.0.0.1','0.0.0.0','[::1]'].includes(host);
     const lan = /^(?:192\.168\.|10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.)/.test(host);
     // La verificación debe pedir al MISMO origen de API que usa Expo Go.
-    if ((local || lan) && parsed.pathname.startsWith('/archivos/')) {
+    const origen = new URL(BASE);
+    const mismoHostHttp = origen.protocol === 'https:' && parsed.protocol === 'http:' &&
+      parsed.hostname.toLowerCase() === origen.hostname.toLowerCase();
+    if ((local || lan || mismoHostHttp) && parsed.pathname.startsWith('/archivos/')) {
       return BASE + parsed.pathname + parsed.search + parsed.hash;
     }
     return parsed.href;
