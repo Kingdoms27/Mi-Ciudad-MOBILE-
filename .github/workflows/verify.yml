@@ -20,10 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.13.0
-      - name: Instalar dependencias
-        run: npm install
+      - name: Instalar dependencias reproducibles
+        run: npm ci
       - name: Validar versiones Expo
         run: npx expo install --check
+      - name: Verificar integridad SDK y configuración con Expo Doctor
+        run: npx expo-doctor@latest
       - name: Validar scripts de fotografías
         run: |
           node --check scripts/instalar-fotos-locales.mjs
