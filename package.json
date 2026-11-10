@@ -18,6 +18,7 @@
     "fotos:externas": "node scripts/auditar-fotos-externas.mjs",
     "fotos:instalar": "node scripts/instalar-fotos-locales.mjs",
     "fotos:reporte": "node scripts/reporte-fotos.mjs",
+    "fotos:api:preparar:win": "powershell -ExecutionPolicy Bypass -File scripts/preparar-fotos-api-windows.ps1",
     "entrega:check": "node scripts/verificar-entrega.mjs",
     "api:diagnosticar:win": "powershell -ExecutionPolicy Bypass -File scripts/diagnosticar-backend-windows.ps1",
     "eventos:reprogramar:demo": "node scripts/reprogramar-eventos-demo.mjs",
