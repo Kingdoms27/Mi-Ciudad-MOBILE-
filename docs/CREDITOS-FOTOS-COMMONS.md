@@ -3,7 +3,7 @@
 Las fotografías de este lote no se inventaron ni se atribuyen a comercios
 sin evidencia. Son **imágenes de referencia de sitios reconocibles**; se
 incluyen con nombres estáticos para que Expo las muestre aun sin conexión.
-Cada fuente conserva su propia licencia. Wikimedia Commons y sus autores
+Cada fuente conserva su propia licencia. La aplicación muestra estos mismos créditos en **Mi cuenta → Créditos fotográficos**, con enlaces al archivo y su licencia. Wikimedia Commons y sus autores
 no están vinculados al proyecto.
 
 | Nombre del archivo local | Sitio representado | Autor | Licencia | Archivo fuente |
