@@ -17,3 +17,15 @@ export function imagenesParaLugar(lugar: Lugar): string[] {
   return [...new Set([propia, ...delServidor]
     .filter((valor): valor is string => typeof valor==='string' && /^https?:\/\//i.test(valor)))];
 }
+
+/** Permite distinguir fotografías acreditadas de ilustraciones que
+ * la API docente entrega como semillas de demostración. */
+export function tieneFotoExternaCurada(lugar: Lugar): boolean {
+  return Boolean(FOTOS[lugar.id]);
+}
+
+export function tieneImagenDemostrativaApi(lugar: Lugar): boolean {
+  return Array.isArray(lugar.imagenes) && lugar.imagenes.some(
+    url => typeof url === 'string' && /\/semilla-[^/?]+\.(?:png|jpe?g|webp)(?:\?|$)/i.test(url),
+  );
+}
