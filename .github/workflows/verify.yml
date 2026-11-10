@@ -65,5 +65,7 @@ jobs:
         run: node --check scripts/reprogramar-eventos-demo.mjs
       - name: Pruebas de imágenes de la API docente
         run: node --test scripts/test-imagenes-api.mjs
+      - name: Validar diagnóstico completo de imágenes para el grupo
+        run: node --check scripts/diagnosticar-imagenes-grupo.mjs
       - name: TypeScript
         run: npm run typecheck

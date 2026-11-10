@@ -21,7 +21,8 @@
     "entrega:check": "node scripts/verificar-entrega.mjs",
     "api:diagnosticar:win": "powershell -ExecutionPolicy Bypass -File scripts/diagnosticar-backend-windows.ps1",
     "eventos:reprogramar:demo": "node scripts/reprogramar-eventos-demo.mjs",
-    "fotos:commons": "node scripts/descargar-fotos-commons.mjs"
+    "fotos:commons": "node scripts/descargar-fotos-commons.mjs",
+    "api:fotos:grupo": "node scripts/diagnosticar-imagenes-grupo.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",

@@ -64,6 +64,21 @@ tu Wi-Fi, usar una API HTTPS accesible públicamente.
 El proyecto, el mapa y las imágenes de la API no necesitan migrarse a
 SDK 58 para hacer esa prueba.
 
+## Pruebas compartidas con compañeros
+
+Ver [la guía de Android/iPhone y diagnóstico de imágenes de la API](docs/PRUEBAS-COMPANEROS.md).
+
+Cuando el servidor del profesor esté encendido, verificá **cada** imagen
+antes de compartir Expo Go:
+
+```powershell
+npm run api:fotos:grupo -- http://localhost:3000
+```
+
+Genera un reporte de solo lectura, detecta HTTP 403/404, medios ausentes y
+fotos repetidas. Si los compañeros están en otra red, primero es necesario
+un backend HTTPS accesible: el QR/túnel de Expo comparte Metro, no la API.
+
 ## Ejecutar
 
 ```bash
