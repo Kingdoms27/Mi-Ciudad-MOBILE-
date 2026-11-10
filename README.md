@@ -4,6 +4,20 @@ Aplicación móvil de guía turística para **Colón, Entre Ríos**, desarrollad
 
 La implementación sigue el PRD *Mi Ciudad — Guía turística de Colón*. El ZIP de la cátedra ya incluye el contrato oficial y el backend; cuando no hay URL de servidor configurada, se utilizan mocks tipados. Cuando se configura `EXPO_PUBLIC_API_URL`, los servicios consultan la API y usan la última caché válida como respaldo; un error remoto no debe reemplazar datos remotos guardados por mocks.
 
+## Cómo evaluar desde Git (si la cátedra eliminó el requisito del APK)
+
+**[Guía paso a paso para clonar, iniciar la API local y abrir Expo Go SDK 58](docs/ENTREGA-DESDE-GIT.md).**
+
+El repositorio contiene la aplicación y los scripts de Windows. Para probar
+los datos oficiales, el evaluador necesita también el ZIP original
+`api-proyectos-mobile-main.zip` que proporcionó la cátedra; ese backend
+no está publicado dentro de este repositorio. Con Git + Expo Go,
+Metro y la API pueden ejecutarse **localmente** y la PC permanece encendida.
+Para un APK autónomo hace falta otra configuración.
+
+**Importante:** la consigna escrita original pedía también una APK preview.
+Usar modalidad solo Git únicamente con la confirmación actualizada del docente.
+
 ## Funcionalidades
 
 - Catálogo de lugares con búsqueda, categorías, horarios, precio y accesibilidad.
