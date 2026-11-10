@@ -15,6 +15,7 @@ import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { imagenesParaLugar } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
@@ -83,7 +84,7 @@ function ContenidoLugar({
   const fotoLocal=fotoLocalParaLugar(lugar);
   const apiActiva=apiConfigurada();
   const { imagen, cargando, reportarError }=useImagenLugar(
-    lugar.id,fotoLocal?[]:lugar.imagenes,
+    lugar.id,fotoLocal?[]:imagenesParaLugar(lugar),
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
 

@@ -32,3 +32,16 @@ cervecerías, restaurantes, heladerías ni comercios una foto de otro lugar.
 Las fotografías para el resto de lugares requieren selección, licencia
 y revisión visual individual. Una foto incluida en Commons puede estar
 desactualizada; no debe usarse para confirmar horarios, precios o servicios.
+
+## Fotografías externas verificadas adicionales
+
+Estas fotografías se descargan por HTTPS desde Wikimedia Commons sólo en
+fichas identificadas y se guardan localmente después de la primera carga.
+No están empaquetadas en la APK, por lo que necesitan conexión la primera vez.
+
+| Ficha | Archivo | Autor | Licencia | Fuente |
+|---|---|---|---|---|
+| Termas de Colón, sector de toboganes (2013) | `Toboganes_Acuaticos.JPG` | Leisuregroup | CC BY-SA 3.0 | [Archivo](https://commons.wikimedia.org/wiki/File:Toboganes_Acuaticos.JPG) |
+| Iglesia Santos Justo y Pastor (Plaza San Martín) | `Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG` | Juandrovandi | CC BY-SA 4.0 | [Archivo](https://commons.wikimedia.org/wiki/File:Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG) |
+
+Son fotografías históricas; no indican horarios, servicios ni estado actual.

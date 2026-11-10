@@ -3,7 +3,8 @@ import { Platform } from 'react-native';
 import { Evento, Lugar } from '@/src/tipos';
 
 type ExpoNotifications = typeof import('expo-notifications');
-const CANAL = 'mi-ciudad-recordatorios';
+// Un canal nuevo permite HIGH incluso si Android ya creó el canal viejo con DEFAULT.
+const CANAL = 'mi-ciudad-recordatorios-v2';
 let carga: Promise<ExpoNotifications | null> | null = null;
 
 /**
@@ -20,14 +21,14 @@ async function cargarNotificaciones(): Promise<ExpoNotifications | null> {
           handleNotification: async () => ({
             shouldShowBanner: true,
             shouldShowList: true,
-            shouldPlaySound: false,
+            shouldPlaySound: true,
             shouldSetBadge: false,
           }),
         });
         if (Platform.OS === 'android') {
           await Notifications.setNotificationChannelAsync(CANAL, {
             name: 'Recordatorios y proximidad',
-            importance: Notifications.AndroidImportance.DEFAULT,
+            importance: Notifications.AndroidImportance.HIGH,
           });
         }
         return Notifications;
@@ -88,8 +89,7 @@ export async function programarRecordatorioEvento(evento: Evento): Promise<strin
   const Notifications = await cargarNotificaciones();
   if (!Notifications) return null;
 
-  const permiso = await Notifications.requestPermissionsAsync();
-  if (!permiso.granted) return null;
+  if (!(await pedirPermisoNotificaciones())) return null;
 
   let fecha = new Date(inicio.getTime() - 60 * 60 * 1000);
   if (fecha.getTime() <= ahora) fecha = new Date(ahora + 5000);
@@ -158,7 +158,9 @@ export async function notificarCambioEvento(evento: Evento) {
       body: `El evento figura como ${evento.estado}. Revisá la agenda antes de ir.`,
       data: { eventoId: evento.id },
     },
-    trigger: null,
+    trigger: Platform.OS === 'android'
+      ? { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1, channelId: CANAL }
+      : null,
   });
   return true;
 }

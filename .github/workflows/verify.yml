@@ -2,7 +2,9 @@ name: Verificación mobile
 
 on:
   push:
-    branches: [main]
+    # Verificar también ramas de trabajo, incluso si un PR creado por un bot
+    # no dispara el evento pull_request en GitHub Actions.
+    branches: [main, 'fix/**', 'feature/**']
   pull_request:
     branches: [main]
 
@@ -67,6 +69,8 @@ jobs:
         run: node --check scripts/reprogramar-eventos-demo.mjs
       - name: Pruebas de imágenes de la API docente
         run: node --test scripts/test-imagenes-api.mjs
+      - name: Validar cierre de avisos y fotos verificadas
+        run: node --test scripts/test-cierre-mobile.mjs
       - name: Validar diagnóstico completo de imágenes para el grupo
         run: node --check scripts/diagnosticar-imagenes-grupo.mjs
       - name: Revisar sintaxis de conexión remota PowerShell
