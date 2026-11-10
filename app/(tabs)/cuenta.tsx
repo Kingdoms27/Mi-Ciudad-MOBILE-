@@ -4,9 +4,8 @@ import { router } from 'expo-router';
 import Ionicons from '@react-native-vector-icons/ionicons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { apiConfigurada } from '@/src/servicios/api';
 import { actualizarPerfil } from '@/src/servicios/perfil';
-import { registrarAvisosPush, enviarAvisoPrueba, desvincularAvisosPush } from '@/src/servicios/dispositivos';
+import { pedirPermisoNotificaciones } from '@/src/servicios/notificaciones';
 import { useSesion } from '@/src/contexto/SesionContext';
 import { useTema } from '@/src/contexto/TemaContext';
 import { actualizarPreferencias } from '@/src/servicios/preferencias';
@@ -26,7 +25,6 @@ export default function Cuenta(){
   const[nombrePerfil,setNombrePerfil]=useState('');
   const[fotoPerfil,setFotoPerfil]=useState<string|null|undefined>(undefined);
   const[guardandoPerfil,setGuardandoPerfil]=useState(false);
-  const[procesandoPush,setProcesandoPush]=useState(false);
 
   useEffect(()=>{if(usuario&&usuario.preferencias.tema!==modo)setModo(usuario.preferencias.tema)},[usuario?.id]);
 
@@ -98,25 +96,15 @@ export default function Cuenta(){
     }
   };
 
-  const configurarPush=async(accion:'activar'|'probar'|'desactivar')=>{
-    if(!usuario||procesandoPush)return;
-    setProcesandoPush(true);
-    try{
-      if(accion==='activar'){
-        await registrarAvisosPush(usuario.id);
-        Alert.alert('Avisos activados','El teléfono quedó registrado en la API.');
-      }else if(accion==='probar'){
-        const enviadas=await enviarAvisoPrueba();
-        Alert.alert('Avisos de prueba',`El servidor informó ${enviadas} envío(s).`);
-      }else{
-        await desvincularAvisosPush(usuario.id);
-        Alert.alert('Avisos desactivados','Este teléfono ya no está asociado a los avisos de la cuenta.');
+  const cambiarAvisosProximidad = async (activar:boolean) => {
+    if (activar) {
+      const permitido = await pedirPermisoNotificaciones().catch(() => false);
+      if (!permitido) {
+        Alert.alert('Permiso necesario','Activá las notificaciones de Mi Ciudad en los ajustes del teléfono para recibir avisos.');
+        return;
       }
-    }catch(error){
-      Alert.alert('Notificaciones',error instanceof Error?error.message:'No pudimos completar la operación.');
-    }finally{
-      setProcesandoPush(false);
     }
+    await pref({avisarProximidad:activar});
   };
 
   if(cargando)return <View style={[s.center,{backgroundColor:colores.fondo}]}>
@@ -339,7 +327,7 @@ export default function Cuenta(){
               <Text style={[s.rowCaption,{color:colores.secundario}]}>Máximo un aviso por lugar y día</Text>
             </View>
           </View>
-          <Switch value={p.avisarProximidad} onValueChange={v=>{void Haptics.selectionAsync();pref({avisarProximidad:v})}}/>
+          <Switch value={p.avisarProximidad} onValueChange={v=>{void Haptics.selectionAsync();void cambiarAvisosProximidad(v)}}/>
         </View>
 
         <View style={[s.separator,{backgroundColor:colores.borde}]}/>
@@ -368,26 +356,31 @@ export default function Cuenta(){
       </GlassSurface>
     </Reveal>
 
-    {apiConfigurada()?<Reveal delay={180}>
-      <Text style={[s.section,{color:colores.tinta}]}>Avisos desde la API</Text>
+    <Reveal delay={180}>
+      <Text style={[s.section,{color:colores.tinta}]}>Recordatorios del viaje</Text>
       <GlassSurface style={s.profileCard}>
-        <Text style={[s.rowCaption,{color:colores.secundario,marginBottom:12}]}>
-          Activación voluntaria en builds compatibles. El backend docente puede responder NO_IMPLEMENTADO hasta completar su módulo de notificaciones push.
-        </Text>
-        <View style={{gap:8}}>
-          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('activar')} style={[s.btn,{backgroundColor:colores.primario}]}>
-            <Ionicons name="notifications-outline" size={17} color="white"/>
-            <Text style={s.btnText}>{procesandoPush?'Procesando…':'Activar avisos push'}</Text>
-          </Pressable>
-          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('probar')} style={[s.option,{backgroundColor:colores.primarioSuave,alignItems:'center'}]}>
-            <Text style={{color:colores.primario,fontWeight:'800'}}>Enviar aviso de prueba</Text>
-          </Pressable>
-          <Pressable disabled={procesandoPush} onPress={()=>configurarPush('desactivar')} style={[s.option,{backgroundColor:colores.superficie2,alignItems:'center'}]}>
-            <Text style={{color:colores.secundario,fontWeight:'800'}}>Desactivar en este dispositivo</Text>
-          </Pressable>
+        <View style={s.rowLeft}>
+          <View style={[s.smallIcon,{backgroundColor:colores.primarioSuave}]}>
+            <Ionicons name="alarm-outline" size={21} color={colores.primario}/>
+          </View>
+          <View style={{flex:1}}>
+            <Text style={[s.rowText,{color:colores.tinta}]}>Notificaciones locales</Text>
+            <Text style={[s.rowCaption,{color:colores.secundario}]}>
+              Guardá un evento futuro en Agenda para programar su recordatorio una hora antes.
+              Los avisos de proximidad siguen la preferencia de arriba.
+            </Text>
+          </View>
         </View>
+        <Text style={[s.rowCaption,{color:colores.secundario,marginTop:12}]}>
+          No hace falta activar avisos push del servidor: ese módulo no está implementado
+          en la API de la cátedra. Si tocás una notificación, Android abre Mi Ciudad
+          y te lleva al lugar o evento correspondiente.
+        </Text>
+        <Pressable onPress={()=>router.push('/(tabs)/agenda')} style={[s.option,{backgroundColor:colores.primarioSuave,alignItems:'center',marginTop:12}]}>
+          <Text style={{color:colores.primario,fontWeight:'900'}}>Ir a la Agenda</Text>
+        </Pressable>
       </GlassSurface>
-    </Reveal>:null}
+    </Reveal>
 
     <Pressable onPress={logout} style={[s.logout,{borderColor:colores.peligro}]}>
       <Ionicons name="log-out-outline" size={20} color={colores.peligro}/>
