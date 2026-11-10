@@ -44,55 +44,50 @@ docs/                        Mapeo, decisiones, pruebas y defensa
 ## Requisitos de entorno
 
 - Node.js 22.13 o superior.
-- Expo SDK 57 (React Native 0.86.3).
+- Expo SDK 58 (React Native 0.88.1), iOS 16.4+ y Android 7+.
 - Teléfono Android/iPhone para probar cámara, GPS, biometría, notificaciones y sensores.
 - Cuenta de Expo para vincular el proyecto y generar builds con EAS.
 
-## Probar iPhone — Giovanni Percara (Expo SDK 57)
+## Pruebas compartidas — Expo SDK 58 para Android e iPhone
 
-En septiembre de 2026, Expo confirmó que **Expo Go de la App Store
-admite SDK 57**. Giovanni puede abrir el QR remoto si tanto su
-Expo Go del iPhone como la terminal Expo CLI de la computadora
-iniciaron sesión con la **misma cuenta Expo**. No necesita TestFlight
-para este primer intento. Ver:
-[la guía de Giovanni](docs/PRUEBA-IOS-GIOVANNI.md) y
-[el anuncio de Expo](https://expo.dev/changelog/expo-go-57-login).
+Mi Ciudad ahora tiene una **versión única SDK 58**. Los compañeros que
+tengan Expo Go de SDK 53/54/57 deben actualizar **Expo Go**, no bajar
+el proyecto de versión. En iPhone, comprobar que el Expo Go instalado
+soporte SDK 58; cuando sea compatible, puede escanear el QR de Expo
+si las cuentas de Expo en la terminal y en el iPhone coinciden.
 
-Para imágenes, debe ser accesible desde su iPhone **la API de la cátedra**
-a través de HTTPS, no una IP privada de tu PC. El túnel de Expo no publica
-la API.
+**Para probar desde distintas redes**, ejecutá:
 
-## Pruebas compartidas con compañeros
+```powershell
+# Terminal 1: backend de la cátedra
+npm run api:iniciar:win
+# Terminal 2: HTTPS temporal (solo datos ficticios)
+cloudflared tunnel --url http://localhost:3000
+# Terminal 3: reemplazar con la URL real de la terminal 2
+npm run grupo:conectar -- https://TU-DIRECCION-REAL.trycloudflare.com
+```
 
-**Para compañeros en otras redes**, manteniendo Expo SDK 57:
-`npm run api:iniciar:win` en una terminal;
-`cloudflared tunnel --url http://localhost:3000` en otra;
-copiar la dirección temporal HTTPS y finalmente ejecutar
-`npm run grupo:conectar -- https://tu-api.trycloudflare.com`.
-El último comando verifica la API, escribe `.env.local` y abre Expo
-por túnel. Ver
-[pasos completos y precauciones](docs/PRUEBAS-COMPANEROS.md).
-Usar la API de desarrollo **sólo con cuentas y datos ficticios** porque
-el Quick Tunnel expone una URL pública temporal.
+El QR comparte Metro y el HTTPS de Cloudflare comparte la API: ambos
+son necesarios para tener las fotos oficiales. La PC debe seguir
+encendida. Una URL Quick Tunnel es temporal y públicamente accesible;
+no usar datos personales o de producción.
 
+- [Guía para los compañeros](docs/PRUEBAS-COMPANEROS.md)
+- [Guía iOS para Giovanni](docs/PRUEBA-IOS-GIOVANNI.md)
 
-Ver [la guía de Android/iPhone y diagnóstico de imágenes de la API](docs/PRUEBAS-COMPANEROS.md).
-
-Cuando el servidor del profesor esté encendido, verificá **cada** imagen
-antes de compartir Expo Go:
+Antes de dar por verificadas las imágenes, ejecutar con la API encendida:
 
 ```powershell
 npm run api:fotos:grupo -- http://localhost:3000
 ```
 
-Genera un reporte de solo lectura, detecta HTTP 403/404, medios ausentes y
-fotos repetidas. Si los compañeros están en otra red, primero es necesario
-un backend HTTPS accesible: el QR/túnel de Expo comparte Metro, no la API.
+Si una foto falta o está repetida, el problema se corrige en la API
+del profesor y su contenido, no cambiando el SDK.
 
 ## Ejecutar
 
 ```bash
-npm install
+npm ci
 npx expo install --check
 npm run typecheck
 npx expo start --tunnel
