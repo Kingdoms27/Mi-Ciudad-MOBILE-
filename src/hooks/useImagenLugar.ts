@@ -20,7 +20,15 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
     [urls],
   );
   const candidatos = useMemo(() => clave.split('|').filter(Boolean), [clave]);
-  const [uri, setUri] = useState('');
+  // Asociar el resultado con el lugar y las URLs consultadas evita mostrar
+  // durante un render la foto guardada de otro lugar u otra API.
+  const identidad = lugarId + '|' + clave;
+  const [resultado, setResultado] = useState<{ identidad: string; uri: string; listo: boolean }>({
+    identidad: '', uri: '', listo: false,
+  });
+  const uri = resultado.identidad === identidad ? resultado.uri : '';
+  const cargando = candidatos.length > 0 &&
+    (resultado.identidad !== identidad || !resultado.listo);
   const [reintento, setReintento] = useState(0);
   const fallidas = useRef(new Set<string>());
 
@@ -31,24 +39,33 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
     // En Web dejamos la descarga al navegador; en Android/iOS se usa sólo
     // una copia local validada o el respaldo incluido en la aplicación.
     if (Platform.OS === 'web') {
-      setUri(opciones[0] ?? '');
+      setResultado({ identidad, uri: opciones[0] ?? '', listo: true });
       return () => { activo = false; };
     }
 
-    setUri('');
+    setResultado({ identidad, uri: '', listo: false });
     (async () => {
       const guardada = await obtenerImagenLugarGuardada(lugarId, opciones);
       if (!activo) return;
-      if (guardada && !fallidas.current.has(guardada)) setUri(guardada);
+      if (guardada && !fallidas.current.has(guardada)) {
+        setResultado({ identidad, uri: guardada, listo: false });
+      }
 
       const nueva = await resolverImagenLugar(lugarId, opciones);
-      if (activo && nueva && !fallidas.current.has(nueva)) setUri(nueva);
+      if (activo && nueva && !fallidas.current.has(nueva)) {
+        setResultado({ identidad, uri: nueva, listo: true });
+      }
     })().catch(error => {
       if (__DEV__) {
         console.info('[Mi Ciudad] Foto no disponible; usando respaldo local', {
           lugarId,
           motivo: error instanceof Error ? error.message : String(error),
         });
+      }
+    }).finally(() => {
+      // Tras finalizar todos los intentos, se permite mostrar el respaldo.
+      if (activo) {
+        setResultado(prev => prev.identidad === identidad ? { ...prev, listo: true } : prev);
       }
     });
     return () => { activo = false; };
@@ -57,7 +74,7 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
   const reportarError = useCallback((motivo?: string) => {
     if (!uri || fallidas.current.has(uri)) return;
     fallidas.current.add(uri);
-    setUri('');
+    setResultado({ identidad, uri: '', listo: false });
     if (__DEV__) {
       console.info('[Mi Ciudad] Foto descargada no legible; probando otra', {
         lugarId, motivo: motivo ?? 'Error de imagen', uri,
@@ -72,5 +89,5 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
       .finally(() => { setReintento(n => n + 1); });
   }, [lugarId, uri]);
 
-  return { imagen: uri, reportarError };
+  return { imagen: uri, cargando, reportarError };
 }
