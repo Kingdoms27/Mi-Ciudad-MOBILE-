@@ -79,5 +79,29 @@ jobs:
             $errors | ForEach-Object { Write-Host $_.ToString() }
             exit 1
           }
+      - name: Revisar sintaxis del preparador de fotos API PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("scripts/preparar-fotos-api-windows.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host $_.ToString() }
+            exit 1
+          }
+      - name: Validar sintaxis TypeScript del importador de fotos del backend
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import ts from 'typescript';
+          const path = 'tools/api-mi-ciudad/importar-fotos-lugares.ts';
+          const code = readFileSync(path, 'utf8');
+          const archivo = ts.createSourceFile(path, code, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+          const errores = archivo.parseDiagnostics;
+          if (errores.length) {
+            console.error(errores.map(e => ts.flattenDiagnosticMessageText(e.messageText, '\\n')));
+            process.exitCode = 1;
+          }
+          NODE
       - name: TypeScript
         run: npm run typecheck
