@@ -1,0 +1,32 @@
+
+> mi-ciudad-mobile@1.0.0 typecheck
+> tsc --noEmit
+
+src/componentes/MapaLeaflet.tsx(297,11): error TS2769: No overload matches this call.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'RefObject<WebView<undefined> | null>' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type '{ html: string; }' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'string' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type '{ position: "absolute"; top: number; right: number; bottom: number; left: number; backgroundColor: string; }' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'string[]' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'true' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'true' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'true' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'string' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'string' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'false' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type 'false' is not assignable to type 'never'.
+  Overload 2 of 2, '(props: never, context: any): WebView<undefined>', gave the following error.
+    Type '(event: any) => void' is not assignable to type 'never'.
+src/componentes/MapaLeaflet.tsx(310,16): error TS7006: Parameter 'event' implicitly has an 'any' type.
