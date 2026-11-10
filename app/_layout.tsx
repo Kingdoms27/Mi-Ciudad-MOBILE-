@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider as NavigationThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, router, ThemeProvider as NavigationThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Network from 'expo-network';
 import * as Location from 'expo-location';
@@ -10,9 +10,40 @@ import { sincronizarVisitasPendientes } from '@/src/servicios/visitas';
 import { sincronizarEstadoEventos } from '@/src/servicios/eventosGuardados';
 import { obtenerLugares } from '@/src/servicios/lugares';
 import { revisarProximidad, revisarProximidadDesdeCoordenadas } from '@/src/servicios/proximidad';
+import { inicializarAvisosLocales } from '@/src/servicios/notificaciones';
 
 function Efectos(){
   const{usuario}=useSesion();
+
+  useEffect(()=>{
+    let activo=true;
+    let listener: { remove: () => void } | undefined;
+    let pendiente: ReturnType<typeof setTimeout> | undefined;
+    // Un recordatorio local puede abrir Expo Go por acción del usuario.
+    // Ir exactamente al evento/lugar que tocó, sin reabrir rutas repetidas
+    // en recargas ni registrar tokens push del backend.
+    void inicializarAvisosLocales().then(Notifications=>{
+      if(!Notifications||!activo)return;
+      const abrir=(respuesta:import('expo-notifications').NotificationResponse)=>{
+        if(!activo||respuesta.actionIdentifier!==Notifications.DEFAULT_ACTION_IDENTIFIER)return;
+        const datos=respuesta.notification.request.content.data;
+        Notifications.clearLastNotificationResponse();
+        const eventoId=datos?.eventoId;
+        const lugarId=datos?.lugarId;
+        if(typeof eventoId==='string'&&eventoId){
+          router.push({pathname:'/evento/[id]',params:{id:eventoId}});
+        }else if(typeof lugarId==='string'&&lugarId){
+          router.push({pathname:'/lugar/[id]',params:{id:lugarId}});
+        }
+      };
+      listener=Notifications.addNotificationResponseReceivedListener(abrir);
+      const ultima=Notifications.getLastNotificationResponse();
+      if(ultima){
+        pendiente=setTimeout(()=>abrir(ultima),300);
+      }
+    }).catch(()=>undefined);
+    return()=>{activo=false;listener?.remove();if(pendiente)clearTimeout(pendiente)};
+  },[]);
 
   useEffect(()=>{
     inicializarDb().catch(console.error);
