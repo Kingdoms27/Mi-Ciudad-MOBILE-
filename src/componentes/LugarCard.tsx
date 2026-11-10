@@ -13,13 +13,15 @@ import { apiConfigurada } from '@/src/servicios/api';
 export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   const{colores}=useTema();
   const fotoLocal=fotoLocalParaLugar(lugar);
-  // Con API docente, las fotografías remotas son la fuente principal;
-  // la imagen local sólo entra si el archivo falla o todavía no se cargó.
+  // La consigna exige consumir el catálogo docente, no exige que las
+  // fotografías se alojen en su backend. Priorizar las fotos verificadas
+  // incluidas en la app: no parpadean, funcionan sin red y no son los PNG
+  // genéricos de las semillas. Para el resto, intentar imágenes de la API.
   const apiActiva=apiConfigurada();
   const { imagen, cargando, reportarError }=useImagenLugar(
-    lugar.id,apiActiva||!fotoLocal?lugar.imagenes:[],
+    lugar.id,fotoLocal?[]:lugar.imagenes,
   );
-  const mostrarRemota=Boolean(imagen)&&(apiActiva||!fotoLocal);
+  const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
