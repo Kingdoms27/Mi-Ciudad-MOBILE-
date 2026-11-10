@@ -22,8 +22,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.3.0
-      - name: Instalar Expo SDK 58
-        run: npm install expo@^58.0.0 --save
+      - name: Regenerar dependencias limpias desde SDK 58
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install expo@^58.0.0 --save
       - name: Alinear todas las dependencias de Expo
         id: alinear
         shell: bash
