@@ -27,7 +27,7 @@ export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
   {lugares,coord,oscuro,onLugarPress},
   ref,
 ){
-  const webRef=useRef<WebView|null>(null);
+  const webRef=useRef<WebView<object>|null>(null);
 
   useImperativeHandle(ref,()=>({
     enfocar(latitud,longitud,zoom=15){
@@ -294,7 +294,7 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
 </html>`;
   },[lugares,coord,oscuro]);
 
-  return <WebView
+  return <WebView<object>
     ref={webRef}
     source={{html}}
     userAgent="MiCiudadColon/1.0 (ReactNativeWebView; educational tourism app)"

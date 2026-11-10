@@ -6,13 +6,7 @@
     "orientation": "portrait",
     "scheme": "miciudadcolon",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F5F2EA"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "ar.edu.uner.miciudadcolon",
@@ -88,6 +82,14 @@
           "enableBackgroundPlayback": true,
           "microphonePermission": false,
           "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F2EA"
         }
       ]
     ],
