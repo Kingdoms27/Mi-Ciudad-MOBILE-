@@ -10,11 +10,15 @@ import { sincronizarVisitasPendientes } from '@/src/servicios/visitas';
 import { sincronizarEstadoEventos } from '@/src/servicios/eventosGuardados';
 import { obtenerLugares } from '@/src/servicios/lugares';
 import { revisarProximidad, revisarProximidadDesdeCoordenadas } from '@/src/servicios/proximidad';
+import { prepararNotificacionesLocales } from '@/src/servicios/notificaciones';
 
 function Efectos(){
   const{usuario}=useSesion();
 
   useEffect(()=>{
+    // Registrar el manejador de avisos locales desde el inicio, también
+    // cuando llegan recordatorios mientras la aplicación está abierta.
+    void prepararNotificacionesLocales();
     inicializarDb().catch(console.error);
     const sub=Network.addNetworkStateListener(s=>{
       if(s.isConnected&&s.isInternetReachable!==false){
