@@ -16,7 +16,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   // Con API docente, las fotografías remotas son la fuente principal;
   // la imagen local sólo entra si el archivo falla o todavía no se cargó.
   const apiActiva=apiConfigurada();
-  const { imagen, reportarError }=useImagenLugar(
+  const { imagen, cargando, reportarError }=useImagenLugar(
     lugar.id,apiActiva||!fotoLocal?lugar.imagenes:[],
   );
   const mostrarRemota=Boolean(imagen)&&(apiActiva||!fotoLocal);
@@ -41,6 +41,10 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
     >
       <View style={s.imageWrap}>
         {mostrarRemota?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
+         apiActiva&&cargando?<View style={[s.image,s.placeholder,{backgroundColor:colores.superficie2}]}>
+           <Ionicons name="image-outline" size={27} color={colores.secundario}/>
+           <Text style={[s.placeholderText,{color:colores.secundario}]}>CARGANDO IMAGEN DE LA API</Text>
+         </View>:
          fotoLocal?<Image source={fotoLocal} style={s.image} resizeMode="cover"/>:
           <View style={s.imageWrap}>
             <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
