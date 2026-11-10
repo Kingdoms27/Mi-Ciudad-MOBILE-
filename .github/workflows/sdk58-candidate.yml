@@ -58,9 +58,41 @@ jobs:
       - name: Verificar dependencias Expo
         run: npx expo install --check
       - name: Ejecutar Expo Doctor
-        run: npx expo-doctor@latest
+        id: doctor
+        shell: bash
+        run: |
+          set +e
+          npx expo-doctor@latest > sdk58-doctor-completo.txt 2>&1
+          estado=$?
+          echo "estado=$estado" >> "$GITHUB_OUTPUT"
+          tail -120 sdk58-doctor-completo.txt > sdk58-doctor.txt
+          cat sdk58-doctor.txt
+          exit 0
       - name: Compilar TypeScript
-        run: npm run typecheck
+        id: typescript
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > sdk58-ts-completo.txt 2>&1
+          estado=$?
+          echo "estado=$estado" >> "$GITHUB_OUTPUT"
+          tail -120 sdk58-ts-completo.txt > sdk58-typescript.txt
+          cat sdk58-typescript.txt
+          exit 0
+      - name: Guardar diagnósticos de migración de SDK 58
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f sdk58-doctor.txt sdk58-typescript.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "test(expo): registro de diagnóstico SDK 58"
+            git push origin HEAD:upgrade/sdk58-grupo-20261110
+          fi
+      - name: Validar calidad de migración
+        run: |
+          test "${{ steps.doctor.outputs.estado }}" = "0"
+          test "${{ steps.typescript.outputs.estado }}" = "0"
       - name: Comprobar pruebas de imagenes de API
         run: node --test scripts/test-imagenes-api.mjs
       - name: Validar configuracion publica
