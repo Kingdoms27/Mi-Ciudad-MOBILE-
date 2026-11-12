@@ -8,6 +8,7 @@ import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { fotoLocalEsReferencial } from '@/src/servicios/calidadFotografica';
 import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 
@@ -24,6 +25,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
+  const fotoReferencial = Boolean(fotoLocal) && fotoLocalEsReferencial(lugar);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -54,6 +56,9 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
              </Text>
            </View>
          </View>}
+        {fotoReferencial?<View style={s.demoBadge}>
+          <Text style={s.demoBadgeText}>VISTA REFERENCIAL DEL ENTORNO</Text>
+        </View>:null}
         {mostrarRemota&&demoApi?<View style={s.demoBadge}>
           <Text style={s.demoBadgeText}>IMAGEN DE DEMOSTRACIÓN</Text>
         </View>:null}
