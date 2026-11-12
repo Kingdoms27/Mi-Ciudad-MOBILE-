@@ -1,0 +1,267 @@
+{
+  "descripcion": "Inventario de licencias y correspondencia fotográfica — Mi Ciudad Colón, 12/11/2026",
+  "actualizado": "2026-11-12",
+  "nota": "sitio = fotografía específica; referencial = entorno/puente pero no punto exacto; pendiente = no incluir como foto del lugar sin evidencia",
+  "lugares": [
+    {
+      "id": "lug-001",
+      "nombre": "Termas de Colón",
+      "estado": "sitio",
+      "archivo": "lug-001.jpg",
+      "autor": "Leisuregroup",
+      "licencia": "CC BY-SA 3.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Toboganes_Acuaticos.JPG",
+      "observacion": ""
+    },
+    {
+      "id": "lug-002",
+      "nombre": "Playa Norte",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "sector exacto sin licencia verificable"
+    },
+    {
+      "id": "lug-003",
+      "nombre": "Balneario Piedras Coloradas",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "única fotografía Commons localizada es de inundación 2014; no portada actual"
+    },
+    {
+      "id": "lug-004",
+      "nombre": "Molino Forclaz",
+      "estado": "sitio",
+      "archivo": "molino-forclaz.jpg",
+      "autor": "Dario Alpern",
+      "licencia": "CC BY-SA 4.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Molino_Forclaz_en_Colón.JPG",
+      "observacion": ""
+    },
+    {
+      "id": "lug-005",
+      "nombre": "Museo Casa de la Cultura",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "nombre y edificio por confirmar"
+    },
+    {
+      "id": "lug-006",
+      "nombre": "Parque Nacional El Palmar",
+      "estado": "sitio",
+      "archivo": "parque-nacional-el-palmar.jpg",
+      "autor": "Pablo D. Flores",
+      "licencia": "Dominio público (declarado por el autor)",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Parque_Nacional_El_Palmar_(3).jpg",
+      "observacion": ""
+    },
+    {
+      "id": "lug-007",
+      "nombre": "Puerto Viejo",
+      "estado": "referencial",
+      "archivo": "puerto-viejo.jpg",
+      "autor": "Fernando de Gorocica",
+      "licencia": "CC BY-SA 4.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Puerto_de_Colón_-_Entre_Ríos.jpg",
+      "observacion": "La fotografía representa un elemento de la zona, pero no acredita la ubicación exacta anunciada"
+    },
+    {
+      "id": "lug-008",
+      "nombre": "Iglesia de la Plaza San Martín",
+      "estado": "sitio",
+      "archivo": "lug-008.jpg",
+      "autor": "Juandrovandi",
+      "licencia": "CC BY-SA 4.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG",
+      "observacion": ""
+    },
+    {
+      "id": "lug-009",
+      "nombre": "Anfiteatro Municipal",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "imagen del anfiteatro de Colón sin permiso"
+    },
+    {
+      "id": "lug-010",
+      "nombre": "Paseo de Artesanos",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "sector exacto sin foto autorizada"
+    },
+    {
+      "id": "lug-011",
+      "nombre": "Casa de Artesanías Regionales",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "edificio por verificar"
+    },
+    {
+      "id": "lug-012",
+      "nombre": "Palacio San José",
+      "estado": "sitio",
+      "archivo": "palacio-san-jose.jpg",
+      "autor": "Pablo D. Flores",
+      "licencia": "Dominio público (declarado por el autor)",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Palacio_San_José_1.jpg",
+      "observacion": ""
+    },
+    {
+      "id": "lug-013",
+      "nombre": "Museo Histórico Regional de San José",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "fotografías oficiales sin permiso de redistribución acreditado"
+    },
+    {
+      "id": "lug-014",
+      "nombre": "Costanera Gobernador Quirós",
+      "estado": "sitio",
+      "archivo": "costanera-gobernador-quiros.jpg",
+      "autor": "Juandrovandi",
+      "licencia": "CC BY-SA 4.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Costanera_de_Colon,_Entre_Rios.JPG",
+      "observacion": ""
+    },
+    {
+      "id": "lug-015",
+      "nombre": "Parque Dr. Herminio J. Quirós",
+      "estado": "sitio",
+      "archivo": "parque-dr-herminio-j-quiros.jpg",
+      "autor": "Pablo D. Flores",
+      "licencia": "CC BY-SA 2.5",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Parque_Quirós,_Colón_-_1.jpg",
+      "observacion": ""
+    },
+    {
+      "id": "lug-016",
+      "nombre": "Mirador del Puente General Artigas",
+      "estado": "referencial",
+      "archivo": "mirador-del-puente-general-artigas.jpg",
+      "autor": "Dario Alpern",
+      "licencia": "CC BY-SA 3.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Puente_General_Artigas.jpg",
+      "observacion": "La fotografía representa un elemento de la zona, pero no acredita la ubicación exacta anunciada"
+    },
+    {
+      "id": "lug-017",
+      "nombre": "Playa Paso Vela",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "lugar exacto por confirmar"
+    },
+    {
+      "id": "lug-018",
+      "nombre": "Termas de Villa Elisa",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "galería oficial sin permiso de redistribución acreditado"
+    },
+    {
+      "id": "lug-019",
+      "nombre": "Parrilla del Puerto",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "comercio genérico sin identificación inequívoca"
+    },
+    {
+      "id": "lug-020",
+      "nombre": "Pulpería de la Colonia",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "comercio genérico sin identificación inequívoca"
+    },
+    {
+      "id": "lug-021",
+      "nombre": "Heladería de la Peatonal",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "comercio genérico sin identificación inequívoca"
+    },
+    {
+      "id": "lug-022",
+      "nombre": "Cervecería Artesanal del Río",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "comercio genérico sin identificación inequívoca"
+    },
+    {
+      "id": "lug-023",
+      "nombre": "Hostería del Río",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "alojamiento genérico sin identificación inequívoca"
+    },
+    {
+      "id": "lug-024",
+      "nombre": "Camping Municipal Norte",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "sector exacto sin foto autorizada"
+    },
+    {
+      "id": "lug-025",
+      "nombre": "Centro de Interpretación del Patrimonio Histórico y Cultural de la Colonia San José y la Costa del Río Uruguay",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "institución o edificio exacto por confirmar"
+    },
+    {
+      "id": "lug-027",
+      "nombre": "Feria de la Plaza San Martín",
+      "estado": "pendiente",
+      "archivo": null,
+      "autor": null,
+      "licencia": null,
+      "fuente": null,
+      "observacion": "medios periodísticos no autorizan redistribución"
+    }
+  ]
+}
