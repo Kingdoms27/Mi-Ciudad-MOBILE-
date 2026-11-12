@@ -45,17 +45,15 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
     >
       <View style={s.imageWrap}>
         {mostrarRemota?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
-         apiActiva&&cargando?<View style={[s.image,s.placeholder,{backgroundColor:colores.superficie2}]}>
-           <Ionicons name="image-outline" size={27} color={colores.secundario}/>
-           <Text style={[s.placeholderText,{color:colores.secundario}]}>CARGANDO IMAGEN DE LA API</Text>
-         </View>:
          fotoLocal?<Image source={fotoLocal} style={s.image} resizeMode="cover"/>:
-          <View style={s.imageWrap}>
-            <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
-            <View style={s.respaldoFoto}>
-              <Text style={s.respaldoFotoTexto}>VISTA GENERAL DE COLÓN</Text>
-            </View>
-          </View>}
+         <View style={s.imageWrap}>
+           <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
+           <View style={s.respaldoFoto}>
+             <Text style={s.respaldoFotoTexto}>
+               {apiActiva&&cargando?'BUSCANDO FOTOGRAFÍA': 'VISTA GENERAL DE COLÓN · SIN FOTO ESPECÍFICA'}
+             </Text>
+           </View>
+         </View>}
         {mostrarRemota&&demoApi?<View style={s.demoBadge}>
           <Text style={s.demoBadgeText}>IMAGEN DE DEMOSTRACIÓN</Text>
         </View>:null}
