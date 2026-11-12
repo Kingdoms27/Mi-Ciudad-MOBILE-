@@ -91,7 +91,8 @@ export async function programarRecordatorioEvento(evento: Evento): Promise<strin
 
   if (!(await pedirPermisoNotificaciones())) return null;
 
-  let fecha = new Date(inicio.getTime() - 60 * 60 * 1000);
+  // El docente propuso 15 o 30 minutos: fijamos 30 como política de la app.
+  let fecha = new Date(inicio.getTime() - 30 * 60 * 1000);
   if (fecha.getTime() <= ahora) fecha = new Date(ahora + 5000);
 
   return Notifications.scheduleNotificationAsync({
