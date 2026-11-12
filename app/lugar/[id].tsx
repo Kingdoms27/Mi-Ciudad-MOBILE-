@@ -17,6 +17,7 @@ import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
 import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
+import { abrirNavegacion } from '@/src/servicios/navegacion';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
@@ -104,10 +105,14 @@ function ContenidoLugar({
     }
   };
 
-  const abrirMapa=()=>Alert.alert('Cómo querés llegar','Elegí el modo de viaje.',[
+  const abrirMapa=()=>Alert.alert('Cómo querés llegar','Se abrirá la app de mapas de tu dispositivo.',[
     {text:'Cancelar',style:'cancel'},
-    {text:'A pie',onPress:()=>Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lugar.coordenadas.latitud},${lugar.coordenadas.longitud}&travelmode=walking`)},
-    {text:'En auto',onPress:()=>Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lugar.coordenadas.latitud},${lugar.coordenadas.longitud}&travelmode=driving`)},
+    {text:'A pie',onPress:()=>{void abrirNavegacion(lugar.coordenadas,'walking').catch(
+      ()=>Alert.alert('No se pudieron abrir los mapas','Comprobá que tengas instalada una aplicación de mapas.'),
+    );}},
+    {text:'En auto',onPress:()=>{void abrirNavegacion(lugar.coordenadas,'driving').catch(
+      ()=>Alert.alert('No se pudieron abrir los mapas','Comprobá que tengas instalada una aplicación de mapas.'),
+    );}},
   ]);
 
   const descargar=async()=>{
