@@ -35,9 +35,12 @@ desactualizada; no debe usarse para confirmar horarios, precios o servicios.
 
 ## Fotografías externas verificadas adicionales
 
-Estas fotografías se descargan por HTTPS desde Wikimedia Commons sólo en
-fichas identificadas y se guardan localmente después de la primera carga.
-No están empaquetadas en la APK, por lo que necesitan conexión la primera vez.
+El comando `npm run fotos:commons` descarga estas dos fotografías en
+`assets/lugares/lug-001.jpg` y `assets/lugares/lug-008.jpg`, y el instalador
+genera las referencias estáticas para incluirlas en la APK. **Sólo estarán en
+la APK si esos dos archivos efectivamente se descargaron y se guardaron en
+Git antes de compilar.** Mientras falten, el código dispone de URLs de
+Commons que requieren conexión la primera vez.
 
 | Ficha | Archivo | Autor | Licencia | Fuente |
 |---|---|---|---|---|
@@ -45,3 +48,12 @@ No están empaquetadas en la APK, por lo que necesitan conexión la primera vez.
 | Iglesia Santos Justo y Pastor (Plaza San Martín) | `Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG` | Juandrovandi | CC BY-SA 4.0 | [Archivo](https://commons.wikimedia.org/wiki/File:Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG) |
 
 Son fotografías históricas; no indican horarios, servicios ni estado actual.
+
+
+## Auditoría automática de derechos
+
+El inventario fuente-por-fuente está en `docs/LICENCIAS-FOTOS-20261112.json`.
+Ejecutar `npm run fotos:licencias` después de descargar los JPG: comprueba
+que los archivos tengan una atribución documentada, encabezado válido y
+no estén duplicados. Dos fotos —Puerto Viejo y mirador del puente— son
+**vistas referenciales** y no deben presentarse como ubicación exacta.
