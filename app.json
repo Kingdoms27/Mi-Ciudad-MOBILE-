@@ -91,7 +91,9 @@
           "resizeMode": "contain",
           "backgroundColor": "#F5F2EA"
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true
