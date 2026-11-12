@@ -21,7 +21,7 @@ function moduloTs(path, dependencias) {
   return modulo.exports;
 }
 
-function entorno({conPermiso=true}={}) {
+function entorno({conPermiso=true,expoGo=false,fallaCanal=false}={}) {
   const notificaciones = [];
   const canales = [];
   let handler;
@@ -29,7 +29,10 @@ function entorno({conPermiso=true}={}) {
     AndroidImportance: { HIGH: 4 },
     SchedulableTriggerInputTypes: { DATE: 'date', TIME_INTERVAL:'timeInterval' },
     setNotificationHandler: h => { handler=h; },
-    setNotificationChannelAsync: async (id,settings) => { canales.push({id,settings}); },
+    setNotificationChannelAsync: async (id,settings) => { 
+      if (fallaCanal) throw new Error('NullPointerException simulado en Expo Go');
+      canales.push({id,settings}); 
+    },
     getPermissionsAsync: async () => ({granted:conPermiso}),
     requestPermissionsAsync: async () => ({granted:conPermiso}),
     scheduleNotificationAsync: async x => { notificaciones.push(x); return 'aviso-1'; },
@@ -38,6 +41,7 @@ function entorno({conPermiso=true}={}) {
   const datos = new Map();
   const api = moduloTs('src/servicios/notificaciones.ts', {
     'react-native': { Platform: { OS:'android' } },
+    'expo-constants': { appOwnership: expoGo ? 'expo' : null },
     'expo-sqlite/kv-store': {
       getItem: async k => datos.get(k),
       setItem: async (k,v) => datos.set(k,v),
@@ -59,6 +63,27 @@ test('recordatorio LOCAL de evento futuro, canal Android y pantalla de alerta',a
   assert.equal(e.canales[0].settings.importance,4);
   assert.equal((await e.handler().handleNotification({})).shouldShowBanner,true);
   assert.equal((await e.handler().handleNotification({})).shouldPlaySound,true);
+});
+
+test('Expo Go Android: omite canal nativo que falla y deja activos los avisos locales',async()=>{
+  const e=entorno({expoGo:true,fallaCanal:true});
+  assert.equal(await e.api.prepararNotificacionesLocales(),true);
+  assert.equal(e.canales.length,0,'Expo Go no debe configurar canal nativo');
+  assert.equal(await e.api.programarAvisoLocalDePrueba(),true);
+  assert.equal(e.notificaciones.length,1);
+  assert.equal('channelId' in e.notificaciones[0].trigger,false);
+  const inicio=new Date(Date.now()+60*60*1000).toISOString();
+  await e.api.programarRecordatorioEvento({id:'evt-test',titulo:'Recorrido',inicio,estado:'programado'});
+  assert.equal('channelId' in e.notificaciones[1].trigger,false);
+});
+
+test('APK con canal Android rechazado conserva el fallback y no bloquea eventos',async()=>{
+  const e=entorno({fallaCanal:true});
+  assert.equal(await e.api.prepararNotificacionesLocales(),true);
+  const inicio=new Date(Date.now()+3*60*60*1000).toISOString();
+  assert.equal(await e.api.programarRecordatorioEvento({id:'evt-fallback',titulo:'Recorrido',inicio,estado:'programado'}),'aviso-1');
+  assert.equal(e.notificaciones.length,1);
+  assert.equal('channelId' in e.notificaciones[0].trigger,false);
 });
 
 test('evento próximo: recordatorio inmediato y nunca con fecha pasada',async()=>{
