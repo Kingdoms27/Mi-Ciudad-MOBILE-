@@ -135,3 +135,10 @@ Encontré una fotografía reutilizable que representa **una playa de la ciudad d
 El instalador `npm run fotos:commons` ahora prepara `lug-002.jpg`. Al ejecutarlo en Windows, valida y descarga el JPEG, genera su referencia local y permite que aparezca en la APK. **Todavía no es un binario guardado en GitHub.** Si descarga correctamente, habrá 10 imágenes locales (7 específicas y 3 referenciales) y 16 fichas sin foto local; **Playa Norte aún requiere una fotografía específica** si se quiere cumplir ese criterio de exactitud.
 
 No se han descargado otras fotografías nuevas: las demás requieren confirmar el lugar y los derechos de reutilización. No sobrescribir ni confundir esta vista general con una fotografía identificada del sector Norte.
+
+
+## Nueva fotografía específica histórica para Puerto Viejo
+
+Wikimedia Commons identifica explícitamente [Puerto viejo, Colón - 1.jpg](https://commons.wikimedia.org/wiki/File:Puerto_viejo%2C_Col%C3%B3n_-_1.jpg) como un edificio antiguo del puerto de Colón, Entre Ríos. Autor: Pablo D. Flores, **CC BY-SA 2.5**, tomada el **14 de julio de 2006**. Se agregó al instalador como `lug-007.jpg` con prioridad de imagen por ID de la API sobre la fotografía referencial `puerto-viejo.jpg` que **no se borra**. Es una foto histórica y no demuestra el estado actual del edificio.
+
+El comando `npm run fotos:commons` prepara las dos incorporaciones recientes `lug-002.jpg` (vista general de playa, sector Norte no confirmado) y `lug-007.jpg` (Puerto Viejo histórico). En tu PC se verá el resultado de la descarga; los binarios aún deben guardarse en GitHub antes de construir la APK.
