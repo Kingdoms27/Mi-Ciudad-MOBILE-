@@ -1,7 +1,7 @@
 {
   "descripcion": "Inventario de licencias y correspondencia fotográfica — Mi Ciudad Colón, 12/11/2026",
   "actualizado": "2026-11-12",
-  "nota": "sitio = fotografía específica; referencial = entorno/puente pero no punto exacto; pendiente = no incluir como foto del lugar sin evidencia",
+  "nota": "sitio = fotografía específica; referencial = paisaje o sitio de la ciudad sin verificación de sector exacto; pendiente = no incluir sin evidencia",
   "lugares": [
     {
       "id": "lug-001",
@@ -16,12 +16,12 @@
     {
       "id": "lug-002",
       "nombre": "Playa Norte",
-      "estado": "pendiente",
-      "archivo": null,
-      "autor": null,
-      "licencia": null,
-      "fuente": null,
-      "observacion": "sector exacto sin licencia verificable"
+      "estado": "referencial",
+      "archivo": "lug-002.jpg",
+      "autor": "Ternava",
+      "licencia": "CC BY-SA 4.0",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Playa_en_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg",
+      "observacion": "Fotografía de una playa en Colón tomada el 25 de enero de 2020 tras una tormenta. NO se verifica que corresponda a Playa Norte."
     },
     {
       "id": "lug-003",
