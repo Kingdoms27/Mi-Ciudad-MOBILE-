@@ -29,9 +29,8 @@ export default function CreditosFotos() {
       </Pressable>
       <Text style={[s.title,{color:colores.tinta}]}>Créditos fotográficos</Text>
       <Text style={[s.intro,{color:colores.secundario}]}>
-        Las primeras siete fotografías se incluyen en la app para funcionar sin conexión. Las fotos de Termas de Colón y la iglesia se descargan desde Commons y quedan guardadas después de la primera carga.
-        Los archivos pertenecen a sus autores originales y conservan las licencias de Wikimedia Commons.
-        La presencia de una imagen no confirma que muestre el estado actual del lugar.
+        Hay nueve fotografías con autor y licencia documentados. Si se ejecutó fotos:commons antes de compilar la APK, las nueve quedan incluidas para consultar sin conexión; si no, las dos fotos de Termas de Colón y la iglesia pueden necesitar descargarse al abrirlas.
+        Las vistas del puerto y del puente son referenciales y no certifican el punto exacto. Las imágenes de Wikimedia Commons conservan sus licencias originales; una foto histórica tampoco confirma el estado actual del sitio.
       </Text>
       {FOTOS.map(f=>{
         const url = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.archivo);
