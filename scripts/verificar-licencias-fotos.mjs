@@ -45,6 +45,16 @@ for(const item of fichas){
   if(archivos.has(item.archivo))
     errores.push('Un mismo archivo se atribuye a dos fichas: '+item.archivo);
   archivos.set(item.archivo,item);
+  for(const alternativa of (item.alternativos??[])){
+    if(!alternativa.archivo || alternativa.archivo.includes('/') || alternativa.archivo.includes('\\') ||
+      !permitido.has(extname(alternativa.archivo).toLowerCase()))
+      errores.push('Nombre inseguro para foto alternativa de '+item.id);
+    if(!alternativa.autor || !alternativa.licencia || !alternativa.fuente)
+      errores.push('Créditos incompletos de foto alternativa en '+item.id);
+    if(archivos.has(alternativa.archivo))
+      errores.push('Foto alternativa duplicada: '+alternativa.archivo);
+    archivos.set(alternativa.archivo,{ ...item, ...alternativa });
+  }
 }
 
 const jpg=bytes=>bytes.length>=1500 && bytes[0]===255 && bytes[1]===216 && bytes[2]===255;
