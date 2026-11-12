@@ -3,6 +3,8 @@ import { apiConfigurada } from '@/src/servicios/api';
 // GENERADO por fotos:instalar. Archivos incluidos en el APK.
 const FOTOS: Record<string, number> = {
   "costanera-gobernador-quiros": require("../../assets/lugares/costanera-gobernador-quiros.jpg"),
+  "lug-001": require("../../assets/lugares/lug-001.jpg"),
+  "lug-008": require("../../assets/lugares/lug-008.jpg"),
   "mirador-del-puente-general-artigas": require("../../assets/lugares/mirador-del-puente-general-artigas.jpg"),
   "molino-forclaz": require("../../assets/lugares/molino-forclaz.jpg"),
   "palacio-san-jose": require("../../assets/lugares/palacio-san-jose.jpg"),
