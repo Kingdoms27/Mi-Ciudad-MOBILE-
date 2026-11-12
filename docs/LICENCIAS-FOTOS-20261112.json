@@ -66,12 +66,21 @@
     {
       "id": "lug-007",
       "nombre": "Puerto Viejo",
-      "estado": "referencial",
-      "archivo": "puerto-viejo.jpg",
-      "autor": "Fernando de Gorocica",
-      "licencia": "CC BY-SA 4.0",
-      "fuente": "https://commons.wikimedia.org/wiki/File:Puerto_de_Colón_-_Entre_Ríos.jpg",
-      "observacion": "La fotografía representa un elemento de la zona, pero no acredita la ubicación exacta anunciada"
+      "estado": "sitio",
+      "archivo": "lug-007.jpg",
+      "autor": "Pablo D. Flores",
+      "licencia": "CC BY-SA 2.5",
+      "fuente": "https://commons.wikimedia.org/wiki/File:Puerto_viejo%2C_Col%C3%B3n_-_1.jpg",
+      "observacion": "Edificio del antiguo puerto de Colón, fotografía histórica de julio de 2006; no acredita estado actual.",
+      "alternativos": [
+        {
+          "archivo": "puerto-viejo.jpg",
+          "autor": "Fernando de Gorocica",
+          "licencia": "CC BY-SA 4.0",
+          "fuente": "https://commons.wikimedia.org/wiki/File:Puerto_de_Colón_-_Entre_Ríos.jpg",
+          "observacion": "Vista de escollera y entorno, no edificio del Puerto Viejo"
+        }
+      ]
     },
     {
       "id": "lug-008",
