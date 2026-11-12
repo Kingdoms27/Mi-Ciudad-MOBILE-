@@ -76,3 +76,53 @@ archivos binarios con Git.
 
 **No marcar "26 fotos reales" hasta contar con 26 fuentes distintas,
 correctamente identificadas y autorizadas.**
+
+
+## Verificación adicional de fuentes (12 de noviembre de 2026)
+
+Se contrastaron recursos públicos para evitar imágenes de municipios
+equivocados. **Una web accesible públicamente no concede automáticamente
+permiso para descargar, editar ni redistribuir sus fotografías.**
+
+1. **Playa Norte (`lug-002`)** — Turismo de Colón identifica expresamente
+   a Playa Norte y la distingue de Punta Colón, Piedras Coloradas, Inkier,
+   Playa Honda y Playa Nueva:
+   https://www.colonturismo.tur.ar/playas-islas/
+   La página nacional menciona accesibilidad de Playa Norte, pero sus
+   fotografías generales de playas no acreditan automáticamente ese sector:
+   https://www.argentina.gob.ar/node/469432
+   **Acción:** obtener imagen propia, foto donada o autorización escrita de
+   la imagen del sector exacto.
+
+2. **Piedras Coloradas (`lug-003`)** — Wikimedia Commons tiene
+   `Entrada del Camping Piedras Coloradas.JPG` y
+   `Camping Piedras Coloradas inundado.jpg`, de Dario Alpern,
+   del episodio de creciente de 2014:
+   https://commons.wikimedia.org/wiki/File:Entrada_del_Camping_Piedras_Coloradas.JPG
+   https://commons.wikimedia.org/wiki/File:Camping_Piedras_Coloradas_inundado.jpg
+   Son reutilizables conforme a la licencia indicada por Commons, pero
+   **no sirven como portada turística actual**. Tampoco usar el archivo
+   `Piedras Coloradas.jpg`: representa Las Grutas, **Río Negro**, no Colón.
+
+3. **Museo Histórico Regional San José (`lug-013`)** — el portal turístico
+   de San José confirma dirección Urquiza 1127 y la identidad del museo:
+   https://sanjose.tur.ar/que-hacer/
+   **Acción:** pedir una fotografía y licencia/permiso al museo o tomar
+   una foto propia. Evitar el Museo Departamental de San José de Uruguay.
+
+4. **Termas de Villa Elisa (`lug-018`)** — hay galería turística
+   específica en https://www.termasdevillaelisa.com.ar/fotos.php .
+   **Acción:** verificar quién posee los derechos y solicitar autorización
+   para integrarla a la APK. Una foto visible online no equivale a CC.
+
+5. **Feria de Plaza San Martín (`lug-027`)** — existen crónicas de ferias
+   en la plaza de Colón:
+   https://emisoracolon.com.ar/index.php/2026/09/02/colon-se-prepara-para-una-nueva-gran-feria-de-artesanos-y-emprendedores/
+   **Acción:** solicitar foto al organizador o al autor. Una imagen general
+   de la plaza no debe etiquetarse como foto de la feria.
+
+**Estado de integración:** ninguna de estas nuevas fuentes quedó
+autorizada para descarga automática por esta revisión. Los originales de
+la cátedra se mantienen intactos y las fichas sin fuente tienen su
+respaldo visual identificado.
+
