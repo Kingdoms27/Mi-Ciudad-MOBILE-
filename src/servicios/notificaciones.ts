@@ -79,7 +79,7 @@ export async function pedirPermisoNotificaciones() {
 export async function programarAvisoLocalDePrueba(): Promise<boolean> {
   const Notifications = await cargarNotificaciones();
   if (!Notifications || !(await pedirPermisoNotificaciones())) return false;
-  await Notifications.scheduleNotificationAsync({
+  return Notifications.scheduleNotificationAsync({
     content: {
       title: 'Mi Ciudad Colón',
       body: 'Los recordatorios locales están funcionando en este teléfono.',
