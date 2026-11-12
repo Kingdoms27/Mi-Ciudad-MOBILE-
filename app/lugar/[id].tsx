@@ -152,7 +152,7 @@ function ContenidoLugar({
         {!fotoLocal&&!mostrarRemota&&apiActiva&&cargando?
           <View style={s.genericBadge}><Text style={s.genericBadgeText}>Buscando fotografía del lugar…</Text></View>:null}
         {fotoReferencial?<View style={s.genericBadge}>
-          <Text style={s.genericBadgeText}>Vista referencial, no foto certificada del punto exacto</Text>
+          <Text style={s.genericBadgeText}>{lugar.id==='lug-002'?'Foto de una playa de Colón · Sector no confirmado':'Vista referencial, no foto certificada del punto exacto'}</Text>
         </View>:null}
         {mostrarRemota&&demoApi?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Imagen de demostración de la cátedra</Text></View>:null}
         {!fotoLocal&&!mostrarRemota&&!cargando?<View style={s.genericBadge}>
