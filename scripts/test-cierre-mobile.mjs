@@ -79,8 +79,11 @@ test('proximidad con permiso: no duplicar avisos en un mismo día',async()=>{
 test('fotos verificadas antes que demo API, sin inventar fotos de comercios',()=>{
   const f=moduloTs('src/servicios/fotosExternas.ts',{});
   const api='https://api.ejemplo.com/archivos/museums.png';
-  const iglesia=f.imagenesParaLugar({id:'lug-008',imagenes:[api]});
+  const iglesia=f.imagenesParaLugar({id:'lug-008',nombre:'Iglesia Santos Justo y Pastor',imagenes:[api]});
   assert.ok(iglesia[0].includes('Iglesia_Santos_Justo_y_Pastor'));
   assert.equal(iglesia[1],api);
+  const comercio=f.imagenesParaLugar({id:'lug-008',nombre:'Bodega Vulliez Sermet',imagenes:[api]});
+  assert.deepEqual(Array.from(comercio),[api], 'no mostrar iglesia en una bodega');
+  assert.equal(f.tieneFotoExternaCurada({id:'lug-008',nombre:'Bodega Vulliez Sermet',imagenes:[api]}),false);
   assert.deepEqual(Array.from(f.imagenesParaLugar({id:'lug-019',imagenes:[api]})),[api]);
 });
