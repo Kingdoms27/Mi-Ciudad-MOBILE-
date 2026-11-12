@@ -5,7 +5,8 @@
  *   npm run fotos:commons
  *
  * No modifica backend/SQLite ni reemplaza fotografías propias ya existentes.
- * Descarga 7 fotografías originales más 2 adicionales verificadas.
+ * Descarga 7 fotografías originales más 2 verificadas y una vista de playa
+ * de Colón etiquetada expresamente como REFERENCIAL (no acredita Playa Norte).
  * No inventa fotos para los lugares sin fuente autorizada.
  * Ver docs/CREDITOS-FOTOS-COMMONS.md.
  */
@@ -18,6 +19,15 @@ const destino=join(root,'assets','lugares');
 const maxBytes=12_000_000;
 const maxWait=20_000;
 const entries=[
+  // La fotografía fue tomada en una playa de la ciudad de Colón en 2020,
+  // después de una tormenta; NO está acreditado que sea Playa Norte.
+  // Se presenta en la UI como vista general de playa, nunca como imagen
+  // documentada del sector exacto.
+  {
+    lugar:'Playa Norte — vista general de una playa de Colón (referencial)',
+    archivo:'lug-002.jpg',
+    titulo:'Playa en Colón, Entre Ríos.jpg',
+  },
   // La API docente usa estas dos fichas: lug-001 = Termas y
   // lug-008 = Iglesia Santos Justo y Pastor. Usamos el ID para no depender
   // de una variante del nombre; la app sólo aplica la foto con la API activa.
