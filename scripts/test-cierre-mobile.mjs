@@ -54,10 +54,31 @@ test('recordatorio LOCAL de evento futuro, canal Android y pantalla de alerta',a
   assert.equal(id,'aviso-1');
   assert.equal(e.notificaciones.length,1);
   assert.equal(e.notificaciones[0].content.data.eventoId,'evt-007');
+  assert.equal(new Date(e.notificaciones[0].trigger.date).getTime(),new Date(inicio).getTime()-30*60*1000);
   assert.equal(e.notificaciones[0].trigger.channelId,'mi-ciudad-recordatorios-v2');
   assert.equal(e.canales[0].settings.importance,4);
   assert.equal((await e.handler().handleNotification({})).shouldShowBanner,true);
   assert.equal((await e.handler().handleNotification({})).shouldPlaySound,true);
+});
+
+test('evento próximo: recordatorio inmediato y nunca con fecha pasada',async()=>{
+  const e=entorno();
+  const inicio=new Date(Date.now()+10*60*1000).toISOString();
+  await e.api.programarRecordatorioEvento({id:'evt-cerca',titulo:'Evento cercano',inicio,estado:'programado'});
+  const fecha=new Date(e.notificaciones[0].trigger.date).getTime();
+  assert.ok(fecha>=Date.now(),'el aviso no se agenda en el pasado');
+  assert.ok(fecha<=Date.now()+10000,'el aviso se genera unos segundos después');
+});
+
+test('abrir navegación respeta las preferencias del sistema y valida coordenadas',()=>{
+  const nav=moduloTs('src/servicios/navegacion.ts',{
+    'react-native': {Linking:{openURL:async()=>{}},Platform:{OS:'android'}},
+  });
+  const punto={latitud:-32.2231,longitud:-58.144};
+  assert.ok(nav.urlNavegacion(punto,'walking','android').startsWith('geo:'));
+  assert.ok(nav.urlNavegacion(punto,'driving','ios').includes('maps.apple.com'));
+  assert.ok(nav.urlNavegacion(punto,'walking','ios').includes('dirflg=w'));
+  assert.throws(()=>nav.urlNavegacion({latitud:300,longitud:0},'walking','android'));
 });
 
 test('proximidad sin permiso no solicita ni genera notificaciones',async()=>{
