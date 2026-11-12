@@ -7,6 +7,7 @@
  * No modifica backend/SQLite ni reemplaza fotografías propias ya existentes.
  * Descarga 7 fotografías originales más 2 verificadas y una vista de playa
  * de Colón etiquetada expresamente como REFERENCIAL (no acredita Playa Norte).
+ * También prepara una foto histórica específica del antiguo puerto.
  * No inventa fotos para los lugares sin fuente autorizada.
  * Ver docs/CREDITOS-FOTOS-COMMONS.md.
  */
@@ -27,6 +28,14 @@ const entries=[
     lugar:'Playa Norte — vista general de una playa de Colón (referencial)',
     archivo:'lug-002.jpg',
     titulo:'Playa en Colón, Entre Ríos.jpg',
+  },
+  // Archivo del antiguo puerto identificado específicamente como
+  // "Puerto viejo, Colón". Foto histórica de 2006; el JPG anterior del
+  // entorno se conserva, y el selector del catálogo prefiere esta foto.
+  {
+    lugar:'Puerto Viejo — edificio histórico del puerto (2006)',
+    archivo:'lug-007.jpg',
+    titulo:'Puerto viejo, Colón - 1.jpg',
   },
   // La API docente usa estas dos fichas: lug-001 = Termas y
   // lug-008 = Iglesia Santos Justo y Pastor. Usamos el ID para no depender
