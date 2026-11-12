@@ -75,7 +75,18 @@ const texto=[
 "    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');",
 '}',
 'export function fotoLocalParaLugar(lugar: Lugar): number | undefined {',
-'  return FOTOS[slug(lugar.nombre)] ?? (apiConfigurada() ? FOTOS[lugar.id] : undefined);',
+'  const nombre = slug(lugar.nombre);',
+'  const restricciones: Record<string,string[]> = {',
+"    'lug-001':['termas','colon'],",
+"    'lug-002':['playa','norte'],",
+"    'lug-007':['puerto','viejo'],",
+"    'lug-008':['iglesia','plaza','san','martin'],",
+'  };',
+'  const permitida = !restricciones[lugar.id] || restricciones[lugar.id].every(p => nombre.includes(p));',
+'  // Preferir ID exacto (foto histórica del puerto) en catálogo de la API.',
+'  // No aplicar ID reutilizados por mocks en ausencia de la API docente.',
+'  return (apiConfigurada() && permitida ? FOTOS[lugar.id] : undefined) ?? FOTOS[nombre];',
+
 '}',
 ].join('\n')+'\n';
 await writeFile(manifiesto,texto,'utf8');
