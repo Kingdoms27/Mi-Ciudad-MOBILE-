@@ -15,5 +15,15 @@ function slug(nombre: string): string {
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 export function fotoLocalParaLugar(lugar: Lugar): number | undefined {
-  return FOTOS[slug(lugar.nombre)] ?? (apiConfigurada() ? FOTOS[lugar.id] : undefined);
+  const nombre = slug(lugar.nombre);
+  const restricciones: Record<string,string[]> = {
+    'lug-001':['termas','colon'],
+    'lug-002':['playa','norte'],
+    'lug-007':['puerto','viejo'],
+    'lug-008':['iglesia','plaza','san','martin'],
+  };
+  const permitida = !restricciones[lugar.id] || restricciones[lugar.id].every(p => nombre.includes(p));
+  // En catálogo real priorizamos archivo por ID para reemplazar vistas
+  // referenciales anteriores; con mocks usamos únicamente nombres.
+  return (apiConfigurada() && permitida ? FOTOS[lugar.id] : undefined) ?? FOTOS[nombre];
 }
