@@ -109,3 +109,32 @@ jobs:
           NODE
       - name: TypeScript
         run: npm run typecheck
+
+  regresion:
+    name: Pruebas de código sin depender del catálogo patch Expo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - run: npm ci
+      - name: Validar archivos y scripts de cierre
+        run: |
+          node --check scripts/descargar-fotos-commons.mjs
+          node --check scripts/test-cierre-mobile.mjs
+          node --check scripts/test-imagenes-api.mjs
+      - name: Validar PowerShell de lotes
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile('scripts/cierre-dos-lotes-windows.ps1', [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host $_.ToString() }
+            exit 1
+          }
+      - name: Pruebas unitarias
+        run: node --test scripts/test-imagenes-api.mjs scripts/test-cierre-mobile.mjs
+      - name: Compilación TypeScript
+        run: npm run typecheck
