@@ -23,7 +23,7 @@ export function urlNavegacion(
     return 'geo:0,0?q=' + encodeURIComponent(punto);
   }
   if (plataforma === 'ios') {
-    return 'http://maps.apple.com/?daddr=' + encodeURIComponent(punto) +
+    return 'https://maps.apple.com/?daddr=' + encodeURIComponent(punto) +
       '&dirflg=' + (modo === 'walking' ? 'w' : 'd');
   }
   return 'https://www.openstreetmap.org/?mlat=' + latitud +
