@@ -5,8 +5,9 @@
  *   npm run fotos:commons
  *
  * No modifica backend/SQLite ni reemplaza fotografías propias ya existentes.
- * Es un lote inicial de 7 sitios verificables, NO una solución inventada para
- * los 26 lugares. Ver docs/CREDITOS-FOTOS-COMMONS.md.
+ * Descarga 7 fotografías originales más 2 adicionales verificadas.
+ * No inventa fotos para los lugares sin fuente autorizada.
+ * Ver docs/CREDITOS-FOTOS-COMMONS.md.
  */
 import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -17,6 +18,17 @@ const destino=join(root,'assets','lugares');
 const maxBytes=12_000_000;
 const maxWait=20_000;
 const entries=[
+  // La API docente usa estas dos fichas: lug-001 = Termas y
+  // lug-008 = Iglesia Santos Justo y Pastor. Usamos el ID para no depender
+  // de una variante del nombre; la app sólo aplica la foto con la API activa.
+  {
+    lugar:'Termas de Colón', archivo:'lug-001.jpg',
+    titulo:'Toboganes Acuaticos.JPG',
+  },
+  {
+    lugar:'Iglesia Santos Justo y Pastor', archivo:'lug-008.jpg',
+    titulo:'Iglesia Santos Justo y Pastor Colon Entre Rios.JPG',
+  },
   {
     lugar:'Molino Forclaz', archivo:'molino-forclaz.jpg',
     titulo:'Molino Forclaz en Colón.JPG',
