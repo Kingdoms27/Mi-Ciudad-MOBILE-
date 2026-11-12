@@ -57,7 +57,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
            </View>
          </View>}
         {fotoReferencial?<View style={s.demoBadge}>
-          <Text style={s.demoBadgeText}>VISTA REFERENCIAL DEL ENTORNO</Text>
+          <Text style={s.demoBadgeText}>{lugar.id==='lug-002'?'PLAYA DE COLÓN · SECTOR NO CONFIRMADO':'VISTA REFERENCIAL DEL ENTORNO'}</Text>
         </View>:null}
         {mostrarRemota&&demoApi?<View style={s.demoBadge}>
           <Text style={s.demoBadgeText}>IMAGEN DE DEMOSTRACIÓN</Text>
