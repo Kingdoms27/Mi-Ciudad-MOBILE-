@@ -126,3 +126,12 @@ autorizada para descarga automática por esta revisión. Los originales de
 la cátedra se mantienen intactos y las fichas sin fuente tienen su
 respaldo visual identificado.
 
+
+
+## Actualización de fotografías reales — pendiente de descarga en PC
+
+Encontré una fotografía reutilizable que representa **una playa de la ciudad de Colón** (autor Ternava, 25/01/2020, licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)). Wikimedia Commons NO especifica que sea el sector **Playa Norte**: [archivo original](https://commons.wikimedia.org/wiki/File:Playa_en_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg). La incluí **solo como vista contextual etiquetada, no como foto exacta de Playa Norte**.
+
+El instalador `npm run fotos:commons` ahora prepara `lug-002.jpg`. Al ejecutarlo en Windows, valida y descarga el JPEG, genera su referencia local y permite que aparezca en la APK. **Todavía no es un binario guardado en GitHub.** Si descarga correctamente, habrá 10 imágenes locales (7 específicas y 3 referenciales) y 16 fichas sin foto local; **Playa Norte aún requiere una fotografía específica** si se quiere cumplir ese criterio de exactitud.
+
+No se han descargado otras fotografías nuevas: las demás requieren confirmar el lugar y los derechos de reutilización. No sobrescribir ni confundir esta vista general con una fotografía identificada del sector Norte.
