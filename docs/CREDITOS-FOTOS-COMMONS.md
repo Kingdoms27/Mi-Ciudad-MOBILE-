@@ -8,6 +8,7 @@ no están vinculados al proyecto.
 
 | Nombre del archivo local | Sitio representado | Autor | Licencia | Archivo fuente |
 |---|---|---|---|---|
+| `lug-002.jpg` | Playa de la ciudad de Colón; **no está confirmado que sea Playa Norte** (fotografía después de tormenta, 2020) | Ternava | CC BY-SA 4.0 | [Playa en Colón, Entre Ríos.jpg](https://commons.wikimedia.org/wiki/File:Playa_en_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg) |
 | `molino-forclaz.jpg` | Molino Forclaz | Dario Alpern | CC BY-SA 4.0 (o versiones compatibles indicadas en origen) | [Molino Forclaz en Colón.JPG](https://commons.wikimedia.org/wiki/File:Molino_Forclaz_en_Col%C3%B3n.JPG) |
 | `parque-nacional-el-palmar.jpg` | Parque Nacional El Palmar | Pablo D. Flores | Dominio público declarado por autor | [Parque Nacional El Palmar (3).jpg](https://commons.wikimedia.org/wiki/File:Parque_Nacional_El_Palmar_(3).jpg) |
 | `palacio-san-jose.jpg` | Palacio San José | Pablo D. Flores | Dominio público declarado por autor | [Palacio San José 1.jpg](https://commons.wikimedia.org/wiki/File:Palacio_San_Jos%C3%A9_1.jpg) |
@@ -35,10 +36,10 @@ desactualizada; no debe usarse para confirmar horarios, precios o servicios.
 
 ## Fotografías externas verificadas adicionales
 
-El comando `npm run fotos:commons` descarga estas dos fotografías en
-`assets/lugares/lug-001.jpg` y `assets/lugares/lug-008.jpg`, y el instalador
+El comando `npm run fotos:commons` descarga las dos fotografías originales y la vista de playa en
+`assets/lugares/lug-001.jpg`, `assets/lugares/lug-008.jpg` y `assets/lugares/lug-002.jpg`, y el instalador
 genera las referencias estáticas para incluirlas en la APK. **Sólo estarán en
-la APK si esos dos archivos efectivamente se descargaron y se guardaron en
+la APK si esos archivos efectivamente se descargaron y se guardaron en
 Git antes de compilar.** Mientras falten, el código dispone de URLs de
 Commons que requieren conexión la primera vez.
 
