@@ -109,3 +109,16 @@ jobs:
           NODE
       - name: TypeScript
         run: npm run typecheck
+  inicio-recorrido:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - name: Instalar
+        run: npm ci
+      - name: Validar TypeScript
+        run: npm run typecheck

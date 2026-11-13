@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -55,6 +55,22 @@ export default function Inicio(){
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
   const scrollY=useRef(new Animated.Value(0)).current;
+  // Transicion inicial breve y accesible, sin timers ni bucles continuos.
+  const entrada=useRef(new Animated.Value(0)).current;
+  useEffect(()=>{
+    let activo=true;
+    void AccessibilityInfo.isReduceMotionEnabled().then(reducido=>{
+      if(!activo)return;
+      if(reducido){entrada.setValue(1);return;}
+      Animated.timing(entrada,{
+        toValue:1,
+        duration:800,
+        easing:Easing.out(Easing.cubic),
+        useNativeDriver:true,
+      }).start();
+    }).catch(()=>entrada.setValue(1));
+    return ()=>{activo=false;entrada.stopAnimation()};
+  },[entrada]);
 
   const cargar=async()=>{
     setCargando(true);
@@ -62,10 +78,9 @@ export default function Inicio(){
     try{
       const[l,c]=await Promise.all([obtenerLugares(),obtenerCategorias()]);
       if('error'in l)throw new Error(l.error.mensaje);
-      if('error'in c)throw new Error(c.error.mensaje);
       setLugares(l.datos);
-      setCategorias(c.datos);
-
+      // El catalogo no debe desaparecer si las categorias no responden.
+      setCategorias('error' in c ? [] : c.datos);
 
     }catch(e){
       setError(e instanceof Error?e.message:'No se pudo cargar.');
@@ -143,11 +158,14 @@ export default function Inicio(){
             <Ionicons name="sparkles-outline" size={16} color="white"/>
           </View>
         </View>
-        <View style={s.heroCopy}>
-          <Text style={s.heroKicker}>MI CIUDAD</Text>
+        <Animated.View style={[s.heroCopy,{
+          opacity:entrada,
+          transform:[{translateY:entrada.interpolate({inputRange:[0,1],outputRange:[22,0]})}],
+        }]}>
+          <Text style={s.heroKicker}>MI CIUDAD · COLÓN</Text>
           <Text style={s.heroTitle}>Descubrí Colón{String.fromCharCode(10)}a tu ritmo.</Text>
           <Text style={s.heroDesc}>Río, patrimonio, naturaleza y experiencias para guardar en tu recorrido.</Text>
-        </View>
+        </Animated.View>
       </View>
 
       <View style={s.body}>
@@ -168,7 +186,30 @@ export default function Inicio(){
           </GlassSurface>
         </Reveal>
 
-        <Reveal delay={120}>
+        <Reveal delay={105}>
+          <View style={s.shortcuts}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir mapa de Colón"
+              onPress={()=>router.push('/(tabs)/mapa')}
+              style={[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde}]}>
+              <Ionicons name="map-outline" size={20} color={colores.primario}/>
+              <Text style={[s.shortcutText,{color:colores.tinta}]}>Mapa</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir agenda de eventos"
+              onPress={()=>router.push('/(tabs)/agenda')}
+              style={[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde}]}>
+              <Ionicons name="calendar-outline" size={20} color={colores.primario}/>
+              <Text style={[s.shortcutText,{color:colores.tinta}]}>Agenda</Text>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir mi recorrido"
+              onPress={()=>router.push('/(tabs)/recorrido')}
+              style={[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde}]}>
+              <Ionicons name="footsteps-outline" size={20} color={colores.primario}/>
+              <Text style={[s.shortcutText,{color:colores.tinta}]}>Recorrido</Text>
+            </Pressable>
+          </View>
+        </Reveal>
+
+        <Reveal delay={140}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
             <Pressable
               onPress={()=>{void Haptics.selectionAsync();setCategoria('todas')}}
@@ -246,6 +287,9 @@ const s=StyleSheet.create({
   searchFloat:{marginTop:-29,zIndex:3},
   searchWrap:{height:60,borderRadius:21,flexDirection:'row',alignItems:'center',paddingHorizontal:16,gap:9},
   search:{flex:1,fontSize:15,fontWeight:'700'},
+  shortcuts:{flexDirection:'row',gap:10,marginTop:16},
+  shortcut:{flex:1,minHeight:71,borderWidth:1,borderRadius:17,alignItems:'center',justifyContent:'center',gap:5},
+  shortcutText:{fontSize:12,fontWeight:'800'},
   chips:{gap:8,paddingTop:20,paddingBottom:22,paddingRight:8},
   chip:{paddingHorizontal:14,paddingVertical:10,borderRadius:999,borderWidth:1,flexDirection:'row',alignItems:'center',gap:5},
   sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-end',marginBottom:12},
