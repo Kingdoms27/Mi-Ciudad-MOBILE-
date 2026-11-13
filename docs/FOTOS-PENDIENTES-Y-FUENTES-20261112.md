@@ -76,3 +76,69 @@ archivos binarios con Git.
 
 **No marcar "26 fotos reales" hasta contar con 26 fuentes distintas,
 correctamente identificadas y autorizadas.**
+
+
+## Verificación adicional de fuentes (12 de noviembre de 2026)
+
+Se contrastaron recursos públicos para evitar imágenes de municipios
+equivocados. **Una web accesible públicamente no concede automáticamente
+permiso para descargar, editar ni redistribuir sus fotografías.**
+
+1. **Playa Norte (`lug-002`)** — Turismo de Colón identifica expresamente
+   a Playa Norte y la distingue de Punta Colón, Piedras Coloradas, Inkier,
+   Playa Honda y Playa Nueva:
+   https://www.colonturismo.tur.ar/playas-islas/
+   La página nacional menciona accesibilidad de Playa Norte, pero sus
+   fotografías generales de playas no acreditan automáticamente ese sector:
+   https://www.argentina.gob.ar/node/469432
+   **Acción:** obtener imagen propia, foto donada o autorización escrita de
+   la imagen del sector exacto.
+
+2. **Piedras Coloradas (`lug-003`)** — Wikimedia Commons tiene
+   `Entrada del Camping Piedras Coloradas.JPG` y
+   `Camping Piedras Coloradas inundado.jpg`, de Dario Alpern,
+   del episodio de creciente de 2014:
+   https://commons.wikimedia.org/wiki/File:Entrada_del_Camping_Piedras_Coloradas.JPG
+   https://commons.wikimedia.org/wiki/File:Camping_Piedras_Coloradas_inundado.jpg
+   Son reutilizables conforme a la licencia indicada por Commons, pero
+   **no sirven como portada turística actual**. Tampoco usar el archivo
+   `Piedras Coloradas.jpg`: representa Las Grutas, **Río Negro**, no Colón.
+
+3. **Museo Histórico Regional San José (`lug-013`)** — el portal turístico
+   de San José confirma dirección Urquiza 1127 y la identidad del museo:
+   https://sanjose.tur.ar/que-hacer/
+   **Acción:** pedir una fotografía y licencia/permiso al museo o tomar
+   una foto propia. Evitar el Museo Departamental de San José de Uruguay.
+
+4. **Termas de Villa Elisa (`lug-018`)** — hay galería turística
+   específica en https://www.termasdevillaelisa.com.ar/fotos.php .
+   **Acción:** verificar quién posee los derechos y solicitar autorización
+   para integrarla a la APK. Una foto visible online no equivale a CC.
+
+5. **Feria de Plaza San Martín (`lug-027`)** — existen crónicas de ferias
+   en la plaza de Colón:
+   https://emisoracolon.com.ar/index.php/2026/09/02/colon-se-prepara-para-una-nueva-gran-feria-de-artesanos-y-emprendedores/
+   **Acción:** solicitar foto al organizador o al autor. Una imagen general
+   de la plaza no debe etiquetarse como foto de la feria.
+
+**Estado de integración:** ninguna de estas nuevas fuentes quedó
+autorizada para descarga automática por esta revisión. Los originales de
+la cátedra se mantienen intactos y las fichas sin fuente tienen su
+respaldo visual identificado.
+
+
+
+## Actualización de fotografías reales — pendiente de descarga en PC
+
+Encontré una fotografía reutilizable que representa **una playa de la ciudad de Colón** (autor Ternava, 25/01/2020, licencia [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)). Wikimedia Commons NO especifica que sea el sector **Playa Norte**: [archivo original](https://commons.wikimedia.org/wiki/File:Playa_en_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg). La incluí **solo como vista contextual etiquetada, no como foto exacta de Playa Norte**.
+
+El instalador `npm run fotos:commons` ahora prepara `lug-002.jpg`. Al ejecutarlo en Windows, valida y descarga el JPEG, genera su referencia local y permite que aparezca en la APK. **Todavía no es un binario guardado en GitHub.** Si descarga correctamente, habrá 10 imágenes locales (7 específicas y 3 referenciales) y 16 fichas sin foto local; **Playa Norte aún requiere una fotografía específica** si se quiere cumplir ese criterio de exactitud.
+
+No se han descargado otras fotografías nuevas: las demás requieren confirmar el lugar y los derechos de reutilización. No sobrescribir ni confundir esta vista general con una fotografía identificada del sector Norte.
+
+
+## Nueva fotografía específica histórica para Puerto Viejo
+
+Wikimedia Commons identifica explícitamente [Puerto viejo, Colón - 1.jpg](https://commons.wikimedia.org/wiki/File:Puerto_viejo%2C_Col%C3%B3n_-_1.jpg) como un edificio antiguo del puerto de Colón, Entre Ríos. Autor: Pablo D. Flores, **CC BY-SA 2.5**, tomada el **14 de julio de 2006**. Se agregó al instalador como `lug-007.jpg` con prioridad de imagen por ID de la API sobre la fotografía referencial `puerto-viejo.jpg` que **no se borra**. Es una foto histórica y no demuestra el estado actual del edificio.
+
+El comando `npm run fotos:commons` prepara las dos incorporaciones recientes `lug-002.jpg` (vista general de playa, sector Norte no confirmado) y `lug-007.jpg` (Puerto Viejo histórico). En tu PC se verá el resultado de la descarga; los binarios aún deben guardarse en GitHub antes de construir la APK.

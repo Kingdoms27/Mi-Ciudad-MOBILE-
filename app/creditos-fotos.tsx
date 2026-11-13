@@ -7,9 +7,11 @@ import { useTema } from '@/src/contexto/TemaContext';
 // Atribución verificable de las fotografías empaquetadas en assets/lugares.
 // Fuente detallada: docs/CREDITOS-FOTOS-COMMONS.md
 const FOTOS = [
+  { lugar: 'Playa Norte (vista general de playa en Colón; sector NO confirmado)', autor: 'Ternava', licencia: 'CC BY-SA 4.0', archivo: 'Playa_en_Colón,_Entre_Ríos.jpg' },
   { lugar: 'Molino Forclaz', autor: 'Dario Alpern', licencia: 'CC BY-SA 4.0', archivo: 'Molino_Forclaz_en_Colón.JPG' },
   { lugar: 'Parque Nacional El Palmar', autor: 'Pablo D. Flores', licencia: 'Dominio público (declarado)', archivo: 'Parque_Nacional_El_Palmar_(3).jpg' },
   { lugar: 'Palacio San José', autor: 'Pablo D. Flores', licencia: 'Dominio público (declarado)', archivo: 'Palacio_San_José_1.jpg' },
+  { lugar: 'Puerto Viejo — edificio del antiguo puerto (fotografía 2006)', autor: 'Pablo D. Flores', licencia: 'CC BY-SA 2.5', archivo: 'Puerto_viejo,_Colón_-_1.jpg' },
   { lugar: 'Puerto Viejo (vista del puerto; sector exacto por verificar)', autor: 'Fernando de Gorocica', licencia: 'CC BY-SA 4.0', archivo: 'Puerto_de_Colón_-_Entre_Ríos.jpg' },
   { lugar: 'Costanera Gobernador Quirós', autor: 'Juandrovandi', licencia: 'CC BY-SA 4.0', archivo: 'Costanera_de_Colon,_Entre_Rios.JPG' },
   { lugar: 'Parque Dr. Herminio J. Quirós', autor: 'Pablo D. Flores', licencia: 'CC BY-SA 2.5', archivo: 'Parque_Quirós,_Colón_-_1.jpg' },
@@ -29,9 +31,8 @@ export default function CreditosFotos() {
       </Pressable>
       <Text style={[s.title,{color:colores.tinta}]}>Créditos fotográficos</Text>
       <Text style={[s.intro,{color:colores.secundario}]}>
-        Las primeras siete fotografías se incluyen en la app para funcionar sin conexión. Las fotos de Termas de Colón y la iglesia se descargan desde Commons y quedan guardadas después de la primera carga.
-        Los archivos pertenecen a sus autores originales y conservan las licencias de Wikimedia Commons.
-        La presencia de una imagen no confirma que muestre el estado actual del lugar.
+        Hay once archivos fotográficos documentados para diez fichas: ocho fotografías del sitio (incluida una histórica) y dos vistas contextuales; la vista anterior del puerto se conserva como alternativa. Si se ejecutó fotos:commons antes de compilar la APK, las fotografías descargadas quedan incluidas para consultar sin conexión; si no, las dos fotos de Termas de Colón y la iglesia pueden necesitar descargarse al abrirlas.
+        Las vistas de la playa, del puerto y del puente son referenciales y no certifican el punto exacto. Las imágenes de Wikimedia Commons conservan sus licencias originales; una foto histórica tampoco confirma el estado actual del sitio.
       </Text>
       {FOTOS.map(f=>{
         const url = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.archivo);

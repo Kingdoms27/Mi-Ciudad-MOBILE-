@@ -8,9 +8,11 @@ no están vinculados al proyecto.
 
 | Nombre del archivo local | Sitio representado | Autor | Licencia | Archivo fuente |
 |---|---|---|---|---|
+| `lug-002.jpg` | Playa de la ciudad de Colón; **no está confirmado que sea Playa Norte** (fotografía después de tormenta, 2020) | Ternava | CC BY-SA 4.0 | [Playa en Colón, Entre Ríos.jpg](https://commons.wikimedia.org/wiki/File:Playa_en_Col%C3%B3n%2C_Entre_R%C3%ADos.jpg) |
 | `molino-forclaz.jpg` | Molino Forclaz | Dario Alpern | CC BY-SA 4.0 (o versiones compatibles indicadas en origen) | [Molino Forclaz en Colón.JPG](https://commons.wikimedia.org/wiki/File:Molino_Forclaz_en_Col%C3%B3n.JPG) |
 | `parque-nacional-el-palmar.jpg` | Parque Nacional El Palmar | Pablo D. Flores | Dominio público declarado por autor | [Parque Nacional El Palmar (3).jpg](https://commons.wikimedia.org/wiki/File:Parque_Nacional_El_Palmar_(3).jpg) |
 | `palacio-san-jose.jpg` | Palacio San José | Pablo D. Flores | Dominio público declarado por autor | [Palacio San José 1.jpg](https://commons.wikimedia.org/wiki/File:Palacio_San_Jos%C3%A9_1.jpg) |
+| `lug-007.jpg` | Antiguo edificio de Puerto Viejo en Colón (fotografía de 2006, no representa el estado actual) | Pablo D. Flores | CC BY-SA 2.5 | [Puerto viejo, Colón - 1.jpg](https://commons.wikimedia.org/wiki/File:Puerto_viejo%2C_Col%C3%B3n_-_1.jpg) |
 | `puerto-viejo.jpg` | Vista de la escollera del puerto de Colón; **verificar sector Puerto Viejo antes de publicación** | Fernando de Gorocica | CC BY-SA 4.0 | [Puerto de Colón - Entre Ríos.jpg](https://commons.wikimedia.org/wiki/File:Puerto_de_Col%C3%B3n_-_Entre_R%C3%ADos.jpg) |
 | `costanera-gobernador-quiros.jpg` | Costanera de Colón junto al río Uruguay | Juandrovandi | CC BY-SA 4.0 | [Costanera de Colon, Entre Rios.JPG](https://commons.wikimedia.org/wiki/File:Costanera_de_Colon,_Entre_Rios.JPG) |
 | `parque-dr-herminio-j-quiros.jpg` | Parque Quirós, Colón | Pablo D. Flores | CC BY-SA 2.5 | [Parque Quirós, Colón - 1.jpg](https://commons.wikimedia.org/wiki/File:Parque_Quir%C3%B3s,_Col%C3%B3n_-_1.jpg) |
@@ -35,9 +37,12 @@ desactualizada; no debe usarse para confirmar horarios, precios o servicios.
 
 ## Fotografías externas verificadas adicionales
 
-Estas fotografías se descargan por HTTPS desde Wikimedia Commons sólo en
-fichas identificadas y se guardan localmente después de la primera carga.
-No están empaquetadas en la APK, por lo que necesitan conexión la primera vez.
+El comando `npm run fotos:commons` descarga las dos fotografías originales y la vista de playa en
+`assets/lugares/lug-001.jpg`, `assets/lugares/lug-008.jpg` y `assets/lugares/lug-002.jpg`, y el instalador
+genera las referencias estáticas para incluirlas en la APK. **Sólo estarán en
+la APK si esos archivos efectivamente se descargaron y se guardaron en
+Git antes de compilar.** Mientras falten, el código dispone de URLs de
+Commons que requieren conexión la primera vez.
 
 | Ficha | Archivo | Autor | Licencia | Fuente |
 |---|---|---|---|---|
@@ -45,3 +50,12 @@ No están empaquetadas en la APK, por lo que necesitan conexión la primera vez.
 | Iglesia Santos Justo y Pastor (Plaza San Martín) | `Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG` | Juandrovandi | CC BY-SA 4.0 | [Archivo](https://commons.wikimedia.org/wiki/File:Iglesia_Santos_Justo_y_Pastor_Colon_Entre_Rios.JPG) |
 
 Son fotografías históricas; no indican horarios, servicios ni estado actual.
+
+
+## Auditoría automática de derechos
+
+El inventario fuente-por-fuente está en `docs/LICENCIAS-FOTOS-20261112.json`.
+Ejecutar `npm run fotos:licencias` después de descargar los JPG: comprueba
+que los archivos tengan una atribución documentada, encabezado válido y
+no estén duplicados. Dos fotos —Puerto Viejo y mirador del puente— son
+**vistas referenciales** y no deben presentarse como ubicación exacta.

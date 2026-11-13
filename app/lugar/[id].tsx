@@ -15,6 +15,7 @@ import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { fotoLocalEsReferencial } from '@/src/servicios/calidadFotografica';
 import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 import { abrirNavegacion } from '@/src/servicios/navegacion';
@@ -89,6 +90,7 @@ function ContenidoLugar({
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
+  const fotoReferencial = Boolean(fotoLocal) && fotoLocalEsReferencial(lugar);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -149,6 +151,9 @@ function ContenidoLugar({
         />
         {!fotoLocal&&!mostrarRemota&&apiActiva&&cargando?
           <View style={s.genericBadge}><Text style={s.genericBadgeText}>Buscando fotografía del lugar…</Text></View>:null}
+        {fotoReferencial?<View style={s.genericBadge}>
+          <Text style={s.genericBadgeText}>{lugar.id==='lug-002'?'Foto de una playa de Colón · Sector no confirmado':'Vista referencial, no foto certificada del punto exacto'}</Text>
+        </View>:null}
         {mostrarRemota&&demoApi?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Imagen de demostración de la cátedra</Text></View>:null}
         {!fotoLocal&&!mostrarRemota&&!cargando?<View style={s.genericBadge}>
           <Text style={s.genericBadgeText}>Sin fotografía específica · Vista general de Colón</Text>

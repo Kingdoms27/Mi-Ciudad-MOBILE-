@@ -122,6 +122,15 @@ test('proximidad con permiso: no duplicar avisos en un mismo día',async()=>{
   assert.equal(e.notificaciones[0].content.data.lugarId,'lug-004');
 });
 
+test('una vista del puente o del puerto se marca referencial sin afectar otras fotos',()=>{
+  const fotos=moduloTs('src/servicios/calidadFotografica.ts',{});
+  assert.equal(fotos.fotoLocalEsReferencial({id:'lug-002',nombre:'Playa Norte'}),true);
+  assert.equal(fotos.fotoLocalEsReferencial({id:'lug-007',nombre:'Puerto Viejo'}),true);
+  assert.equal(fotos.fotoLocalEsReferencial({id:'lug-016',nombre:'Mirador del Puente General Artigas'}),true);
+  assert.equal(fotos.fotoLocalEsReferencial({id:'lug-008',nombre:'Iglesia Santos Justo y Pastor'}),false);
+  assert.equal(fotos.fotoLocalEsReferencial({id:'lug-007',nombre:'Otro museo'}),false);
+});
+
 test('fotos verificadas antes que demo API, sin inventar fotos de comercios',()=>{
   const f=moduloTs('src/servicios/fotosExternas.ts',{});
   const api='https://api.ejemplo.com/archivos/museums.png';

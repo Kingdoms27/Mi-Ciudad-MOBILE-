@@ -134,6 +134,10 @@ jobs:
             $errors | ForEach-Object { Write-Host $_.ToString() }
             exit 1
           }
+      - name: Auditar créditos y formato de fotografías locales
+        run: |
+          node --check scripts/verificar-licencias-fotos.mjs
+          npm run fotos:licencias
       - name: Pruebas unitarias
         run: node --test scripts/test-imagenes-api.mjs scripts/test-cierre-mobile.mjs
       - name: Compilación TypeScript
