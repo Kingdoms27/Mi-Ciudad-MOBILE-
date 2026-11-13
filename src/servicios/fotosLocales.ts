@@ -34,5 +34,6 @@ function slug(nombre: string): string {
     .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 export function fotoLocalParaLugar(lugar: Lugar): number | undefined {
-  return FOTOS[slug(lugar.nombre)] ?? (apiConfigurada() ? FOTOS[lugar.id] : undefined);
+  // La API docente usa IDs propios: priorizar el codigo del registro y no un slug de mock.
+  return apiConfigurada() ? (FOTOS[lugar.id] ?? FOTOS[slug(lugar.nombre)]) : (FOTOS[slug(lugar.nombre)] ?? FOTOS[lugar.id]);
 }

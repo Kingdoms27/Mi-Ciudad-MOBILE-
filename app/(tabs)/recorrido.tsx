@@ -14,6 +14,17 @@ import { NetworkBanner } from '@/src/componentes/NetworkBanner';
 import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { SkeletonLista } from '@/src/componentes/SkeletonLugar';
+import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+
+/** Si la visita no tiene foto personal, utilizar la foto incluida del lugar.
+ * Una foto propia siempre tiene prioridad.
+ */
+function FotoVisita({visita,lugar}:{visita:Visita;lugar?:Lugar}){
+  const local=lugar?fotoLocalParaLugar(lugar):undefined;
+  if(visita.fotoUri)return <Image source={{uri:visita.fotoUri}} style={s.photo} resizeMode="cover"/>;
+  if(local)return <Image source={local} style={s.photo} resizeMode="cover"/>;
+  return null;
+}
 
 export default function Recorrido(){
   const{colores,esOscuro}=useTema();
@@ -118,7 +129,7 @@ export default function Recorrido(){
        visitas.length===0?<EstadoContenido tipo="vacio" mensaje="Todavía no registraste visitas."/>:
        visitas.map((v,i)=><Reveal key={v.id} delay={Math.min(130+i*55,430)}>
          <GlassSurface style={s.card} intensity={40}>
-           {v.fotoUri?<Image source={{uri:v.fotoUri}} style={s.photo}/>:null}
+           <FotoVisita visita={v} lugar={lugares.find(l=>l.id===v.lugarId)}/>
            <View style={s.cardBody}>
              <View style={s.top}>
                <Text style={[s.title,{color:colores.tinta}]}>{nombre(v.lugarId)}</Text>
