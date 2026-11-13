@@ -109,3 +109,22 @@ jobs:
           NODE
       - name: TypeScript
         run: npm run typecheck
+
+  # El chequeo SDK de typecheck puede detenerse antes de evaluar nuestros
+  # cambios cuando Expo publica parches. Este job comprueba mapa+TS de forma
+  # independiente, sin ocultar ni rebajar el bloqueo SDK existente.
+  mapas-android-ios:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+      - name: Dependencias
+        run: npm ci
+      - name: Mapas iOS y Android
+        run: npm run mapas:check
+      - name: Tipos TypeScript
+        run: npm run typecheck
