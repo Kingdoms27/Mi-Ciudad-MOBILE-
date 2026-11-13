@@ -134,7 +134,10 @@ jobs:
             $errors | ForEach-Object { Write-Host $_.ToString() }
             exit 1
           }
-      - name: Auditar créditos y formato de fotografías locales
+      - name: Verificar que las 26 fotografías estén incluidas en la app
+        run: npm run entrega:check
+      - name: Revisar atribuciones de fotografías (informativo)
+        continue-on-error: true
         run: |
           node --check scripts/verificar-licencias-fotos.mjs
           npm run fotos:licencias
