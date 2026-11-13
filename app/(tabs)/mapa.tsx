@@ -19,12 +19,20 @@ import { MapaLeaflet, MapaLeafletRef } from '@/src/componentes/MapaLeaflet';
 
 const COLON={latitude:-32.2231,longitude:-58.1440,latitudeDelta:0.07,longitudeDelta:0.07};
 
+function coordenadasValidas(lugar:Lugar){
+  const lat=lugar.coordenadas?.latitud;
+  const lon=lugar.coordenadas?.longitud;
+  return typeof lat==='number'&&Number.isFinite(lat)&&Math.abs(lat)<=85&&
+    typeof lon==='number'&&Number.isFinite(lon)&&Math.abs(lon)<=180;
+}
+
 export default function Mapa(){
   const{colores,esOscuro}=useTema();
   const insets=useSafeAreaInsets();
   // APK Android con clave SDK: react-native-maps nativo.
   // Sin clave nativa, conservar el mapa OSM/WebView que funciona sin Google.
-  const mapaNativo=Platform.OS!=='android' || Constants.expoConfig?.extra?.androidNativeMapsEnabled===true;
+  const mapaNativo=Platform.OS==='ios' ||
+    (Platform.OS==='android' && Constants.expoConfig?.extra?.androidNativeMapsEnabled===true);
   const mapRef=useRef<MapView|null>(null);
   const leafletRef=useRef<MapaLeafletRef|null>(null);
 
@@ -44,11 +52,13 @@ export default function Mapa(){
     try{
       const[l,c]=await Promise.all([obtenerLugares(),obtenerCategorias()]);
       if('error'in l)throw new Error(l.error.mensaje);
-      if('error'in c)throw new Error(c.error.mensaje);
+      // Un fallo de categorias no debe ocultar todos los marcadores:
+      // dejar disponible "Todos" y continuar con los lugares cargados.
       setLugares(l.datos);
-      setCategorias(c.datos);
-
-
+      setCategorias('error' in c ? [] : c.datos);
+      if('error' in c && __DEV__) {
+        console.info('[Mi Ciudad] Categorias no disponibles; se muestra el mapa completo:', c.error.mensaje);
+      }
     }catch(e){
       setError(e instanceof Error?e.message:'No se pudo cargar el mapa.');
     }finally{
@@ -83,7 +93,7 @@ export default function Mapa(){
   useEffect(()=>{void cargar();void cargarUbicacion();},[]);
 
   const visibles=useMemo(
-    ()=>lugares.filter(l=>filtro==='todas'||l.categoriaId===filtro),
+    ()=>lugares.filter(l=>coordenadasValidas(l)&&(filtro==='todas'||l.categoriaId===filtro)),
     [lugares,filtro],
   );
 
@@ -192,6 +202,9 @@ export default function Mapa(){
     >
       {visibles.map(l=><Marker
         key={l.id}
+        // En Apple Maps el evento del pin puede propagarse al mapa y cerrar
+        // inmediatamente la ficha seleccionada. En Android no es necesario.
+        stopPropagation={Platform.OS==='ios'}
         coordinate={{latitude:l.coordenadas.latitud,longitude:l.coordenadas.longitud}}
         title={l.nombre}
         description={coord?formatearDistancia(distanciaKm(coord,l.coordenadas)):l.descripcionCorta}
