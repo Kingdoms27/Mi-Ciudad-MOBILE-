@@ -116,7 +116,7 @@ test('una ilustración secundaria en caché no parpadea antes de la foto princip
 test('diferencia imágenes de semillas, foto externa y el caso sin URL de la cátedra', () => {
   const estado=cargarTs('src/servicios/fotosExternas.ts',{});
   const demo={id:'lug-009',imagenes:['http://localhost:3000/archivos/imagenes/2026/11/semilla-museums-1.png']};
-  const externo={id:'lug-008',imagenes:demo.imagenes};
+  const externo={id:'lug-008',nombre:'Iglesia Santos Justo y Pastor',imagenes:demo.imagenes};
   const sinFoto={id:'lug-003',imagenes:[]};
   assert.equal(estado.tieneImagenDemostrativaApi(demo),true);
   assert.equal(estado.tieneFotoExternaCurada(demo),false);

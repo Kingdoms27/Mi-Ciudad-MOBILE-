@@ -1,11 +1,13 @@
 import Storage from 'expo-sqlite/kv-store';
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 import { Evento, Lugar } from '@/src/tipos';
 
 type ExpoNotifications = typeof import('expo-notifications');
 // Un canal nuevo permite HIGH incluso si Android ya creó el canal viejo con DEFAULT.
 const CANAL = 'mi-ciudad-recordatorios-v2';
 let carga: Promise<ExpoNotifications | null> | null = null;
+let canalAndroidDisponible = false;
 
 /**
  * Locales (Expo Go + APK): eventos, cambio de estado y proximidad.
@@ -25,11 +27,23 @@ async function cargarNotificaciones(): Promise<ExpoNotifications | null> {
             shouldSetBadge: false,
           }),
         });
-        if (Platform.OS === 'android') {
-          await Notifications.setNotificationChannelAsync(CANAL, {
-            name: 'Recordatorios y proximidad',
-            importance: Notifications.AndroidImportance.HIGH,
-          });
+        // Expo Go incluye una implementación nativa compartida. En ciertos
+        // teléfonos setNotificationChannelAsync arroja NullPointerException;
+        // no debe inutilizar TODAS las notificaciones locales.
+        //
+        // Las builds nativas propias sí pueden crear el canal HIGH. Si falla,
+        // permitir que Expo use el canal Android de reserva (Miscellaneous).
+        if (Platform.OS === 'android' && Constants.appOwnership !== 'expo') {
+          try {
+            await Notifications.setNotificationChannelAsync(CANAL, {
+              name: 'Recordatorios y proximidad',
+              importance: Notifications.AndroidImportance.HIGH,
+            });
+            canalAndroidDisponible = true;
+          } catch (error) {
+            canalAndroidDisponible = false;
+            if (__DEV__) console.info('[Mi Ciudad] Canal Android no disponible; usando canal del sistema:', error);
+          }
         }
         return Notifications;
       } catch (error) {
@@ -65,7 +79,7 @@ export async function pedirPermisoNotificaciones() {
 export async function programarAvisoLocalDePrueba(): Promise<boolean> {
   const Notifications = await cargarNotificaciones();
   if (!Notifications || !(await pedirPermisoNotificaciones())) return false;
-  await Notifications.scheduleNotificationAsync({
+  return Notifications.scheduleNotificationAsync({
     content: {
       title: 'Mi Ciudad Colón',
       body: 'Los recordatorios locales están funcionando en este teléfono.',
@@ -73,10 +87,12 @@ export async function programarAvisoLocalDePrueba(): Promise<boolean> {
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 5,
-      ...(Platform.OS === 'android' ? { channelId: CANAL } : {}),
+      ...(Platform.OS === 'android' && canalAndroidDisponible ? { channelId: CANAL } : {}),
     },
-  });
-  return true;
+  }).catch(error => {
+    if (__DEV__) console.info('[Mi Ciudad] El dispositivo rechazó el aviso de prueba', error);
+    return null;
+  }).then(id => Boolean(id));
 }
 
 export async function programarRecordatorioEvento(evento: Evento): Promise<string | null> {
@@ -91,7 +107,8 @@ export async function programarRecordatorioEvento(evento: Evento): Promise<strin
 
   if (!(await pedirPermisoNotificaciones())) return null;
 
-  let fecha = new Date(inicio.getTime() - 60 * 60 * 1000);
+  // El docente propuso 15 o 30 minutos: fijamos 30 como política de la app.
+  let fecha = new Date(inicio.getTime() - 30 * 60 * 1000);
   if (fecha.getTime() <= ahora) fecha = new Date(ahora + 5000);
 
   return Notifications.scheduleNotificationAsync({
@@ -103,7 +120,7 @@ export async function programarRecordatorioEvento(evento: Evento): Promise<strin
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DATE,
       date: fecha,
-      ...(Platform.OS === 'android' ? { channelId: CANAL } : {}),
+      ...(Platform.OS === 'android' && canalAndroidDisponible ? { channelId: CANAL } : {}),
     },
   });
 }
@@ -139,7 +156,8 @@ export async function notificarProximidad(lugar: Lugar) {
       data: { lugarId: lugar.id },
     },
     trigger: Platform.OS === 'android'
-      ? { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1, channelId: CANAL }
+      ? { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1,
+          ...(canalAndroidDisponible ? { channelId: CANAL } : {}) }
       : null,
   });
   await Storage.setItem(key, '1');
@@ -159,7 +177,8 @@ export async function notificarCambioEvento(evento: Evento) {
       data: { eventoId: evento.id },
     },
     trigger: Platform.OS === 'android'
-      ? { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1, channelId: CANAL }
+      ? { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1,
+          ...(canalAndroidDisponible ? { channelId: CANAL } : {}) }
       : null,
   });
   return true;

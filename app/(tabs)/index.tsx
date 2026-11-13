@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as Location from 'expo-location';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
@@ -25,7 +25,7 @@ function Destacado({lugar}:{lugar:Lugar}){
   const { imagen, reportarError }=useImagenLugar(lugar.id,fotoLocal?[]:lugar.imagenes);
 
   return <Pressable
-    style={s.featureCard}
+    style={({pressed})=>[s.featureCard,pressed&&s.featurePressed]}
     onPress={()=>{void Haptics.selectionAsync();router.push({pathname:'/lugar/[id]',params:{id:lugar.id}})}}
   >
     {fotoLocal?<Image source={fotoLocal} style={StyleSheet.absoluteFill} resizeMode="cover"/>:
@@ -33,7 +33,7 @@ function Destacado({lugar}:{lugar:Lugar}){
       <Image source={HERO_LOCAL} style={StyleSheet.absoluteFill} resizeMode="cover"/>}
     <View style={s.featureShade}/>
     <View style={s.featureTop}>
-      <View style={s.featureBadge}><Text style={s.featureBadgeText}>DESTACADO</Text></View>
+      <View style={s.featureBadge}><Ionicons name="star" size={12} color="#F4C66F"/><Text style={s.featureBadgeText}>DESTACADO</Text></View>
     </View>
     <View style={s.featureBottom}>
       <Text style={s.featureName} numberOfLines={2}>{lugar.nombre}</Text>
@@ -55,6 +55,22 @@ export default function Inicio(){
   const[cargando,setCargando]=useState(true);
   const[error,setError]=useState('');
   const scrollY=useRef(new Animated.Value(0)).current;
+  // Transicion inicial breve y accesible, sin timers ni bucles continuos.
+  const entrada=useRef(new Animated.Value(0)).current;
+  useEffect(()=>{
+    let activo=true;
+    void AccessibilityInfo.isReduceMotionEnabled().then(reducido=>{
+      if(!activo)return;
+      if(reducido){entrada.setValue(1);return;}
+      Animated.timing(entrada,{
+        toValue:1,
+        duration:800,
+        easing:Easing.out(Easing.cubic),
+        useNativeDriver:true,
+      }).start();
+    }).catch(()=>entrada.setValue(1));
+    return ()=>{activo=false;entrada.stopAnimation()};
+  },[entrada]);
 
   const cargar=async()=>{
     setCargando(true);
@@ -62,10 +78,9 @@ export default function Inicio(){
     try{
       const[l,c]=await Promise.all([obtenerLugares(),obtenerCategorias()]);
       if('error'in l)throw new Error(l.error.mensaje);
-      if('error'in c)throw new Error(c.error.mensaje);
       setLugares(l.datos);
-      setCategorias(c.datos);
-
+      // El catalogo no debe desaparecer si las categorias no responden.
+      setCategorias('error' in c ? [] : c.datos);
 
     }catch(e){
       setError(e instanceof Error?e.message:'No se pudo cargar.');
@@ -134,6 +149,7 @@ export default function Inicio(){
         <View style={s.heroPhotoShade}/>
         <View style={s.heroBase}/>
         <View style={s.heroBlend}/>
+        <View pointerEvents="none" style={s.heroWave}/>
         <View style={s.heroTop}>
           <View style={s.brandPill}>
             <Ionicons name="location" size={14} color="white"/>
@@ -143,16 +159,19 @@ export default function Inicio(){
             <Ionicons name="sparkles-outline" size={16} color="white"/>
           </View>
         </View>
-        <View style={s.heroCopy}>
-          <Text style={s.heroKicker}>MI CIUDAD</Text>
-          <Text style={s.heroTitle}>Descubrí Colón{String.fromCharCode(10)}a tu ritmo.</Text>
+        <Animated.View style={[s.heroCopy,{
+          opacity:entrada,
+          transform:[{translateY:entrada.interpolate({inputRange:[0,1],outputRange:[22,0]})}],
+        }]}>
+
+          <Text style={s.heroTitle}>Descubrí Colón{String.fromCharCode(10)}<Text style={s.heroTitleAccent}>a tu ritmo.</Text></Text>
           <Text style={s.heroDesc}>Río, patrimonio, naturaleza y experiencias para guardar en tu recorrido.</Text>
-        </View>
+        </Animated.View>
       </View>
 
       <View style={s.body}>
         <Reveal delay={70} style={s.searchFloat}>
-          <GlassSurface style={s.searchWrap} intensity={62}>
+          <GlassSurface style={s.searchWrap} intensity={74}>
             <Ionicons name="search-outline" size={21} color={colores.secundario}/>
             <TextInput
               value={buscar}
@@ -165,10 +184,46 @@ export default function Inicio(){
             {buscar?<Pressable onPress={()=>setBuscar('')} hitSlop={10}>
               <Ionicons name="close-circle" size={19} color={colores.secundario}/>
             </Pressable>:null}
-          </GlassSurface>
+                      <Pressable
+              accessibilityRole="button" accessibilityLabel="Limpiar búsqueda y filtros"
+              onPress={()=>{setBuscar('');setCategoria('todas');void Haptics.selectionAsync();}}
+              style={s.searchFilterButton}
+            >
+              <Ionicons name="options-outline" size={20} color="#116B57"/>
+            </Pressable>
+</GlassSurface>
         </Reveal>
 
-        <Reveal delay={120}>
+                <Reveal delay={108}>
+          <View style={s.shortcuts}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir mapa de Colón"
+              onPress={()=>{void Haptics.selectionAsync();router.push('/(tabs)/mapa')}}
+              style={({pressed})=>[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde},pressed&&s.shortcutPressed]}>
+              <Ionicons name="map-outline" size={24} color={colores.primario}/>
+              <Text style={[s.shortTitle,{color:colores.tinta}]}>Mapa</Text>
+              <Text style={[s.shortDesc,{color:colores.secundario}]} numberOfLines={1}>Explorá Colón</Text>
+              <Image source={require('../../assets/lugares/costanera-gobernador-quiros.jpg')} style={s.shortPhoto} resizeMode="cover"/>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir agenda de eventos"
+              onPress={()=>{void Haptics.selectionAsync();router.push('/(tabs)/agenda')}}
+              style={({pressed})=>[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde},pressed&&s.shortcutPressed]}>
+              <Ionicons name="calendar-outline" size={24} color={colores.primario}/>
+              <Text style={[s.shortTitle,{color:colores.tinta}]}>Agenda</Text>
+              <Text style={[s.shortDesc,{color:colores.secundario}]} numberOfLines={1}>Eventos</Text>
+              <Image source={require('../../assets/lugares/parque-dr-herminio-j-quiros.jpg')} style={s.shortPhoto} resizeMode="cover"/>
+            </Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="Abrir mi recorrido"
+              onPress={()=>{void Haptics.selectionAsync();router.push('/(tabs)/recorrido')}}
+              style={({pressed})=>[s.shortcut,{backgroundColor:colores.superficie,borderColor:colores.borde},pressed&&s.shortcutPressed]}>
+              <Ionicons name="footsteps-outline" size={24} color={colores.primario}/>
+              <Text style={[s.shortTitle,{color:colores.tinta}]}>Recorrido</Text>
+              <Text style={[s.shortDesc,{color:colores.secundario}]} numberOfLines={1}>Tus visitas</Text>
+              <Image source={require('../../assets/lugares/parque-nacional-el-palmar.jpg')} style={s.shortPhoto} resizeMode="cover"/>
+            </Pressable>
+          </View>
+        </Reveal>
+
+        <Reveal delay={140}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
             <Pressable
               onPress={()=>{void Haptics.selectionAsync();setCategoria('todas')}}
@@ -227,42 +282,57 @@ export default function Inicio(){
 }
 
 const s=StyleSheet.create({
+  // INICIO_GLASS_FINAL_2026 — estilos visuales sin cambio de lógica
+  heroWave:{position:'absolute',top:252,left:'-10%',width:'120%',height:42,backgroundColor:'#083C32',borderTopLeftRadius:90,borderTopRightRadius:75,transform:[{rotate:'-1.5deg'}]},
+  heroTitleAccent:{color:'#F2C76F',fontStyle:'italic'},
+  searchFilterButton:{width:39,height:39,borderRadius:15,alignItems:'center',justifyContent:'center',backgroundColor:'rgba(225,242,234,.92)'},
+  shortcutPressed:{opacity:.85,transform:[{scale:.975}]},
+  shortTitle:{fontSize:15,fontWeight:'900',letterSpacing:-.3},
+  shortDesc:{fontSize:9,fontWeight:'700',paddingHorizontal:4,textAlign:'center'},
+  shortPhoto:{position:'absolute',bottom:0,left:0,right:0,width:'100%',height:42,opacity:.9},
+  featurePressed:{opacity:.88,transform:[{scale:.987}]},
+
   root:{flex:1},
   scrollContent:{paddingBottom:112},
-  hero:{height:430,overflow:'hidden',position:'relative',backgroundColor:'#0D2A24'},
-  heroImage:{position:'absolute',left:0,right:0,top:0,height:255,width:'100%'},
-  heroPhotoShade:{position:'absolute',left:0,right:0,top:0,height:255,backgroundColor:'rgba(5,16,14,.16)'},
-  heroBase:{position:'absolute',left:0,right:0,top:220,bottom:0,backgroundColor:'#0D2A24'},
-  heroBlend:{position:'absolute',left:0,right:0,top:188,height:72,backgroundColor:'rgba(13,42,36,.78)'},
-  heroTop:{position:'absolute',top:48,left:20,right:20,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
-  brandPill:{backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',borderRadius:999,paddingHorizontal:11,paddingVertical:8,flexDirection:'row',alignItems:'center',gap:5},
-  brandPillText:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:1.1},
-  weatherLike:{width:38,height:38,borderRadius:14,backgroundColor:'rgba(10,26,22,.52)',borderWidth:1,borderColor:'rgba(255,255,255,.2)',alignItems:'center',justifyContent:'center'},
-  heroCopy:{position:'absolute',left:20,right:20,bottom:48},
+  hero:{height:466,overflow:'hidden',position:'relative',backgroundColor:'#083C32'},
+  heroImage:{position:'absolute',left:0,right:0,top:0,height:295,width:'100%'},
+  heroPhotoShade:{position:'absolute',left:0,right:0,top:0,height:300,backgroundColor:'rgba(6,18,16,.20)'},
+  heroBase:{position:'absolute',left:0,right:0,top:265,bottom:0,backgroundColor:'#083C32'},
+  heroBlend:{position:'absolute',left:0,right:0,top:220,height:86,backgroundColor:'rgba(8,60,50,.63)'},
+  heroTop:{position:'absolute',top:44,left:20,right:20,flexDirection:'row',justifyContent:'space-between',alignItems:'center'},
+  brandPill:{backgroundColor:'rgba(8,34,29,.57)',borderWidth:1,borderColor:'rgba(255,255,255,.33)',borderRadius:999,paddingHorizontal:13,paddingVertical:9,flexDirection:'row',alignItems:'center',gap:7},
+  brandPillText:{color:'white',fontSize:10,fontWeight:'900',letterSpacing:1.2},
+  weatherLike:{width:41,height:41,borderRadius:15,backgroundColor:'rgba(8,34,29,.57)',borderWidth:1,borderColor:'rgba(255,255,255,.28)',alignItems:'center',justifyContent:'center'},
+  heroCopy:{position:'absolute',left:23,right:23,bottom:56},
+  heroLogoPill:{alignSelf:'flex-start',backgroundColor:'rgba(247,244,234,.96)',borderRadius:16,paddingHorizontal:10,paddingVertical:7,marginBottom:8},
+  heroLogoImg:{width:185,height:91},
   heroKicker:{color:'#A9E8D4',fontSize:10,fontWeight:'900',letterSpacing:1.5},
-  heroTitle:{color:'white',fontSize:40,lineHeight:42,fontWeight:'900',letterSpacing:-1.35,marginTop:7},
-  heroDesc:{color:'rgba(255,255,255,.84)',fontSize:14,lineHeight:21,maxWidth:350,marginTop:10},
-  body:{paddingHorizontal:20},
-  searchFloat:{marginTop:-29,zIndex:3},
-  searchWrap:{height:60,borderRadius:21,flexDirection:'row',alignItems:'center',paddingHorizontal:16,gap:9},
+  heroTitle:{color:'white',fontSize:38,lineHeight:43,fontWeight:'900',letterSpacing:-1.4,marginTop:8},
+  heroDesc:{color:'rgba(255,255,255,.87)',fontSize:14,lineHeight:21,maxWidth:360,marginTop:13},
+  body:{paddingHorizontal:19},
+  searchFloat:{marginTop:-33,zIndex:3},
+  searchWrap:{height:66,borderRadius:31,flexDirection:'row',alignItems:'center',paddingHorizontal:17,gap:10,borderWidth:1,borderColor:'rgba(255,255,255,.68)',backgroundColor:'rgba(255,255,255,.86)',elevation:5,shadowColor:'#16483C',shadowOpacity:.12,shadowRadius:18,shadowOffset:{width:0,height:8}},
   search:{flex:1,fontSize:15,fontWeight:'700'},
-  chips:{gap:8,paddingTop:20,paddingBottom:22,paddingRight:8},
-  chip:{paddingHorizontal:14,paddingVertical:10,borderRadius:999,borderWidth:1,flexDirection:'row',alignItems:'center',gap:5},
-  sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-end',marginBottom:12},
-  sectionKicker:{fontSize:9,fontWeight:'900',letterSpacing:1.25},
-  sectionHint:{fontSize:10,fontWeight:'800'},
-  featureRow:{gap:12,paddingRight:10,paddingBottom:24},
-  featureCard:{width:250,height:188,borderRadius:24,overflow:'hidden',backgroundColor:'#203A33'},
-  featureShade:{position:'absolute',top:0,left:0,right:0,bottom:0,backgroundColor:'rgba(7,18,15,.30)'},
+  shortcuts:{flexDirection:'row',gap:9,marginTop:23},
+  shortcut:{flex:1,height:146,borderWidth:1,borderRadius:25,alignItems:'center',justifyContent:'flex-start',paddingTop:16,gap:3,overflow:'hidden',elevation:2,shadowColor:'#184B3D',shadowOpacity:.10,shadowRadius:12,shadowOffset:{width:0,height:5}},
+  shortcutText:{fontSize:12,fontWeight:'800'},
+  chips:{gap:9,paddingTop:24,paddingBottom:28,paddingRight:14},
+  chip:{paddingHorizontal:17,paddingVertical:12,borderRadius:999,borderWidth:1,flexDirection:'row',alignItems:'center',gap:7,elevation:1},
+  sectionHead:{flexDirection:'row',justifyContent:'space-between',alignItems:'flex-end',marginBottom:16},
+  sectionKicker:{fontSize:10,fontWeight:'900',letterSpacing:2},
+  sectionHint:{fontSize:11,fontWeight:'800'},
+  featureRow:{gap:13,paddingRight:14,paddingBottom:26},
+  featureCard:{width:278,height:204,borderRadius:27,overflow:'hidden',backgroundColor:'#203A33',elevation:5,shadowColor:'#103D31',shadowOpacity:.20,shadowRadius:16,shadowOffset:{width:0,height:7}},
+  featureShade:{position:'absolute',top:0,left:0,right:0,bottom:0,backgroundColor:'rgba(7,18,15,.32)'},
   featureTop:{position:'absolute',top:12,left:12},
-  featureBadge:{backgroundColor:'rgba(8,20,17,.62)',borderRadius:999,paddingHorizontal:9,paddingVertical:6},
-  featureBadgeText:{color:'white',fontSize:8,fontWeight:'900',letterSpacing:1},
-  featureBottom:{position:'absolute',left:14,right:14,bottom:13},
-  featureName:{color:'white',fontSize:20,fontWeight:'900',letterSpacing:-.35,paddingRight:38},
-  featureDesc:{color:'rgba(255,255,255,.78)',fontSize:11,marginTop:3,paddingRight:30},
-  featureArrow:{position:'absolute',right:0,bottom:0,width:34,height:34,borderRadius:13,alignItems:'center',justifyContent:'center'},
+  featureBadge:{backgroundColor:'rgba(6,63,48,.88)',borderRadius:999,paddingHorizontal:11,paddingVertical:8,flexDirection:'row',alignItems:'center',gap:6},
+  featureBadgeText:{color:'white',fontSize:9,fontWeight:'900',letterSpacing:.75},
+  featureBottom:{position:'absolute',left:17,right:17,bottom:16},
+  featureName:{color:'white',fontSize:22,fontWeight:'900',letterSpacing:-.45,paddingRight:39},
+  featureDesc:{color:'rgba(255,255,255,.9)',fontSize:12,marginTop:6,paddingRight:32},
+  featureArrow:{position:'absolute',right:0,bottom:0,width:37,height:37,borderRadius:19,alignItems:'center',justifyContent:'center',borderWidth:1,borderColor:'rgba(255,255,255,.35)'},
   section:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginBottom:14},
-  h2:{fontSize:24,fontWeight:'900',letterSpacing:-.55,marginTop:2},
+  h2:{fontSize:27,fontWeight:'900',letterSpacing:-.75,marginTop:4},
   sectionSub:{fontSize:11,marginTop:4,fontWeight:'700',maxWidth:285},
   count:{minWidth:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center',paddingHorizontal:8},
 });

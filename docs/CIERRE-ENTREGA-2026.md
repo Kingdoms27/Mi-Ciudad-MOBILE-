@@ -103,7 +103,7 @@ Una pantalla de Expo Go `Failed to download remote update` se investiga
 en Metro/red, no modificando imágenes.
 
 **Prueba de notificaciones:** activar permiso desde Mi cuenta, ir a
-Agenda y guardar un evento futuro. Si faltan menos de 60 minutos para
+Agenda y guardar un evento futuro. Si faltan menos de 30 minutos para
 el evento, el recordatorio se programa unos segundos después de guardarlo.
 Tocar el aviso puede abrir Expo Go/app: es una acción del sistema operativo,
 no un reinicio espontáneo. Comprobar que lleva al evento. Para avisos

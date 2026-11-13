@@ -5,8 +5,11 @@
  *   npm run fotos:commons
  *
  * No modifica backend/SQLite ni reemplaza fotografías propias ya existentes.
- * Es un lote inicial de 7 sitios verificables, NO una solución inventada para
- * los 26 lugares. Ver docs/CREDITOS-FOTOS-COMMONS.md.
+ * Descarga 7 fotografías originales más 2 verificadas y una vista de playa
+ * de Colón etiquetada expresamente como REFERENCIAL (no acredita Playa Norte).
+ * También prepara una foto histórica específica del antiguo puerto.
+ * No inventa fotos para los lugares sin fuente autorizada.
+ * Ver docs/CREDITOS-FOTOS-COMMONS.md.
  */
 import { mkdir, readFile, writeFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -17,6 +20,34 @@ const destino=join(root,'assets','lugares');
 const maxBytes=12_000_000;
 const maxWait=20_000;
 const entries=[
+  // La fotografía fue tomada en una playa de la ciudad de Colón en 2020,
+  // después de una tormenta; NO está acreditado que sea Playa Norte.
+  // Se presenta en la UI como vista general de playa, nunca como imagen
+  // documentada del sector exacto.
+  {
+    lugar:'Playa Norte — vista general de una playa de Colón (referencial)',
+    archivo:'lug-002.jpg',
+    titulo:'Playa en Colón, Entre Ríos.jpg',
+  },
+  // Archivo del antiguo puerto identificado específicamente como
+  // "Puerto viejo, Colón". Foto histórica de 2006; el JPG anterior del
+  // entorno se conserva, y el selector del catálogo prefiere esta foto.
+  {
+    lugar:'Puerto Viejo — edificio histórico del puerto (2006)',
+    archivo:'lug-007.jpg',
+    titulo:'Puerto viejo, Colón - 1.jpg',
+  },
+  // La API docente usa estas dos fichas: lug-001 = Termas y
+  // lug-008 = Iglesia Santos Justo y Pastor. Usamos el ID para no depender
+  // de una variante del nombre; la app sólo aplica la foto con la API activa.
+  {
+    lugar:'Termas de Colón', archivo:'lug-001.jpg',
+    titulo:'Toboganes Acuaticos.JPG',
+  },
+  {
+    lugar:'Iglesia Santos Justo y Pastor', archivo:'lug-008.jpg',
+    titulo:'Iglesia Santos Justo y Pastor Colon Entre Rios.JPG',
+  },
   {
     lugar:'Molino Forclaz', archivo:'molino-forclaz.jpg',
     titulo:'Molino Forclaz en Colón.JPG',

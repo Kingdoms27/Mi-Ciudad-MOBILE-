@@ -1,3 +1,3 @@
 /// <reference types="expo/types" />
 
-// Archivo generado para tipos de Expo Router.
+// NOTE: This file should not be edited and should be in your git ignore

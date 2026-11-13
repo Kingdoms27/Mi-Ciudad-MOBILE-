@@ -8,6 +8,7 @@ import { useTema } from '@/src/contexto/TemaContext';
 import { horarioHoy, pesos } from '@/src/utilidades/formato';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { fotoLocalEsReferencial } from '@/src/servicios/calidadFotografica';
 import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
 
@@ -24,6 +25,7 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
+  const fotoReferencial = Boolean(fotoLocal) && fotoLocalEsReferencial(lugar);
   const escala=useRef(new Animated.Value(1)).current;
 
   const animar=(toValue:number)=>Animated.spring(escala,{
@@ -45,17 +47,18 @@ export function LugarCard({lugar,distancia}:{lugar:Lugar;distancia?:string}){
     >
       <View style={s.imageWrap}>
         {mostrarRemota?<Image source={{uri:imagen}} style={s.image} resizeMode="cover" onError={(evento)=>reportarError(evento.nativeEvent.error)}/>:
-         apiActiva&&cargando?<View style={[s.image,s.placeholder,{backgroundColor:colores.superficie2}]}>
-           <Ionicons name="image-outline" size={27} color={colores.secundario}/>
-           <Text style={[s.placeholderText,{color:colores.secundario}]}>CARGANDO IMAGEN DE LA API</Text>
-         </View>:
          fotoLocal?<Image source={fotoLocal} style={s.image} resizeMode="cover"/>:
-          <View style={s.imageWrap}>
-            <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
-            <View style={s.respaldoFoto}>
-              <Text style={s.respaldoFotoTexto}>VISTA GENERAL DE COLÓN</Text>
-            </View>
-          </View>}
+         <View style={s.imageWrap}>
+           <Image source={require('../../assets/hero-colon.jpg')} style={s.image} resizeMode="cover"/>
+           <View style={s.respaldoFoto}>
+             <Text style={s.respaldoFotoTexto}>
+               {apiActiva&&cargando?'BUSCANDO FOTOGRAFÍA': 'VISTA GENERAL DE COLÓN · SIN FOTO ESPECÍFICA'}
+             </Text>
+           </View>
+         </View>}
+        {fotoReferencial?<View style={s.demoBadge}>
+          <Text style={s.demoBadgeText}>{lugar.id==='lug-002'?'PLAYA DE COLÓN · SECTOR NO CONFIRMADO':'VISTA REFERENCIAL DEL ENTORNO'}</Text>
+        </View>:null}
         {mostrarRemota&&demoApi?<View style={s.demoBadge}>
           <Text style={s.demoBadgeText}>IMAGEN DE DEMOSTRACIÓN</Text>
         </View>:null}

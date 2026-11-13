@@ -89,5 +89,12 @@ export function useImagenLugar(lugarId: string, urls: string | string[]) {
       .finally(() => { setReintento(n => n + 1); });
   }, [lugarId, identidad, uri]);
 
-  return { imagen: uri, cargando, reportarError };
+  const reintentar = useCallback(() => {
+    // Un enlace que falló por red puede volver a funcionar. Reintento
+    // explícito del usuario: limpiar descartes de esta sesión.
+    fallidas.current.clear();
+    setReintento(n => n + 1);
+  }, []);
+
+  return { imagen: uri, cargando, reportarError, reintentar, tieneCandidatos: candidatos.length > 0 };
 }

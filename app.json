@@ -87,11 +87,14 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash.png",
+          "image": "./assets/splash-logo-colon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#F5F2EA"
+          "backgroundColor": "#FFFFFF",
+          "imageWidth": 190
         }
-      ]
+      ],
+      "expo-sqlite",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true

@@ -15,8 +15,10 @@ import { GlassSurface } from '@/src/componentes/GlassSurface';
 import { Reveal } from '@/src/componentes/Reveal';
 import { useImagenLugar } from '@/src/hooks/useImagenLugar';
 import { fotoLocalParaLugar } from '@/src/servicios/fotosLocales';
+import { fotoLocalEsReferencial } from '@/src/servicios/calidadFotografica';
 import { imagenesParaLugar, tieneFotoExternaCurada, tieneImagenDemostrativaApi } from '@/src/servicios/fotosExternas';
 import { apiConfigurada } from '@/src/servicios/api';
+import { abrirNavegacion } from '@/src/servicios/navegacion';
 import { ScreenTopBar } from '@/src/componentes/ScreenTopBar';
 
 export default function DetalleLugar(){
@@ -83,11 +85,12 @@ function ContenidoLugar({
 }){
   const fotoLocal=fotoLocalParaLugar(lugar);
   const apiActiva=apiConfigurada();
-  const { imagen, cargando, reportarError }=useImagenLugar(
+  const { imagen, cargando, reportarError, reintentar, tieneCandidatos }=useImagenLugar(
     lugar.id,fotoLocal?[]:imagenesParaLugar(lugar),
   );
   const mostrarRemota=Boolean(imagen)&&!fotoLocal;
   const demoApi = !fotoLocal && !tieneFotoExternaCurada(lugar) && tieneImagenDemostrativaApi(lugar);
+  const fotoReferencial = Boolean(fotoLocal) && fotoLocalEsReferencial(lugar);
 
   const toggle=async()=>{
     if(!usuarioId){
@@ -104,10 +107,14 @@ function ContenidoLugar({
     }
   };
 
-  const abrirMapa=()=>Alert.alert('Cómo querés llegar','Elegí el modo de viaje.',[
+  const abrirMapa=()=>Alert.alert('Cómo querés llegar','Se abrirá la app de mapas de tu dispositivo.',[
     {text:'Cancelar',style:'cancel'},
-    {text:'A pie',onPress:()=>Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lugar.coordenadas.latitud},${lugar.coordenadas.longitud}&travelmode=walking`)},
-    {text:'En auto',onPress:()=>Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lugar.coordenadas.latitud},${lugar.coordenadas.longitud}&travelmode=driving`)},
+    {text:'A pie',onPress:()=>{void abrirNavegacion(lugar.coordenadas,'walking').catch(
+      ()=>Alert.alert('No se pudieron abrir los mapas','Comprobá que tengas instalada una aplicación de mapas.'),
+    );}},
+    {text:'En auto',onPress:()=>{void abrirNavegacion(lugar.coordenadas,'driving').catch(
+      ()=>Alert.alert('No se pudieron abrir los mapas','Comprobá que tengas instalada una aplicación de mapas.'),
+    );}},
   ]);
 
   const descargar=async()=>{
@@ -136,19 +143,27 @@ function ContenidoLugar({
       scrollEventThrottle={16}
     >
       <View style={s.heroWrap}>
-        {apiActiva&&cargando&&!mostrarRemota?
-          <View style={[s.hero,s.heroPending,{backgroundColor:colores.superficie2}]}>
-            <Ionicons name="image-outline" size={32} color={colores.secundario}/>
-            <Text style={[s.heroPendingText,{color:colores.secundario}]}>Cargando imagen de la API…</Text>
-          </View>:
-          <Animated.Image
-            source={mostrarRemota?{uri:imagen}:fotoLocal??require('../../assets/hero-colon.jpg')}
-            onError={mostrarRemota?(evento)=>reportarError(evento.nativeEvent.error):undefined}
-            style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
-            resizeMode="cover"
-          />}
+        <Animated.Image
+          source={mostrarRemota?{uri:imagen}:fotoLocal??require('../../assets/hero-colon.jpg')}
+          onError={mostrarRemota?(evento)=>reportarError(evento.nativeEvent.error):undefined}
+          style={[s.hero,{transform:[{translateY:heroTranslate},{scale:heroScale}]}]}
+          resizeMode="cover"
+        />
+        {!fotoLocal&&!mostrarRemota&&apiActiva&&cargando?
+          <View style={s.genericBadge}><Text style={s.genericBadgeText}>Buscando fotografía del lugar…</Text></View>:null}
+        {fotoReferencial?<View style={s.genericBadge}>
+          <Text style={s.genericBadgeText}>{lugar.id==='lug-002'?'Foto de una playa de Colón · Sector no confirmado':'Vista referencial, no foto certificada del punto exacto'}</Text>
+        </View>:null}
         {mostrarRemota&&demoApi?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Imagen de demostración de la cátedra</Text></View>:null}
-        {!fotoLocal&&!mostrarRemota&&!cargando?<View style={s.genericBadge}><Text style={s.genericBadgeText}>Sin fotografía específica · Vista de Colón</Text></View>:null}
+        {!fotoLocal&&!mostrarRemota&&!cargando?<View style={s.genericBadge}>
+          <Text style={s.genericBadgeText}>Sin fotografía específica · Vista general de Colón</Text>
+        </View>:null}
+        {!fotoLocal&&!mostrarRemota&&!cargando&&tieneCandidatos?
+          <Pressable accessibilityRole="button" accessibilityLabel="Reintentar descargar la fotografía"
+            onPress={reintentar} style={s.retryPhoto}>
+            <Ionicons name="refresh-outline" size={14} color="white"/>
+            <Text style={s.genericBadgeText}>Reintentar foto</Text>
+          </Pressable>:null}
         <View style={s.heroShade}/>
         <View style={s.heroBadge}>
           <Ionicons name="location-outline" size={15} color="white"/>
@@ -252,6 +267,8 @@ function ContenidoLugar({
 const s=StyleSheet.create({
   genericBadge:{position:'absolute',right:12,top:56,borderRadius:99,backgroundColor:'rgba(15,24,22,.72)',paddingHorizontal:10,paddingVertical:6},
   genericBadgeText:{color:'white',fontSize:10,fontWeight:'800'},
+  retryPhoto:{position:'absolute',right:12,top:98,paddingHorizontal:10,paddingVertical:8,
+    borderRadius:12,backgroundColor:'rgba(15,24,22,.75)',flexDirection:'row',alignItems:'center',gap:6},
 
   root:{flex:1,overflow:'hidden'},
   center:{flex:1,justifyContent:'center',padding:20},
