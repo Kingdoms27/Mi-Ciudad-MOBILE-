@@ -31,7 +31,8 @@ export default function Mapa(){
   const insets=useSafeAreaInsets();
   // APK Android con clave SDK: react-native-maps nativo.
   // Sin clave nativa, conservar el mapa OSM/WebView que funciona sin Google.
-  const mapaNativo=Platform.OS!=='android' || Constants.expoConfig?.extra?.androidNativeMapsEnabled===true;
+  const mapaNativo=Platform.OS==='ios' ||
+    (Platform.OS==='android' && Constants.expoConfig?.extra?.androidNativeMapsEnabled===true);
   const mapRef=useRef<MapView|null>(null);
   const leafletRef=useRef<MapaLeafletRef|null>(null);
 
