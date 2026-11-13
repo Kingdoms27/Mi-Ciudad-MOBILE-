@@ -19,6 +19,13 @@ import { MapaLeaflet, MapaLeafletRef } from '@/src/componentes/MapaLeaflet';
 
 const COLON={latitude:-32.2231,longitude:-58.1440,latitudeDelta:0.07,longitudeDelta:0.07};
 
+function coordenadasValidas(lugar:Lugar){
+  const lat=lugar.coordenadas?.latitud;
+  const lon=lugar.coordenadas?.longitud;
+  return typeof lat==='number'&&Number.isFinite(lat)&&Math.abs(lat)<=85&&
+    typeof lon==='number'&&Number.isFinite(lon)&&Math.abs(lon)<=180;
+}
+
 export default function Mapa(){
   const{colores,esOscuro}=useTema();
   const insets=useSafeAreaInsets();
@@ -83,7 +90,7 @@ export default function Mapa(){
   useEffect(()=>{void cargar();void cargarUbicacion();},[]);
 
   const visibles=useMemo(
-    ()=>lugares.filter(l=>filtro==='todas'||l.categoriaId===filtro),
+    ()=>lugares.filter(l=>coordenadasValidas(l)&&(filtro==='todas'||l.categoriaId===filtro)),
     [lugares,filtro],
   );
 
