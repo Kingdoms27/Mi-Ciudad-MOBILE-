@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { Coordenadas, Lugar } from '@/src/tipos';
@@ -17,10 +17,9 @@ type Props={
 const CENTRO_COLON={latitud:-32.2231,longitud:-58.1440};
 
 function escapar(valor:string){
-  return valor
-    .replaceAll('\\','\\\\')
-    .replaceAll('`','\\`')
-    .replaceAll('</script>','<\\/script>');
+  // Escapar etiquetas HTML del JSON incrustado en el WebView, incluidas
+  // variantes de mayusculas de </script>, sin alterar los nombres reales.
+  return valor.replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
 }
 
 export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
@@ -38,7 +37,12 @@ export const MapaLeaflet=forwardRef<MapaLeafletRef,Props>(function MapaLeaflet(
   }),[]);
 
   const html=useMemo(()=>{
-    const puntos=lugares.map(l=>({
+    const puntos=lugares.filter(l=>
+      Number.isFinite(l.coordenadas?.latitud) &&
+      Number.isFinite(l.coordenadas?.longitud) &&
+      Math.abs(l.coordenadas.latitud)<=85 &&
+      Math.abs(l.coordenadas.longitud)<=180,
+    ).map(l=>({
       id:l.id,
       nombre:l.nombre,
       lat:l.coordenadas.latitud,
@@ -91,7 +95,8 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
   let center={lat:${CENTRO_COLON.latitud},lon:${CENTRO_COLON.longitud}};
   let activeId=null;
   const points=${escapar(JSON.stringify(puntos))};
-  const user=${coord?JSON.stringify({lat:coord.latitud,lon:coord.longitud}):'null'};
+  // GPS se actualiza por injectJavaScript para no recargar tiles ni perder zoom.
+  let user=null;
   const tilesEl=document.getElementById('tiles');
   const markersEl=document.getElementById('markers');
   const mapEl=document.getElementById('map');
@@ -278,6 +283,11 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     e.stopPropagation();zoom=clamp(zoom-1,minZoom,maxZoom);render();
   });
 
+  window.__miCiudadSetUser=function(next){
+    user=next&&Number.isFinite(next.lat)&&Number.isFinite(next.lon)?next:null;
+    renderMarkers();
+  };
+
   window.__miCiudadFlyTo=function(lat,lon,z){
     center={lat:lat,lon:lon};
     zoom=clamp(z||15,minZoom,maxZoom);
@@ -292,11 +302,28 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
 </script>
 </body>
 </html>`;
-  },[lugares,coord,oscuro]);
+  },[lugares,oscuro]);
+
+  // Actualizar la posicion sin volver a crear el WebView entero.
+  useEffect(()=>{
+    const ubicacion=coord&&Number.isFinite(coord.latitud)&&Number.isFinite(coord.longitud)
+      ? {lat:coord.latitud,lon:coord.longitud}:null;
+    webRef.current?.injectJavaScript(
+      `window.__miCiudadSetUser && window.__miCiudadSetUser(${JSON.stringify(ubicacion)}); true;`,
+    );
+  },[coord?.latitud,coord?.longitud]);
 
   return <WebView<object>
     ref={webRef}
     source={{html}}
+    onLoadEnd={()=>{
+      // Reenviar GPS cuando recarga el HTML por cambio de filtro o tema.
+      const ubicacion=coord&&Number.isFinite(coord.latitud)&&Number.isFinite(coord.longitud)
+        ? {lat:coord.latitud,lon:coord.longitud}:null;
+      webRef.current?.injectJavaScript(
+        `window.__miCiudadSetUser && window.__miCiudadSetUser(${JSON.stringify(ubicacion)}); true;`,
+      );
+    }}
     userAgent="MiCiudadColon/1.0 (ReactNativeWebView; educational tourism app)"
     style={s.web}
     originWhitelist={['*']}
