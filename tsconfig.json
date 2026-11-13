@@ -11,13 +11,16 @@
     "ignoreDeprecations": "6.0"
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ],
   "exclude": [
     "node_modules",
-    "tools/api-mi-ciudad/**/*.ts"
+    "tools/api-mi-ciudad/**/*.ts",
+    "Mi-Ciudad-MOBILE-/**"
   ]
 }
