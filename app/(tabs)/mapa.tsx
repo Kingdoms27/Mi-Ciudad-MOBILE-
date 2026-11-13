@@ -200,6 +200,9 @@ export default function Mapa(){
     >
       {visibles.map(l=><Marker
         key={l.id}
+        // En Apple Maps el evento del pin puede propagarse al mapa y cerrar
+        // inmediatamente la ficha seleccionada. En Android no es necesario.
+        stopPropagation={Platform.OS==='ios'}
         coordinate={{latitude:l.coordenadas.latitud,longitude:l.coordenadas.longitud}}
         title={l.nombre}
         description={coord?formatearDistancia(distanciaKm(coord,l.coordenadas)):l.descripcionCorta}
