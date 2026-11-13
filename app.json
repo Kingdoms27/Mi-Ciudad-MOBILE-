@@ -94,7 +94,8 @@
         }
       ],
       "expo-sqlite",
-      "expo-status-bar"
+      "expo-status-bar",
+      "./plugins/withWorkManagerKeepRules"
     ],
     "experiments": {
       "typedRoutes": true
