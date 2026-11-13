@@ -313,9 +313,13 @@ body{background:${oscuro?'#111815':'#EEECE3'};font-family:-apple-system,BlinkMac
     );
   },[coord?.latitud,coord?.longitud]);
 
+  // Mantener la referencia de source mientras el HTML no cambie;
+  // seleccionar un pin o actualizar GPS no debe recargar el WebView.
+  const fuente=useMemo(()=>({html}),[html]);
+
   return <WebView<object>
     ref={webRef}
-    source={{html}}
+    source={fuente}
     onLoadEnd={()=>{
       // Reenviar GPS cuando recarga el HTML por cambio de filtro o tema.
       const ubicacion=coord&&Number.isFinite(coord.latitud)&&Number.isFinite(coord.longitud)
