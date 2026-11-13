@@ -4,9 +4,6 @@
  * Uso: npm run mapas:check
  */
 import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-
-const raiz = fileURLToPath(new URL('../', import.meta.url));
 const leer = async nombre => readFile(new URL('../' + nombre, import.meta.url), 'utf8');
 const resultados = [];
 let errores = 0;
@@ -33,6 +30,7 @@ try {
   verificar('Android declara permisos de ubicación', (app.expo?.android?.permissions ?? []).includes('android.permission.ACCESS_FINE_LOCATION'));
   verificar('GPS opcional y mapa visible sin permiso', pantalla.includes("setPermiso('negado')") && pantalla.includes('Ubicación desactivada'));
   verificar('Marcadores filtrados por coordenadas válidas', pantalla.includes('coordenadasValidas(l)'));
+  verificar('Toques en pins iOS no cierran el panel por propagación', pantalla.includes("stopPropagation={Platform.OS==='ios'}"));
   verificar('Selección de marcador abre la ficha correcta', pantalla.includes("pathname:'/lugar/[id]'") && pantalla.includes('params:{id:seleccion.id}'));
   verificar('Mapa WebView sincroniza GPS sin recrear sus tiles', leaflet.includes('__miCiudadSetUser') && leaflet.includes('},[lugares,oscuro]);'));
   verificar('Mapa WebView mantiene atribución OpenStreetMap', leaflet.includes('© OpenStreetMap contributors'));
