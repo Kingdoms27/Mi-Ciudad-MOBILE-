@@ -21,3 +21,6 @@ yarn-error.log*
 
 expo-env.d.ts
 # @end expo-cli
+
+# No incluir clones de este repositorio dentro del proyecto original
+/Mi-Ciudad-MOBILE-/
