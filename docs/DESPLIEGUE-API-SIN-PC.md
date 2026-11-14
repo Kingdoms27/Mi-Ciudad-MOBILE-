@@ -1,6 +1,27 @@
 # Mi Ciudad Colón — API HTTPS sin depender de la computadora (Grupo 93)
 
-**Estado:** Blueprint y app preparados en GitHub; el servicio NO queda publicado hasta crear y conectar las cuentas de Render y Supabase. No uses más `trycloudflare.com` en la APK definitiva.
+**Estado actualizado (14/11/2026):** La API original de la catedra esta **publicada y verificada** en Render (plan Free), conectada a Supabase PostgreSQL y Storage. La nueva APK **aun no fue compilada** contra esta direccion: la APK anterior sigue vinculada al tunel temporal.
+
+- API HTTPS: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com
+- Salud: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/salud
+- Catalogo: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/lugares?pagina=1&porPagina=500
+- Validacion: `/salud` devolvio `datos.estado=ok`, `motor=postgres`, `almacen=supabase`; API enumero 26 lugares activos; el manifiesto movil contiene archivos locales para las 26 fichas; la BD contiene 27 lugares, uno inactivo. Las 26 fotos deben revisarse visualmente en la APK para comprobar su correspondencia real.
+- Render: servicio `srv-dbs74rrrjlhs73dc7nu0`; origen oficial `franco-ruisdias-uner/api-proyectos-mobile`.
+- Almacenamiento privado: bucket `archivos` en Supabase.
+- Seguridad: no incluir `DB_URL`, claves S3 ni `JWT_SECRETO` en GitHub o mensajes. Siete tablas en esquema privado `api` tienen RLS deshabilitado; los roles `anon` y `authenticated` carecen de privilegio USAGE sobre el esquema. Revisar políticas antes de exponer el esquema a Data API.
+- Render Free puede dormir por inactividad. Antes de una defensa abrir `/salud` y confirmar que responde.
+
+### Compilar APK Android para el Grupo 93 (desde PowerShell)
+
+```powershell
+cd "$HOME\\Desktop\\Mi-Ciudad-MOBILE-"
+git switch main
+git pull --ff-only origin main
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\\scripts\\cerrar-apk-26-windows.ps1" -ApiUrl "https://mi-ciudad-colon-api-grupo93-5szt.onrender.com"
+eas build --platform android --profile preview --clear-cache
+```
+
+El script primero **valida** el catalogo y luego establece `EXPO_PUBLIC_API_URL` en EAS `preview`; ejecutar el build solo cuando termine con [OK]. No compartir una APK anterior. iOS requiere un build firmado separado.
 
 ## Arquitectura verificada
 
