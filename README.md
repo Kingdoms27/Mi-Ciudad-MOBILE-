@@ -639,3 +639,7 @@ imagen dentro del código, ni modificar el backend del profesor. Antes del build
 final, incluí `assets/lugares/` y `src/servicios/fotosLocales.ts` en Git.
 El CSV es local y no se versiona. Evitá usar sin permiso fotos tomadas de
 portales municipales, redes sociales o servicios comerciales.
+
+## API pública sin depender de la computadora
+
+La guía específica para publicar el backend **original de la cátedra** con Render (HTTPS) y Supabase (PostgreSQL + Storage) está en [docs/DESPLIEGUE-API-SIN-PC.md](docs/DESPLIEGUE-API-SIN-PC.md). El Blueprint está preparado en [render-mi-ciudad-api.yaml](render-mi-ciudad-api.yaml). **La infraestructura requiere configurar las cuentas y secretos en Render y Supabase antes de compilar otra APK**; tener el archivo YAML en GitHub no significa que el servicio ya esté desplegado.
