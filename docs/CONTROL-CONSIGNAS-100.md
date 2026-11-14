@@ -1,5 +1,7 @@
 # Cierre del integrador Mobile — control de consignas
 
+> **Revisión histórica del 08/11/2026.** La API pública y el catálogo fotográfico avanzaron después de esta fecha. Para el estado actual consultá el [README](../README.md) y el [despliegue](DESPLIEGUE-API-SIN-PC.md). Las filas pendientes de esta matriz no acreditan pruebas en teléfonos realizadas posteriormente.
+
 **Fuente principal:** `01 - Mi Ciudad Guia Turistica (1).pdf` (12 páginas).
 **Fecha de revisión:** 2026-11-08. **Estado:** implementación avanzada, **entrega final no acreditada**.
 Esta matriz distingue código presente de pruebas ejecutadas; la compilación o `tsc` exitosos **no** demuestran que todo funcione en un teléfono.
