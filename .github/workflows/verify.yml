@@ -48,6 +48,16 @@ jobs:
         run: node --check scripts/descargar-fotos-commons.mjs
       - name: Verificar sintaxis auditoria de lugares y fotos APK
         run: node --check scripts/verificar-catalogo-apk.mjs
+      - name: Validar PowerShell cierre de 26 lugares y fotos
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile('scripts/cerrar-apk-26-windows.ps1', [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Host $_.ToString() }
+            exit 1
+          }
       - name: Validar configuración Expo dinámica (mapas opcionales)
         run: |
           node --check app.config.js
