@@ -1,5 +1,7 @@
 # Mi Ciudad Colón — Cierre de entrega (SDK 58)
 
+> **Informe de trabajo anterior al 14/11/2026.** Los conteos de fotos, el estado de la API pública y los bloqueos del APK aquí descritos reflejan un corte previo. El estado actualizado de la infraestructura y los pasos de prueba están en el [README](../README.md) y en [DESPLIEGUE-API-SIN-PC](DESPLIEGUE-API-SIN-PC.md).
+
 Esta guía distingue **lo validado en código** de **las pruebas físicas pendientes**.
 No declarar el Trabajo Integrador aprobado o la APK lista antes de probarla.
 
