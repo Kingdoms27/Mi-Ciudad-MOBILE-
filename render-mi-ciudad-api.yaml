@@ -9,7 +9,8 @@ services:
     plan: free
     repo: https://github.com/franco-ruisdias-uner/api-proyectos-mobile
     branch: main
-    rootDir: api-mi-ciudad
+    # Mantener la raiz del repo: las rutas Docker son relativas al repositorio.
+    # rootDir junto con estas rutas duplicaria api-mi-ciudad y fallaria el build.
     dockerfilePath: api-mi-ciudad/Dockerfile
     dockerContext: api-mi-ciudad
     healthCheckPath: /salud
