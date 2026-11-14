@@ -31,9 +31,12 @@ async function ejecutar<T>(
   }
 
   const controller = new AbortController();
-  // Las consultas públicas no deben congelar la interfaz 30 segundos cuando
-  // el teléfono está en 4G y la API funciona sólo en la Wi-Fi de la PC.
-  const timeout = setTimeout(() => controller.abort(), method === 'GET' ? 10000 : 30000);
+  // Render Free suspende el backend por inactividad y su primer arranque puede
+  // superar los 10 segundos. Permitir el cold start sólo para ese hosting,
+  // sin demorar los errores de red de APIs locales o de otros proveedores.
+  const enRender = /^https:\/\/[^/]+\.onrender\.com$/i.test(BASE);
+  const timeoutMs = method === 'GET' ? (enRender ? 75000 : 10000) : 30000;
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const token = await SecureStore.getItemAsync(TOKEN_KEY);
