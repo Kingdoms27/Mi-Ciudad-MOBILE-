@@ -36,9 +36,9 @@ services:
       - key: JWT_SECRETO
         generateValue: true
       - key: SUPABASE_PROYECTO
-        sync: false
+        value: toxtxuegwrhpcvmzbwcf
       - key: S3_REGION
-        sync: false
+        value: us-east-1
       - key: S3_BUCKET
         value: archivos
       - key: S3_ACCESS_KEY_ID
