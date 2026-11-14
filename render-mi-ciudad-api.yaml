@@ -1,0 +1,47 @@
+# Mi Ciudad Colon (Grupo 93) — API docente en Render.
+# Crear Blueprint desde este repo con ruta: render-mi-ciudad-api.yaml
+# Codigo fuente externo: repo publico original de la catedra (NO copiar el backend).
+# Requiere antes un proyecto Supabase (Postgres Session pooler y Storage S3).
+services:
+  - type: web
+    name: mi-ciudad-colon-api-grupo93
+    runtime: docker
+    plan: free
+    repo: https://github.com/franco-ruisdias-uner/api-proyectos-mobile
+    branch: main
+    rootDir: api-mi-ciudad
+    dockerfilePath: api-mi-ciudad/Dockerfile
+    dockerContext: api-mi-ciudad
+    healthCheckPath: /salud
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: ENTORNO
+        value: publicado
+      - key: CONFIAR_PROXY
+        value: 'true'
+      - key: DB_PROVEEDOR
+        value: supabase
+      - key: ARCHIVOS_PROVEEDOR
+        value: supabase
+      - key: SEMBRAR_SI_VACIA
+        value: 'true'
+      - key: DB_SINCRONIZAR
+        value: 'true'
+      - key: SIMULACION_HABILITADA
+        value: 'false'
+      - key: NOTIFICACIONES
+        value: registro
+      - key: DB_URL
+        sync: false
+      - key: JWT_SECRETO
+        generateValue: true
+      - key: SUPABASE_PROYECTO
+        sync: false
+      - key: S3_REGION
+        sync: false
+      - key: S3_BUCKET
+        value: archivos
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
