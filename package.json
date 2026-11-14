@@ -27,7 +27,8 @@
     "grupo:conectar": "powershell -ExecutionPolicy Bypass -File scripts/conectar-grupo-remoto-windows.ps1",
     "cierre:lote1": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cierre-dos-lotes-windows.ps1 -Lote Fotos",
     "cierre:lote2": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cierre-dos-lotes-windows.ps1 -Lote Pruebas",
-    "fotos:licencias": "node scripts/verificar-licencias-fotos.mjs"
+    "fotos:licencias": "node scripts/verificar-licencias-fotos.mjs",
+    "apk:catalogo": "node scripts/verificar-catalogo-apk.mjs"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
