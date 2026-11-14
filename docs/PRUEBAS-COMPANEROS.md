@@ -1,5 +1,7 @@
 # Mi Ciudad Colón — pruebas de grupo, SDK 58 (Android e iPhone)
 
+**Actualización 14/11/2026:** la API de la cátedra ya está publicada en `https://mi-ciudad-colon-api-grupo93-5szt.onrender.com`. Para probar con Expo Go, configurá esa URL en `.env.local` y ejecutá `npx expo start --tunnel` si los compañeros están en redes distintas. El túnel Cloudflare y las tres terminales explicados más abajo corresponden a una alternativa antigua para usar una API local; no hacen falta con el servidor publicado. Antes de compartir un APK, se debe generar una compilación nueva con la URL HTTPS en EAS `preview`.
+
 ## Versión única del proyecto
 
 Mi Ciudad se preparó para Expo **SDK 58**, React Native 0.88 y
