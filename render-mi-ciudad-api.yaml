@@ -30,7 +30,7 @@ services:
       - key: SIMULACION_HABILITADA
         value: 'false'
       - key: NOTIFICACIONES
-        value: registro
+        value: expo
       - key: DB_URL
         sync: false
       - key: JWT_SECRETO
