@@ -46,6 +46,8 @@ jobs:
           }
       - name: Revisar sintaxis del instalador de fotografías Commons
         run: node --check scripts/descargar-fotos-commons.mjs
+      - name: Verificar sintaxis auditoria de lugares y fotos APK
+        run: node --check scripts/verificar-catalogo-apk.mjs
       - name: Validar configuración Expo dinámica (mapas opcionales)
         run: |
           node --check app.config.js
@@ -63,6 +65,13 @@ jobs:
           assert.equal(native.extra.androidNativeMapsEnabled,true);
           assert.equal(native.plugins.at(-1)[0],'react-native-maps');
           assert.equal(native.plugins.at(-1)[1].androidGoogleMapsApiKey,'clave-ficticia-solo-ci');
+          process.env.EAS_BUILD_PROFILE='preview';
+          delete process.env.EXPO_PUBLIC_API_URL;
+          assert.throws(()=>cfg({config:base}),/EXPO_PUBLIC_API_URL/);
+          process.env.EXPO_PUBLIC_API_URL='https://api.ejemplo.com';
+          assert.equal(cfg({config:base}).extra.eas.projectId,base.extra.eas.projectId);
+          delete process.env.EAS_BUILD_PROFILE;
+          delete process.env.EXPO_PUBLIC_API_URL;
           NODE
           npx expo config --type public > /dev/null
       - name: Validar sintaxis de reprogramación segura de eventos
