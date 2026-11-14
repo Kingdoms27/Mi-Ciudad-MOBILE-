@@ -28,7 +28,8 @@
     "cierre:lote1": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cierre-dos-lotes-windows.ps1 -Lote Fotos",
     "cierre:lote2": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cierre-dos-lotes-windows.ps1 -Lote Pruebas",
     "fotos:licencias": "node scripts/verificar-licencias-fotos.mjs",
-    "apk:catalogo": "node scripts/verificar-catalogo-apk.mjs"
+    "apk:catalogo": "node scripts/verificar-catalogo-apk.mjs",
+    "apk:cerrar:win": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cerrar-apk-26-windows.ps1"
   },
   "dependencies": {
     "@react-native-vector-icons/ionicons": "^13.1.4",
