@@ -37,6 +37,25 @@ try {
         throw 'La URL trycloudflare es temporal: la APK dejara de recibir datos cuando se cierre el tunel. Usa hosting estable o repeti con -PermitirTunnelTemporal SOLO para una prueba con el tunel activo.'
     }
 
+    # Distinguir URL de tunel vencida de un catalogo incompleto o sin fotos.
+    Write-Host '[CONEXION] Comprobando API publica antes de auditar las 26 fotos...' -ForegroundColor Cyan
+    try {
+        $salud = Invoke-RestMethod -Uri "$ApiUrl/salud" -Method Get -TimeoutSec 15
+        if ($salud.datos.estado -ne 'ok') {
+            throw 'La API respondio, pero /salud no indica datos.estado=ok.'
+        }
+    } catch {
+        Write-Host '[API NO DISPONIBLE] El enlace configurado no responde.' -ForegroundColor Red
+        Write-Host ('URL actual: ' + $ApiUrl) -ForegroundColor Yellow
+        Write-Host 'La app y las 26 imagenes no han sido evaluadas: la conexion fallo primero.' -ForegroundColor Yellow
+        Write-Host '1. En otra terminal: npm run api:iniciar:win (dejarla abierta).' -ForegroundColor Yellow
+        Write-Host '2. En otra terminal: cloudflared tunnel --url http://localhost:3000 (dejarla abierta).' -ForegroundColor Yellow
+        Write-Host '3. Usar la URL HTTPS NUEVA que muestra cloudflared:' -ForegroundColor Yellow
+        Write-Host 'powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\cerrar-apk-26-windows.ps1 -ApiUrl "https://NUEVA-URL.trycloudflare.com" -PermitirTunnelTemporal' -ForegroundColor Yellow
+        throw ('No se pudo acceder a ' + $ApiUrl + '/salud. Detalle: ' + $_.Exception.Message)
+    }
+    Write-Host '[OK] API publica responde /salud.' -ForegroundColor Green
+
     Write-Host '[1/4] Comprobando los 26 lugares de la API y sus imagenes...' -ForegroundColor Cyan
     & node .\scripts\verificar-catalogo-apk.mjs $ApiUrl
     if ($LASTEXITCODE -ne 0) { throw 'El catalogo no tiene 26 lugares activos con foto comprobada. Revisa el informe de reportes antes de compilar.' }
