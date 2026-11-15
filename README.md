@@ -1,125 +1,187 @@
-# Mi Ciudad Colón
+# Mi Ciudad Colón — Grupo 93
 
-Aplicación móvil realizada por el **Grupo 93** para el trabajo integrador de **Desarrollo para Móviles (UNER, 2026)**.
+**Trabajo Integrador Final · Desarrollo para Móviles · UNER · 2026 (2.º cuatrimestre)**
 
-El objetivo es que una persona que visite Colón, Entre Ríos, pueda encontrar lugares turísticos, ver dónde quedan y guardar su recorrido. La información se consulta a través de la API que proporciona la cátedra.
+Aplicación móvil desarrollada con React Native, Expo y TypeScript para explorar los atractivos turísticos de Colón, Entre Ríos. Consume la API de la cátedra, incorpora capacidades del dispositivo y dispone de almacenamiento local para determinadas funciones sin conexión.
 
-## Funcionalidades
+## Integrantes
 
-- Catálogo de lugares con búsqueda, filtros, fotos, horarios, descripción y datos de contacto.
-- Mapa, ubicación del usuario, distancias y acceso a indicaciones para llegar.
-- Agenda de eventos y recordatorios locales.
-- Registro e inicio de sesión, favoritos y perfil.
-- Registro de visitas por QR, cercanía GPS o carga manual, con fotos y notas.
-- Recorrido guardado en el teléfono y sincronización de visitas pendientes.
-- Reproductor de audioguías, descarga para uso sin conexión y orientación por sensores.
-- Temas claro y oscuro.
+- Kevin Javier Berthet
+- David De Bueno
+- Flavia Gabriela Morilla
+- Giovanni Percara
+- Gabriel Hernán Toledo
 
-Los permisos de cámara, ubicación y notificaciones se solicitan cuando hace falta. La navegación básica no requiere iniciar sesión; guardar datos personales sí.
+## Entrega académica
 
-## Herramientas utilizadas
+**Modalidad informada por el grupo para esta entrega (15/11/2026):**
 
-| Parte | Tecnología |
+- **Código fuente:** entregar el enlace a este repositorio Git (preferido) o un ZIP; deben incluirse `app.json` y `eas.json`. No entregar `node_modules`.
+- **Campus Virtual UNER:** cargar los materiales en la sección correspondiente.
+- **Fecha límite:** la indicada en el Campus; **para quienes entreguen video, hasta el 15 de noviembre de 2026**, según la indicación recibida por el grupo.
+- **Defensa obligatoria:** instancia grupal de 15 a 20 minutos. Se demuestra la app funcionando en un teléfono, con Expo Go o una APK instalada. Cada integrante explica su parte y responde preguntas sobre su implementación. No se permite utilizar asistentes de IA durante la defensa.
+- **Video:** el grupo preparó una presentación grabada; agregar su enlace en la entrega del Campus cuando corresponda. No se publica aquí ningún enlace que no haya sido proporcionado.
+- **APK:** existe configuración EAS `preview` para generar un instalable Android. La versión de la consigna transcrita para esta entrega no enumera el enlace de APK como parte obligatoria de la carga de código fuente. Puede adjuntarse si la cátedra lo solicita; la APK no sustituye la defensa.
+
+> Esta sección utiliza la **consigna actualizada comunicada por el grupo**. Algunos documentos históricos de `docs/` describen la modalidad anterior (repositorio más enlace APK) y deben leerse como antecedentes, no como un cambio de la instrucción actual del Campus.
+
+## Funcionalidades incluidas
+
+- Catálogo de lugares turísticos: tarjetas, búsqueda, categorías, detalles, horarios y fotografías.
+- Mapa y geolocalización, con permisos opcionales y enlaces a indicaciones.
+- Agenda de eventos, favoritos y recordatorios locales cuando hay eventos aplicables.
+- Registro, ingreso, sesión persistente y reingreso biométrico donde el dispositivo lo admite.
+- Registro de visitas con código QR, validación de cercanía, fotos y notas.
+- Recorridos y visitas pendientes con persistencia local y sincronización.
+- Audioguías con controles de reproducción y opciones de descarga.
+- Estados de carga, vacío y error; aviso de conectividad, caché y temas claro/oscuro.
+
+La disponibilidad real de cámara, sensores, mapas y notificaciones depende de permisos y del cliente o build usado. El código incluido y las pruebas automáticas **no garantizan** por sí solos que cada función esté validada en todos los dispositivos.
+
+## Tecnologías y arquitectura
+
+| Capa | Tecnología |
 | --- | --- |
-| App móvil | React Native, Expo SDK 58, TypeScript y Expo Router |
-| Datos locales | SQLite, SecureStore y caché |
-| Cámara, GPS y audio | Módulos de Expo |
-| Backend | API NestJS original de la cátedra |
-| Base y archivos | PostgreSQL y Supabase Storage |
-| Alojamiento de la API | Render (plan gratuito) |
-| APK Android | EAS Build, perfil `preview` |
+| Aplicación móvil | React Native, Expo **SDK 58**, TypeScript |
+| Rutas y pantallas | Expo Router (`app/`) |
+| Comunicación | API REST de la cátedra, consultada desde `src/servicios/` |
+| Backend | NestJS del repositorio docente `api-proyectos-mobile` |
+| API publicada | Render (URL HTTPS indicada abajo) |
+| Datos/archivos remotos | PostgreSQL y almacenamiento configurado en el backend |
+| Persistencia local | `expo-sqlite`, `expo-sqlite/kv-store`, caché y `expo-secure-store` |
+| Hardware y multimedia | `expo-location`, `expo-camera`, `expo-image-picker`, `expo-sensors`, `expo-haptics`, `expo-audio` |
+| Compilación Android | EAS Build, perfil `preview` en `eas.json` |
 
-El código del backend pertenece al repositorio [api-proyectos-mobile](https://github.com/franco-ruisdias-uner/api-proyectos-mobile), carpeta `api-mi-ciudad`. No está duplicado dentro de este repositorio.
+El backend **no está copiado en este repositorio móvil**. Su código original está en [api-proyectos-mobile](https://github.com/franco-ruisdias-uner/api-proyectos-mobile), carpeta `api-mi-ciudad`. La aplicación puede utilizar el despliegue HTTPS ya publicado sin iniciar NestJS en la computadora de quien la evalúa.
 
-## Ejecutar el proyecto
+## Para los profesores: ejecutar desde GitHub
 
-Se necesita Node.js 22 o superior, Git y Expo Go compatible con SDK 58 para probar desde un teléfono.
+### 1. Requisitos
+
+- Git y **Node.js 22 o superior** con npm (la verificación automática del repositorio usa Node 22.13.0).
+- Un teléfono Android o iPhone con **Expo Go compatible con SDK 58**, si se usa esa modalidad, y conexión a Internet.
+- Para probar por red local, celular y computadora deben poder comunicarse en la misma red Wi-Fi.
+
+### 2. Clonar, instalar y configurar la API
+
+Abrir PowerShell en Windows:
 
 ```powershell
 git clone https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-.git
 cd Mi-Ciudad-MOBILE-
 npm ci
 Copy-Item .env.example .env.local
-npx expo start --clear
 ```
 
-Escaneá con Expo Go el QR que aparece en la terminal. Para que Metro funcione desde el celular, ambos dispositivos deben poder comunicarse por la red. Algunas funciones nativas requieren un build específico.
+`package-lock.json` fija la instalación reproducible. `.env.example` ya incluye la URL pública de la API, que se copia a `.env.local` y **no se sube al repositorio**. No introducir contraseñas, tokens ni otros secretos en variables `EXPO_PUBLIC_*`.
 
-El archivo `.env.example` contiene la URL del servidor público. Para usar la API local podés reemplazarla en `.env.local` con la IP de la computadora. **No uses `localhost` en un teléfono físico**. Sin una URL configurada, la app utiliza un catálogo reducido de datos de prueba; eso no equivale a trabajar con la API docente.
-
-### API publicada
-
-- Servidor: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com
-- Estado: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/salud
-- Lugares: https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/lugares?pagina=1&porPagina=500
-
-El 14 de noviembre de 2026 se comprobó que la API respondió correctamente y devolvió **26 lugares activos** de un total de **27 registros**. Render Free puede suspender el servidor por inactividad; por eso el primer acceso a veces demora más.
-
-## Probar los códigos QR
-
-Iniciá sesión y entrá a **Mi recorrido → Escanear QR**. El lector compara el contenido del QR con los códigos que tienen asignados los lugares en la API.
-
-| Contenido del QR | Qué debería pasar |
-| --- | --- |
-| `COLON:lug-004` | Reconoce el Molino Forclaz y registra una visita |
-| `COLON:lug-999` | Rechaza el código: el lugar no existe |
-| `CODIGO-AJENO-2026` | Muestra un error y permite volver a intentar |
-
-Después del QR válido hay que comprobar que la visita aparezca en **Mi recorrido**. También corresponde probar qué ocurre si el teléfono está sin Internet y después recupera la conexión.
-
-## APK para Android
-
-El perfil `preview` está definido en `eas.json`. La dirección de la API debe configurarse en EAS **antes de compilar**.
-
-Con EAS CLI instalado y la sesión de Expo iniciada:
+### 3. Comprobar que la API responde
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\cerrar-apk-26-windows.ps1" -ApiUrl "https://mi-ciudad-colon-api-grupo93-5szt.onrender.com"
-eas build --platform android --profile preview --clear-cache
+$api = "https://mi-ciudad-colon-api-grupo93-5szt.onrender.com"
+Invoke-RestMethod "$api/salud" -TimeoutSec 90
+$r = Invoke-RestMethod "$api/lugares?porPagina=500" -TimeoutSec 90
+"Lugares recibidos: $(@($r.datos).Count)"
 ```
 
-El primer comando revisa que el servidor y el catálogo respondan y configura `EXPO_PUBLIC_API_URL` en el entorno `preview` de EAS. Si informa un error, no conviene continuar con la compilación.
+- **API:** https://mi-ciudad-colon-api-grupo93-5szt.onrender.com
+- **Salud:** https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/salud
+- **Lugares:** https://mi-ciudad-colon-api-grupo93-5szt.onrender.com/lugares?porPagina=500
 
-Una APK anterior no se actualiza sola por cambiar GitHub. Para incluir los cambios hay que instalar una nueva compilación. En iPhone se necesita una compilación iOS distinta.
+En la última verificación del equipo se recibieron **26 lugares activos**. Render Free puede tardar en reactivarse tras un período de inactividad. Si falla `/salud`, primero revisar el backend y la conexión: abrir Expo no pone en marcha la API.
 
-## Organización
+### 4. Iniciar Expo y abrir la aplicación
 
-```text
-app/                    Pantallas y navegación
-src/componentes/        Componentes reutilizables
-src/contexto/           Sesión y tema
-src/servicios/          API, visitas, favoritos, archivos, caché
-src/mocks/              Datos de prueba
-assets/                 Íconos, portada y fotos locales
-scripts/                Herramientas de diagnóstico y compilación
-docs/                   Requisitos, pruebas y material de apoyo
-render-mi-ciudad-api.yaml   Configuración del servidor
+Para un teléfono en la misma red:
+
+```powershell
+npx expo start --clear --lan --go
 ```
 
-Los scripts para levantar la API local o abrir un túnel temporal siguen disponibles para desarrollo. No son necesarios para usar el servidor que ya está publicado.
+Escanear el QR de la terminal con Expo Go compatible con SDK 58. Mantener Metro abierto durante la prueba. Cuando el teléfono se encuentre en **otra red**, puede utilizarse:
 
-## Comprobaciones antes de entregar
+```powershell
+npx expo start --clear --tunnel --go
+```
+
+El túnel puede requerir autenticación Expo y depender de la disponibilidad de red. En iPhone, la cuenta de Expo CLI y la de Expo Go pueden tener que coincidir. Si la versión instalada de Expo Go no es compatible con SDK 58, se necesitará una compilación iOS adecuada: **una APK Android no funciona en iPhone**.
+
+### 5. Comprobaciones reproducibles
+
+Desde la raíz del repositorio, en otra terminal:
 
 ```powershell
 npm run typecheck
 npm run entrega:check
-npx expo-doctor@latest
+npm run doctor
+node --test scripts/test-imagenes-api.mjs scripts/test-cierre-mobile.mjs
 ```
 
-GitHub Actions también ejecuta verificaciones del proyecto. Eso **no reemplaza las pruebas reales** en Android o iPhone, especialmente de cámara, GPS, notificaciones, reproducción de audio y funcionamiento sin conexión.
+También hay verificaciones automatizadas en `.github/workflows/verify.yml`. Estas pruebas comprueban configuración, integridad de archivos, tipos y ciertos comportamientos; **no sustituyen** una prueba física de permisos, cámara, GPS, notificaciones, audio y modo avión.
 
-## Material de prueba y cuestiones pendientes
+## Pruebas de demostración sugeridas
 
-La API usa datos de demostración, incluidos eventos; no es una agenda oficial en tiempo real. Las audioguías que utilizan pistas SoundHelix son audios de prueba y no grabaciones turísticas oficiales.
+1. Abrir Inicio y comprobar que se muestran lugares provenientes de la API, no solo datos de ejemplo.
+2. Buscar un atractivo y abrir su detalle; comprobar texto, imágenes y estados de carga/error.
+3. Abrir Mapa y comparar el comportamiento con el permiso de ubicación concedido y denegado.
+4. Iniciar sesión con **cuentas de demostración autorizadas**, guardar un favorito y consultar Mi recorrido.
+5. Probar un QR válido: `COLON:lug-004` (Molino Forclaz), además de un código inexistente como `COLON:lug-999`.
+6. Guardar una visita y verificar su persistencia y sincronización cuando vuelve la conexión.
+7. Probar reproducción/pausa de audioguía, orientación o háptica, y notificaciones locales si existe un evento futuro apropiado.
 
-El proyecto incorpora archivos de imagen locales para las 26 fichas activas, pero **tener una imagen asociada no garantiza que corresponda exactamente al lugar o que se pueda redistribuir**. La información de origen y las fotos pendientes están en [el inventario de licencias](docs/LICENCIAS-FOTOS-20261112.json). Antes de publicar una versión fuera del ámbito académico hay que resolver las atribuciones que siguen pendientes.
+No se publican contraseñas de demostración en este README. El equipo o la cátedra debe aportar las credenciales de prueba por un canal apropiado cuando sean necesarias.
 
-En Android el mapa puede usar OpenStreetMap/CARTO en una vista WebView como alternativa al mapa nativo. La aceptación de esa variante y las pruebas con sensores, notificaciones y sin conexión deben documentarse con resultados del dispositivo.
+## Estructura del repositorio
 
-## Documentación
+```text
+app/                  Pantallas, tabs y rutas de Expo Router
+src/componentes/      Componentes de interfaz
+src/contexto/         Sesión y tema
+src/servicios/        API, catálogo, visitas, caché, medios y persistencia
+src/mocks/            Datos de ejemplo (solo si no se configuró la API)
+assets/               Marca, portada y 26 imágenes locales de lugares
+plugins/              Configuraciones nativas del proyecto
+scripts/              Diagnóstico, validaciones y utilidades
+docs/                 Mapeos, pruebas, decisiones y créditos
+.github/workflows/     Verificaciones automáticas
+app.json              Identidad y configuración Expo
+eas.json              Perfiles de compilación EAS
+app.config.js         Configuración dinámica de mapa Android y API EAS
+.env.example          Ejemplo de configuración pública de la API
+package-lock.json     Dependencias fijadas para npm ci
+```
 
-- [Mapeo de los requisitos funcionales](docs/MAPEO-PRD.md)
-- [Plan de pruebas](docs/PRUEBAS-MOBILE.md)
-- [Guía para presentar la app](docs/GUIA-DEFENSA.md)
-- [Despliegue de la API](docs/DESPLIEGUE-API-SIN-PC.md)
-- [Inventario y licencias de fotografías](docs/LICENCIAS-FOTOS-20261112.json)
+`node_modules/`, `.env`, `.env.local`, credenciales y archivos de firma no se versionan. Tampoco se incluyen el código del backend original ni un archivo de video si no se han subido expresamente.
+
+## Build instalable Android (información adicional)
+
+El perfil `preview` en `eas.json` genera una APK. Para una compilación independiente de Metro es necesario que el entorno EAS `preview` tenga `EXPO_PUBLIC_API_URL` apuntando a una API **HTTPS pública** antes de generar el build. La configuración local `.env.local` no garantiza que EAS reciba esa variable.
+
+```powershell
+npx eas-cli@latest env:list --environment preview
+npm run entrega:check -- --apk
+npx eas-cli@latest build --platform android --profile preview
+```
+
+Una APK existente **no se modifica** al editar este README. Si la cátedra solicita un enlace a un build, compartir el enlace real de EAS correspondiente al archivo instalado y probado, no un enlace inventado.
+
+## Limitaciones y aclaraciones para la evaluación
+
+- El catálogo incluye 26 lugares activos según la última prueba; esto no demuestra que existan 26 fotos **únicas y verificadas**. Ver créditos y licencias.
+- La API puede devolver cero eventos próximos; eso no significa necesariamente que la pantalla Agenda tenga un error de código. Las notificaciones locales relacionadas con eventos requieren datos adecuados y permisos.
+- Algunas audioguías emplean audio de demostración, no grabaciones turísticas oficiales.
+- En Android, el mapa puede usar una alternativa WebView con OpenStreetMap/CARTO cuando no está habilitado el mapa nativo. Validar con la cátedra si se exige estrictamente `react-native-maps`.
+- El comportamiento de Expo Go no es necesariamente igual al de una compilación instalada para notificaciones, biometría, background audio y módulos nativos.
+- Para pruebas offline, primero abrir la app con conexión y guardar datos en caché. Un teléfono recién instalado y sin conexión no puede consultar por primera vez el servidor.
+
+## Documentación adicional
+
+- [Mapeo de requisitos del integrador](docs/MAPEO-REQUISITOS-INTEGRADOR.md).
+- [Plan de pruebas móviles](docs/PRUEBAS-MOBILE.md).
+- [Pruebas remotas y de compañeros](docs/PRUEBAS-COMPANEROS.md) (incluye instrucciones históricas de API local).
+- [Despliegue de la API sin computadora](docs/DESPLIEGUE-API-SIN-PC.md).
+- [Guía de defensa](docs/GUIA-DEFENSA.md).
+- [Inventario de fotografías y licencias](docs/LICENCIAS-FOTOS-20261112.json).
+- [Mapeo del PRD](docs/MAPEO-PRD.md).
+
+**Grupo 93 · UNER · Desarrollo para Móviles · Noviembre de 2026**
