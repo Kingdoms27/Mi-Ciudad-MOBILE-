@@ -12,6 +12,12 @@ Aplicación móvil desarrollada con React Native, Expo y TypeScript para explora
 - Giovanni Percara
 - Gabriel Hernán Toledo
 
+## Video de presentación del Grupo 93
+
+- **Video grupal:** [GRUPO 93.mp4 — presentación de Mi Ciudad Colón (Google Drive)](https://drive.google.com/file/d/1nw2q3lBlXO0xPQ6FiQjtQqRWSSoSWqOq/view?usp=sharing).
+- El video complementa la entrega del repositorio y la defensa grupal coordinada con la cátedra.
+- **Para evaluar:** abrir el enlace de Drive con permiso de visualización. Si se solicita acceso, el equipo debe habilitarlo; no se publican credenciales.
+
 ## Entrega académica
 
 **Modalidad informada por el grupo para esta entrega (15/11/2026):**
