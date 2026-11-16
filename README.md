@@ -20,23 +20,30 @@ Aplicación móvil desarrollada con React Native, Expo y TypeScript para explora
 
 ## Descargar e instalar la aplicación (Android APK)
 
-**[Descargar Mi Ciudad Colón para Android — APK](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk)**
+### 📲 Descarga directa — versión final v1.0.0
 
-[Ver versiones publicadas en GitHub Releases](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases)
+**[⬇️ DESCARGAR MI CIUDAD COLÓN — APK PARA ANDROID](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk)**
 
-> **Estado del enlace:** preparado para la publicación. La descarga directa empezará a funcionar **únicamente después** de publicar una *Release* estable en este repositorio con el archivo adjunto llamado exactamente `mi-ciudad-colon.apk`. Antes de eso, GitHub puede mostrar un error 404. No se afirma que la APK ya esté alojada.
+- **Estado:** publicada en GitHub Releases (16/11/2026).
+- **Versión:** `v1.0.0` — Mi Ciudad Colón Grupo 93 | Versión Final.
+- **Archivo:** `mi-ciudad-colon.apk` (135 MB, según GitHub Releases).
+- **Publicación oficial:** [consultar la Release v1.0.0](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/tag/v1.0.0).
+- **Enlace permanente a la última versión:** [descargar APK](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk).
 
-**Para los profesores (Android):** abrir el enlace de descarga en el celular, descargar el archivo `.apk`, abrirlo e instalarlo. Android puede pedir autorización para instalar aplicaciones descargadas desde el navegador; habilitarla solo si se confía en este proyecto. La APK permite abrir la aplicación sin instalar Expo Go, clonar el repositorio ni mantener Metro encendido. Se necesita conexión a Internet para las funcionalidades que consultan la API y conceder los permisos del dispositivo que correspondan. **Una APK no se puede instalar en iPhone/iOS.**
+**Para los profesores:** abrir el enlace desde un teléfono Android, descargar el archivo `.apk`, tocar el archivo descargado y seguir la instalación. Si Android solicita permiso para instalar desde el navegador o el gestor de archivos, permitirlo únicamente si se confía en el origen. Una vez instalada, la aplicación se abre directamente desde el teléfono: **no hace falta Expo Go, clonar GitHub, instalar Node.js ni mantener Metro ejecutándose**.
 
-### Cómo publicar o actualizar la APK (equipo del Grupo 93)
+**Consideraciones de la prueba:** algunas funciones consumen la API HTTPS y requieren Internet; otras solicitan permisos de cámara, ubicación o notificaciones. La APK es **solo para Android**; para iPhone/iOS deben utilizarse las alternativas descritas más abajo. La publicación del instalador no garantiza por sí sola que todas las funciones operen en cada dispositivo.
 
-1. Generar el instalable Android con el perfil `preview` de EAS Build (ver [Build instalable Android](#build-instalable-android-información-adicional)). Confirmar antes que la compilación use la URL HTTPS pública de la API.
-2. Descargar y probar la APK en un teléfono Android real. Renombrar el archivo a **`mi-ciudad-colon.apk`** (sin comprimirlo en ZIP).
-3. Entrar en [Releases del repositorio](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases), elegir **Draft a new release**, crear la etiqueta `v1.0.0`, adjuntar `mi-ciudad-colon.apk` y seleccionar **Publish release**. Publicarla como versión normal, **no como borrador ni prerelease**.
-4. Verificar el [enlace directo](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk) desde una ventana de incógnito, sin iniciar sesión en GitHub, y volver a comprobar la instalación en Android.
-5. Para futuras actualizaciones, crear otra Release estable (por ejemplo, `v1.0.1`) con el archivo **exactamente del mismo nombre**. El enlace `releases/latest/download/mi-ciudad-colon.apk` apuntará a la APK de la última Release estable publicada, sin necesidad de editar nuevamente el README.
+### Publicación de futuras versiones (equipo del Grupo 93)
 
-**Importante:** publicar una Release no compila ni modifica la app automáticamente; aloja el archivo APK que el equipo sube. La aplicación instalada sigue dependiendo de que su API remota esté disponible para las funciones online.
+La versión `v1.0.0` ya está publicada; **no hay que repetir la publicación inicial**. Si en el futuro se genera otra compilación:
+
+1. Generar la APK con EAS Build (`preview`) y comprobar que apunte a la API HTTPS pública.
+2. Probarla en un dispositivo Android y nombrar el archivo exactamente `mi-ciudad-colon.apk`.
+3. Crear una nueva [GitHub Release](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases) estable con una nueva etiqueta (por ejemplo, `v1.0.1`) y adjuntar la APK; no marcarla como *pre-release*.
+4. Comprobar la descarga e instalación desde una ventana de incógnito. El enlace `releases/latest/download/mi-ciudad-colon.apk` seguirá apuntando a la última versión estable sin modificar este README.
+
+**Nota:** una Release almacena la APK adjunta, pero no recompila ni actualiza automáticamente la aplicación instalada en los teléfonos.
 
 ## Entrega académica
 
@@ -47,7 +54,7 @@ Aplicación móvil desarrollada con React Native, Expo y TypeScript para explora
 - **Fecha límite:** la indicada en el Campus; **para quienes entreguen video, hasta el 15 de noviembre de 2026**, según la indicación recibida por el grupo.
 - **Defensa obligatoria:** instancia grupal de 15 a 20 minutos. Se demuestra la app funcionando en un teléfono, con Expo Go o una APK instalada. Cada integrante explica su parte y responde preguntas sobre su implementación. No se permite utilizar asistentes de IA durante la defensa.
 - **Video:** el grupo preparó una presentación grabada; agregar su enlace en la entrega del Campus cuando corresponda. No se publica aquí ningún enlace que no haya sido proporcionado.
-- **APK:** existe configuración EAS `preview` para generar un instalable Android. La versión de la consigna transcrita para esta entrega no enumera el enlace de APK como parte obligatoria de la carga de código fuente. Se incluye arriba un enlace de descarga directa preparado para la publicación de una Release estable; la APK no sustituye la defensa.
+- **APK:** [versión final v1.0.0 disponible para descarga directa](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk). El instalador de Android se publicó en GitHub Releases el 16/11/2026; es un recurso complementario para la evaluación y no sustituye la defensa ni los demás elementos solicitados por la cátedra.
 
 > Esta sección utiliza la **consigna actualizada comunicada por el grupo**. Algunos documentos históricos de `docs/` describen la modalidad anterior (repositorio más enlace APK) y deben leerse como antecedentes, no como un cambio de la instrucción actual del Campus.
 
@@ -189,7 +196,7 @@ npm run entrega:check -- --apk
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-Una APK existente **no se modifica** al editar este README. Para compartir una APK comprobada, publicarla en GitHub Releases siguiendo las instrucciones anteriores o proporcionar el enlace real del build de EAS; no compartir enlaces a archivos que todavía no se han publicado.
+La **APK v1.0.0 ya está publicada** en [GitHub Releases](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/tag/v1.0.0) y tiene [descarga directa](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk). Editar este README no cambia el binario ya publicado; cualquier corrección de la aplicación requiere generar, probar y publicar una APK nueva.
 
 ## Limitaciones y aclaraciones para la evaluación
 
