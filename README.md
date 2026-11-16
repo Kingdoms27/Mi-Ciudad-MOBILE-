@@ -18,6 +18,26 @@ Aplicación móvil desarrollada con React Native, Expo y TypeScript para explora
 - El video complementa la entrega del repositorio y la defensa grupal coordinada con la cátedra.
 - **Para evaluar:** abrir el enlace de Drive con permiso de visualización. Si se solicita acceso, el equipo debe habilitarlo; no se publican credenciales.
 
+## Descargar e instalar la aplicación (Android APK)
+
+**[Descargar Mi Ciudad Colón para Android — APK](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk)**
+
+[Ver versiones publicadas en GitHub Releases](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases)
+
+> **Estado del enlace:** preparado para la publicación. La descarga directa empezará a funcionar **únicamente después** de publicar una *Release* estable en este repositorio con el archivo adjunto llamado exactamente `mi-ciudad-colon.apk`. Antes de eso, GitHub puede mostrar un error 404. No se afirma que la APK ya esté alojada.
+
+**Para los profesores (Android):** abrir el enlace de descarga en el celular, descargar el archivo `.apk`, abrirlo e instalarlo. Android puede pedir autorización para instalar aplicaciones descargadas desde el navegador; habilitarla solo si se confía en este proyecto. La APK permite abrir la aplicación sin instalar Expo Go, clonar el repositorio ni mantener Metro encendido. Se necesita conexión a Internet para las funcionalidades que consultan la API y conceder los permisos del dispositivo que correspondan. **Una APK no se puede instalar en iPhone/iOS.**
+
+### Cómo publicar o actualizar la APK (equipo del Grupo 93)
+
+1. Generar el instalable Android con el perfil `preview` de EAS Build (ver [Build instalable Android](#build-instalable-android-información-adicional)). Confirmar antes que la compilación use la URL HTTPS pública de la API.
+2. Descargar y probar la APK en un teléfono Android real. Renombrar el archivo a **`mi-ciudad-colon.apk`** (sin comprimirlo en ZIP).
+3. Entrar en [Releases del repositorio](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases), elegir **Draft a new release**, crear la etiqueta `v1.0.0`, adjuntar `mi-ciudad-colon.apk` y seleccionar **Publish release**. Publicarla como versión normal, **no como borrador ni prerelease**.
+4. Verificar el [enlace directo](https://github.com/Kingdoms27/Mi-Ciudad-MOBILE-/releases/latest/download/mi-ciudad-colon.apk) desde una ventana de incógnito, sin iniciar sesión en GitHub, y volver a comprobar la instalación en Android.
+5. Para futuras actualizaciones, crear otra Release estable (por ejemplo, `v1.0.1`) con el archivo **exactamente del mismo nombre**. El enlace `releases/latest/download/mi-ciudad-colon.apk` apuntará a la APK de la última Release estable publicada, sin necesidad de editar nuevamente el README.
+
+**Importante:** publicar una Release no compila ni modifica la app automáticamente; aloja el archivo APK que el equipo sube. La aplicación instalada sigue dependiendo de que su API remota esté disponible para las funciones online.
+
 ## Entrega académica
 
 **Modalidad informada por el grupo para esta entrega (15/11/2026):**
@@ -27,7 +47,7 @@ Aplicación móvil desarrollada con React Native, Expo y TypeScript para explora
 - **Fecha límite:** la indicada en el Campus; **para quienes entreguen video, hasta el 15 de noviembre de 2026**, según la indicación recibida por el grupo.
 - **Defensa obligatoria:** instancia grupal de 15 a 20 minutos. Se demuestra la app funcionando en un teléfono, con Expo Go o una APK instalada. Cada integrante explica su parte y responde preguntas sobre su implementación. No se permite utilizar asistentes de IA durante la defensa.
 - **Video:** el grupo preparó una presentación grabada; agregar su enlace en la entrega del Campus cuando corresponda. No se publica aquí ningún enlace que no haya sido proporcionado.
-- **APK:** existe configuración EAS `preview` para generar un instalable Android. La versión de la consigna transcrita para esta entrega no enumera el enlace de APK como parte obligatoria de la carga de código fuente. Puede adjuntarse si la cátedra lo solicita; la APK no sustituye la defensa.
+- **APK:** existe configuración EAS `preview` para generar un instalable Android. La versión de la consigna transcrita para esta entrega no enumera el enlace de APK como parte obligatoria de la carga de código fuente. Se incluye arriba un enlace de descarga directa preparado para la publicación de una Release estable; la APK no sustituye la defensa.
 
 > Esta sección utiliza la **consigna actualizada comunicada por el grupo**. Algunos documentos históricos de `docs/` describen la modalidad anterior (repositorio más enlace APK) y deben leerse como antecedentes, no como un cambio de la instrucción actual del Campus.
 
@@ -169,7 +189,7 @@ npm run entrega:check -- --apk
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-Una APK existente **no se modifica** al editar este README. Si la cátedra solicita un enlace a un build, compartir el enlace real de EAS correspondiente al archivo instalado y probado, no un enlace inventado.
+Una APK existente **no se modifica** al editar este README. Para compartir una APK comprobada, publicarla en GitHub Releases siguiendo las instrucciones anteriores o proporcionar el enlace real del build de EAS; no compartir enlaces a archivos que todavía no se han publicado.
 
 ## Limitaciones y aclaraciones para la evaluación
 
